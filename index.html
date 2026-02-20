@@ -207,7 +207,6 @@
     font-weight: 900;
     transition: all 0.25s ease;
     position: relative;
-    padding-bottom: 0;
   }
 
   .nav-item .nav-label {
@@ -256,23 +255,24 @@
     backdrop-filter: blur(8px);
   }
 
-  /* ── Visual Cues ── */
+  /* ── Visual Cues — BIG and WHITE ── */
+
   .shake-cue {
     position: absolute;
     bottom: calc(80px + var(--safe-bottom));
     z-index: 20;
-    opacity: 0.3;
+    opacity: 0.5;
     animation: shakeCueAnim 1.2s ease-in-out infinite;
     transition: opacity 0.6s ease;
   }
-  .shake-cue svg { width: 36px; height: 36px; }
+  .shake-cue svg { width: 80px; height: 80px; }
 
   @keyframes shakeCueAnim {
     0%, 100% { transform: translateX(0) rotate(0deg); }
-    12% { transform: translateX(-10px) rotate(-10deg); }
-    24% { transform: translateX(10px) rotate(10deg); }
-    36% { transform: translateX(-8px) rotate(-7deg); }
-    48% { transform: translateX(8px) rotate(7deg); }
+    12% { transform: translateX(-12px) rotate(-12deg); }
+    24% { transform: translateX(12px) rotate(12deg); }
+    36% { transform: translateX(-9px) rotate(-8deg); }
+    48% { transform: translateX(9px) rotate(8deg); }
     60% { transform: translateX(-4px) rotate(-3deg); }
     72% { transform: translateX(4px) rotate(3deg); }
     84% { transform: translateX(0) rotate(0); }
@@ -282,11 +282,11 @@
     position: absolute;
     bottom: calc(80px + var(--safe-bottom));
     z-index: 20;
-    opacity: 0.3;
+    opacity: 0.5;
     animation: tiltCueAnim 3s ease-in-out infinite;
     transition: opacity 0.6s ease;
   }
-  .tilt-cue svg { width: 44px; height: 44px; }
+  .tilt-cue svg { width: 90px; height: 90px; }
 
   @keyframes tiltCueAnim {
     0%, 100% { transform: rotate(0deg) translateY(0); }
@@ -300,10 +300,10 @@
     position: absolute;
     bottom: calc(80px + var(--safe-bottom));
     z-index: 20;
-    opacity: 0.3;
+    opacity: 0.5;
     transition: opacity 0.6s ease;
   }
-  .hold-cue svg { width: 40px; height: 52px; }
+  .hold-cue svg { width: 80px; height: 100px; }
 
   .cue-hidden { opacity: 0 !important; pointer-events: none; }
 
@@ -412,13 +412,48 @@
     transition: all 0.15s ease-out;
   }
 
-  .water-param {
+  /* Water tilt readout — large, visible */
+  .water-tilt-readout {
     position: absolute;
-    bottom: -26px;
-    font-size: 0.5rem;
-    opacity: 0.2;
-    font-family: monospace;
-    white-space: nowrap;
+    bottom: calc(80px + var(--safe-bottom));
+    left: 0; right: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    gap: clamp(16px, 5vw, 30px);
+    pointer-events: none;
+  }
+
+  .tilt-axis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .tilt-axis .tilt-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(0.6rem, 2.5vw, 0.75rem);
+    font-weight: 300;
+    font-style: italic;
+    opacity: 0.4;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .tilt-axis .tilt-value {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.8rem, 8vw, 2.8rem);
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    line-height: 1;
+  }
+
+  .tilt-axis .tilt-unit {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(0.55rem, 2vw, 0.7rem);
+    opacity: 0.3;
+    font-style: italic;
   }
 
   /* ── Fire ── */
@@ -604,7 +639,7 @@
       <span class="inner">金</span>
     </div>
     <div class="shake-cue" id="metalCue">
-      <svg viewBox="0 0 40 40" fill="none" stroke="rgba(212,175,55,0.5)" stroke-width="1.5" stroke-linecap="round">
+      <svg viewBox="0 0 40 40" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round">
         <rect x="13" y="7" width="14" height="26" rx="3"/>
         <line x1="5" y1="13" x2="9" y2="10"/>
         <line x1="4" y1="20" x2="9" y2="20"/>
@@ -643,20 +678,35 @@
   <div class="interaction-area">
     <div class="water-visual" id="waterVisual">
       <div class="water-orb" id="waterOrb"></div>
-      <div class="water-param" id="waterParam"></div>
     </div>
+    <!-- Tilt cue (shown before first interaction) -->
     <div class="tilt-cue" id="waterCue">
       <svg viewBox="0 0 48 48" fill="none" stroke-linecap="round">
-        <rect x="16" y="10" width="16" height="26" rx="3" stroke="rgba(70,130,200,0.5)" stroke-width="1.5"/>
-        <path d="M8 23 L3 23" stroke="rgba(70,130,200,0.35)" stroke-width="1.2"/>
-        <path d="M6 19.5 L3 23 L6 26.5" stroke="rgba(70,130,200,0.35)" stroke-width="1.2" fill="none"/>
-        <path d="M40 23 L45 23" stroke="rgba(70,130,200,0.35)" stroke-width="1.2"/>
-        <path d="M42 19.5 L45 23 L42 26.5" stroke="rgba(70,130,200,0.35)" stroke-width="1.2" fill="none"/>
-        <path d="M24 5 L24 1" stroke="rgba(70,130,200,0.35)" stroke-width="1.2"/>
-        <path d="M20.5 3.5 L24 0.5 L27.5 3.5" stroke="rgba(70,130,200,0.35)" stroke-width="1.2" fill="none"/>
-        <path d="M24 43 L24 47" stroke="rgba(70,130,200,0.35)" stroke-width="1.2"/>
-        <path d="M20.5 44.5 L24 47.5 L27.5 44.5" stroke="rgba(70,130,200,0.35)" stroke-width="1.2" fill="none"/>
+        <rect x="16" y="10" width="16" height="26" rx="3" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+        <path d="M8 23 L3 23" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+        <path d="M6 19.5 L3 23 L6 26.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
+        <path d="M40 23 L45 23" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+        <path d="M42 19.5 L45 23 L42 26.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
+        <path d="M24 5 L24 1" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+        <path d="M20.5 3.5 L24 0.5 L27.5 3.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
+        <path d="M24 43 L24 47" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+        <path d="M20.5 44.5 L24 47.5 L27.5 44.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
       </svg>
+    </div>
+    <!-- Tilt degree readout (always visible once interacting) -->
+    <div class="water-tilt-readout" id="waterReadout" style="opacity:0;">
+      <div class="tilt-axis">
+        <span class="tilt-label">Tilt</span>
+        <span class="tilt-value" id="tiltBeta">0°</span>
+      </div>
+      <div class="tilt-axis">
+        <span class="tilt-label">Roll</span>
+        <span class="tilt-value" id="tiltGamma">0°</span>
+      </div>
+      <div class="tilt-axis">
+        <span class="tilt-label">Spin</span>
+        <span class="tilt-value" id="tiltAlpha">0°</span>
+      </div>
     </div>
   </div>
 </div>
@@ -685,17 +735,17 @@
     </div>
     <div class="hold-cue" id="earthCue">
       <svg viewBox="0 0 44 56" fill="none" stroke-linecap="round">
-        <ellipse cx="22" cy="18" rx="7" ry="9" stroke="var(--earth-dim)" stroke-width="1.5"/>
-        <line x1="22" y1="27" x2="22" y2="38" stroke="var(--earth-dim)" stroke-width="1.5"/>
-        <circle cx="22" cy="43" r="4" stroke="rgba(139,94,60,0.3)" stroke-width="1">
+        <ellipse cx="22" cy="18" rx="7" ry="9" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+        <line x1="22" y1="27" x2="22" y2="38" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+        <circle cx="22" cy="43" r="4" stroke="rgba(255,255,255,0.4)" stroke-width="1">
           <animate attributeName="r" from="4" to="14" dur="2s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" from="0.5" to="0" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" from="0.6" to="0" dur="2s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="22" cy="43" r="4" stroke="rgba(139,94,60,0.3)" stroke-width="1">
+        <circle cx="22" cy="43" r="4" stroke="rgba(255,255,255,0.4)" stroke-width="1">
           <animate attributeName="r" from="4" to="14" dur="2s" begin="1s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" from="0.5" to="0" dur="2s" begin="1s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" from="0.6" to="0" dur="2s" begin="1s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="22" cy="43" r="3" fill="rgba(139,94,60,0.35)"/>
+        <circle cx="22" cy="43" r="3" fill="rgba(255,255,255,0.45)"/>
       </svg>
     </div>
   </div>
@@ -727,150 +777,123 @@
 
 <script>
 // ════════════════════════════════════════
-// Viewport height fix for mobile browsers
+// Viewport height fix
 // ════════════════════════════════════════
-function setVH() {
-  document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
-}
-setVH();
-window.addEventListener('resize', setVH);
+function setVH(){document.documentElement.style.setProperty('--vh',window.innerHeight+'px');}
+setVH(); window.addEventListener('resize',setVH);
 
 // ════════════════════════════════════════
 // Audio Context & Core
 // ════════════════════════════════════════
-let audioCtx = null;
-let currentElement = null;
+let audioCtx=null, currentElement=null;
 
-function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+function initAudio(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
 }
 
 // ════════════════════════════════════════
-// Permission: request ALL on entry
+// Permissions — ALL on entry
 // ════════════════════════════════════════
-document.getElementById('startBtn').addEventListener('click', async () => {
-  const status = document.getElementById('permStatus');
-  status.textContent = 'Requesting permissions…';
-
-  // 1. Audio
+document.getElementById('startBtn').addEventListener('click', async()=>{
+  const status=document.getElementById('permStatus');
+  status.textContent='Requesting permissions…';
   initAudio();
-
-  // 2. DeviceMotion (accelerometer — needed for Metal shake)
-  if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-    try {
-      const r = await DeviceMotionEvent.requestPermission();
-      if (r !== 'granted') { status.textContent = 'Motion access needed for full experience'; }
-    } catch (e) { status.textContent = 'Motion permission denied'; }
+  if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
+    try{const r=await DeviceMotionEvent.requestPermission();if(r!=='granted')status.textContent='Motion access needed';}catch(e){}
   }
-
-  // 3. DeviceOrientation (gyroscope — needed for Water tilt)
-  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-    try {
-      const r = await DeviceOrientationEvent.requestPermission();
-      if (r !== 'granted') { status.textContent = 'Orientation access needed for full experience'; }
-    } catch (e) { status.textContent = 'Orientation permission denied'; }
+  if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
+    try{const r=await DeviceOrientationEvent.requestPermission();if(r!=='granted')status.textContent='Orientation access needed';}catch(e){}
   }
-
-  // 4. Haptic test (no permission needed, just verify)
-  if (navigator.vibrate) {
-    navigator.vibrate(1); // silent test pulse
-  }
-
-  // 5. Wake Lock to prevent screen dimming during performance
-  if ('wakeLock' in navigator) {
-    try { await navigator.wakeLock.request('screen'); } catch(e) {}
-  }
-
+  if(navigator.vibrate) navigator.vibrate(1);
+  if('wakeLock' in navigator){try{await navigator.wakeLock.request('screen');}catch(e){}}
   document.getElementById('permissionOverlay').classList.add('hidden');
 });
 
 // ════════════════════════════════════════
 // Navigation
 // ════════════════════════════════════════
-function openElement(name) {
+function openElement(name){
   initAudio();
-  document.getElementById('landing').style.display = 'none';
-  document.getElementById('bottomNav').style.display = 'flex';
+  document.getElementById('landing').style.display='none';
+  document.getElementById('bottomNav').style.display='flex';
   switchElement(name);
 }
 
-function switchElement(name) {
-  if (currentElement === name) return;
-  if (currentElement) cleanupCurrent();
-  document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+function switchElement(name){
+  if(currentElement===name) return;
+  if(currentElement) cleanupCurrent();
+  document.querySelectorAll('.element-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelector(`.nav-item.${name}`).classList.add('active');
-  document.getElementById(name + '-page').classList.add('active');
-  currentElement = name;
+  document.getElementById(name+'-page').classList.add('active');
+  currentElement=name;
   initAudio();
-  ({metal:initMetal, wood:initWood, water:initWater, fire:initFire, earth:initEarth})[name]();
+  ({metal:initMetal,wood:initWood,water:initWater,fire:initFire,earth:initEarth})[name]();
 }
 
-function goHome() {
+function goHome(){
   cleanupCurrent();
-  document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
-  document.getElementById('bottomNav').style.display = 'none';
-  document.getElementById('landing').style.display = 'flex';
-  currentElement = null;
+  document.querySelectorAll('.element-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('bottomNav').style.display='none';
+  document.getElementById('landing').style.display='flex';
+  currentElement=null;
 }
 
-function cleanupCurrent() {
-  ({metal:cleanupMetal, wood:cleanupWood, water:cleanupWater, fire:cleanupFire, earth:cleanupEarth})[currentElement]();
+function cleanupCurrent(){
+  ({metal:cleanupMetal,wood:cleanupWood,water:cleanupWater,fire:cleanupFire,earth:cleanupEarth})[currentElement]();
 }
 
-function hideCue(id) { const c=document.getElementById(id); if(c) c.classList.add('cue-hidden'); }
-function resetCue(id) { const c=document.getElementById(id); if(c) c.classList.remove('cue-hidden'); }
+function hideCue(id){const c=document.getElementById(id);if(c)c.classList.add('cue-hidden');}
+function resetCue(id){const c=document.getElementById(id);if(c)c.classList.remove('cue-hidden');}
 
 // ════════════════════════════════════════
 // Drone utility
 // ════════════════════════════════════════
-function createDrone(baseFreq, type, detune) {
-  const o1=audioCtx.createOscillator(), o2=audioCtx.createOscillator();
-  const g=audioCtx.createGain(), f=audioCtx.createBiquadFilter();
-  o1.type=type||'sine'; o1.frequency.value=baseFreq;
-  o2.type='sine'; o2.frequency.value=baseFreq*1.002;
+function createDrone(baseFreq,type,detune){
+  const o1=audioCtx.createOscillator(),o2=audioCtx.createOscillator();
+  const g=audioCtx.createGain(),f=audioCtx.createBiquadFilter();
+  o1.type=type||'sine';o1.frequency.value=baseFreq;
+  o2.type='sine';o2.frequency.value=baseFreq*1.002;
   if(detune){o1.detune.value=detune;o2.detune.value=-detune;}
-  f.type='lowpass'; f.frequency.value=800; f.Q.value=2;
+  f.type='lowpass';f.frequency.value=800;f.Q.value=2;
   g.gain.value=0;
-  o1.connect(f); o2.connect(f); f.connect(g); g.connect(audioCtx.destination);
-  o1.start(); o2.start();
-  return {osc1:o1,osc2:o2,gain:g,filter:f};
+  o1.connect(f);o2.connect(f);f.connect(g);g.connect(audioCtx.destination);
+  o1.start();o2.start();
+  return{osc1:o1,osc2:o2,gain:g,filter:f};
 }
 
 // ════════════════════════════════════════
 // 1. METAL 金
 // ════════════════════════════════════════
-let metalHandler=null, metalLastShake=0;
+let metalHandler=null,metalLastShake=0;
 
-function initMetal() {
+function initMetal(){
   resetCue('metalCue');
-  metalHandler = e => {
-    const a=e.accelerationIncludingGravity||e.acceleration; if(!a) return;
-    const m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z), now=Date.now();
-    if(m>18 && now-metalLastShake>120){metalLastShake=now; hideCue('metalCue'); triggerMetalRing(Math.min(m/40,1));}
+  metalHandler=e=>{
+    const a=e.accelerationIncludingGravity||e.acceleration;if(!a)return;
+    const m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z),now=Date.now();
+    if(m>18&&now-metalLastShake>120){metalLastShake=now;hideCue('metalCue');triggerMetalRing(Math.min(m/40,1));}
   };
-  window.addEventListener('devicemotion', metalHandler);
-  document.getElementById('metalRing').addEventListener('touchstart', metalTap);
+  window.addEventListener('devicemotion',metalHandler);
+  document.getElementById('metalRing').addEventListener('touchstart',metalTap);
 }
-function metalTap(){hideCue('metalCue'); triggerMetalRing(0.7);}
+function metalTap(){hideCue('metalCue');triggerMetalRing(0.7);}
 
-function triggerMetalRing(int) {
+function triggerMetalRing(int){
   const ring=document.getElementById('metalRing');
-  ring.classList.add('shaking'); setTimeout(()=>ring.classList.remove('shaking'),200);
-  const t=audioCtx.currentTime, f=800+Math.random()*600;
-  const mod=audioCtx.createOscillator(), mg=audioCtx.createGain();
-  const car=audioCtx.createOscillator(), env=audioCtx.createGain();
-  mod.frequency.value=f*1.4; mg.gain.value=f*2; car.frequency.value=f;
-  mod.connect(mg); mg.connect(car.frequency); car.connect(env); env.connect(audioCtx.destination);
-  env.gain.setValueAtTime(int*0.25,t); env.gain.exponentialRampToValueAtTime(0.001,t+1.5);
-  mod.start(t); car.start(t); mod.stop(t+1.6); car.stop(t+1.6);
+  ring.classList.add('shaking');setTimeout(()=>ring.classList.remove('shaking'),200);
+  const t=audioCtx.currentTime,f=800+Math.random()*600;
+  const mod=audioCtx.createOscillator(),mg=audioCtx.createGain();
+  const car=audioCtx.createOscillator(),env=audioCtx.createGain();
+  mod.frequency.value=f*1.4;mg.gain.value=f*2;car.frequency.value=f;
+  mod.connect(mg);mg.connect(car.frequency);car.connect(env);env.connect(audioCtx.destination);
+  env.gain.setValueAtTime(int*0.25,t);env.gain.exponentialRampToValueAtTime(0.001,t+1.5);
+  mod.start(t);car.start(t);mod.stop(t+1.6);car.stop(t+1.6);
 }
 
 function cleanupMetal(){
-  if(metalHandler) window.removeEventListener('devicemotion',metalHandler);
+  if(metalHandler)window.removeEventListener('devicemotion',metalHandler);
   document.getElementById('metalRing').removeEventListener('touchstart',metalTap);
   metalHandler=null;
 }
@@ -878,16 +901,16 @@ function cleanupMetal(){
 // ════════════════════════════════════════
 // 2. WOOD 木
 // ════════════════════════════════════════
-let woodDrone=null, woodPadActive=false;
+let woodDrone=null,woodPadActive=false;
 
-function initWood() {
-  woodDrone=createDrone(110,'sawtooth',5); woodDrone.filter.frequency.value=300;
-  const pad=document.getElementById('woodPad'), cross=document.getElementById('woodCrosshair');
+function initWood(){
+  woodDrone=createDrone(110,'sawtooth',5);woodDrone.filter.frequency.value=300;
+  const pad=document.getElementById('woodPad'),cross=document.getElementById('woodCrosshair');
   const mv=(x,y)=>{
     const r=pad.getBoundingClientRect();
-    const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)), ny=Math.max(0,Math.min(1,(y-r.top)/r.height));
-    cross.style.left=(nx*100)+'%'; cross.style.top=(ny*100)+'%';
-    woodDrone.filter.frequency.value=200+nx*2000; woodDrone.gain.gain.value=(1-ny)*0.3;
+    const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));
+    cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';
+    woodDrone.filter.frequency.value=200+nx*2000;woodDrone.gain.gain.value=(1-ny)*0.3;
   };
   pad.addEventListener('touchstart',e=>{e.preventDefault();woodPadActive=true;mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchmove',e=>{e.preventDefault();if(woodPadActive)mv(e.touches[0].clientX,e.touches[0].clientY);});
@@ -905,7 +928,7 @@ function triggerWoodPerc(freq,isM){
     o.type='sine';o.frequency.value=freq;o.connect(e);e.connect(audioCtx.destination);
     e.gain.setValueAtTime(0.3,t);e.gain.exponentialRampToValueAtTime(0.001,t+0.5);
     o.start(t);o.stop(t+0.6);
-  } else {
+  }else{
     const bs=audioCtx.sampleRate*0.08,buf=audioCtx.createBuffer(1,bs,audioCtx.sampleRate);
     const d=buf.getChannelData(0);for(let i=0;i<bs;i++)d[i]=Math.random()*2-1;
     const s=audioCtx.createBufferSource();s.buffer=buf;
@@ -918,44 +941,85 @@ function triggerWoodPerc(freq,isM){
 function cleanupWood(){if(woodDrone){woodDrone.osc1.stop();woodDrone.osc2.stop();woodDrone=null;}}
 
 // ════════════════════════════════════════
-// 3. WATER 水
+// 3. WATER 水 — Gyro with large tilt readout
 // ════════════════════════════════════════
-let waterDrone=null, waterOrientHandler=null;
+let waterDrone=null,waterOrientHandler=null;
+
+// Baseline: when phone screen faces user at ~60° from flat, 
+// beta ≈ 60. We treat that as "neutral" so the readout shows 
+// relative tilt from comfortable holding position.
+const BETA_NEUTRAL = 60;
 
 function initWater(){
   resetCue('waterCue');
-  waterDrone=createDrone(80,'sine',3); waterDrone.gain.gain.value=0.15;
+  document.getElementById('waterReadout').style.opacity='0';
+
+  waterDrone=createDrone(80,'sine',3);waterDrone.gain.gain.value=0.15;
   const lfo=audioCtx.createOscillator(),lg=audioCtx.createGain();
   lfo.type='sine';lfo.frequency.value=0.3;lg.gain.value=20;
   lfo.connect(lg);lg.connect(waterDrone.filter.frequency);lfo.start();
   waterDrone.lfo=lfo;waterDrone.lfoGain=lg;
-  const orb=document.getElementById('waterOrb'),param=document.getElementById('waterParam');
+
+  const orb=document.getElementById('waterOrb');
   const vis=document.getElementById('waterVisual');
+  const readout=document.getElementById('waterReadout');
+  const valBeta=document.getElementById('tiltBeta');
+  const valGamma=document.getElementById('tiltGamma');
+  const valAlpha=document.getElementById('tiltAlpha');
+
   waterOrientHandler=e=>{
     const beta=e.beta||0,gamma=e.gamma||0,alpha=e.alpha||0;
+
+    // Hide cue, show readout
     hideCue('waterCue');
-    const nx=(gamma+90)/180,ny=(beta+180)/360,nz=alpha/360;
-    waterDrone.osc1.frequency.value=60+nx*200;waterDrone.osc2.frequency.value=62+nx*200;
-    waterDrone.filter.frequency.value=200+ny*2000;waterDrone.lfo.frequency.value=0.1+nz*4;
+    readout.style.opacity='1';
+
+    // Relative tilt from comfortable holding angle
+    const relBeta=Math.round(beta-BETA_NEUTRAL);
+    const relGamma=Math.round(gamma);
+    const relAlpha=Math.round(alpha);
+
+    valBeta.textContent=relBeta+'°';
+    valGamma.textContent=relGamma+'°';
+    valAlpha.textContent=relAlpha+'°';
+
+    // Normalize for sound (using raw values for full range)
+    const nx=(gamma+90)/180;
+    const ny=(beta+180)/360;
+    const nz=alpha/360;
+
+    waterDrone.osc1.frequency.value=60+nx*200;
+    waterDrone.osc2.frequency.value=62+nx*200;
+    waterDrone.filter.frequency.value=200+ny*2000;
+    waterDrone.lfo.frequency.value=0.1+nz*4;
+
     const sz=vis.clientWidth;
-    orb.style.left=(nx*(sz-50))+'px';orb.style.top=(ny*(sz-50))+'px';
-    orb.style.width=(35+nz*30)+'px';orb.style.height=(35+nz*30)+'px';
-    param.textContent=`β${beta.toFixed(0)}° γ${gamma.toFixed(0)}° α${alpha.toFixed(0)}°`;
+    orb.style.left=(nx*(sz-50))+'px';
+    orb.style.top=(ny*(sz-50))+'px';
+    orb.style.width=(35+nz*30)+'px';
+    orb.style.height=(35+nz*30)+'px';
   };
   window.addEventListener('deviceorientation',waterOrientHandler);
+
+  // Fallback: touch
   vis.addEventListener('touchmove',e=>{
-    e.preventDefault();hideCue('waterCue');
+    e.preventDefault();hideCue('waterCue');readout.style.opacity='1';
     const r=vis.getBoundingClientRect(),t=e.touches[0];
     const nx=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width));
     const ny=Math.max(0,Math.min(1,(t.clientY-r.top)/r.height));
-    waterDrone.osc1.frequency.value=60+nx*200;waterDrone.filter.frequency.value=200+ny*2000;
-    orb.style.left=(nx*(vis.clientWidth-50))+'px';orb.style.top=(ny*(vis.clientHeight-50))+'px';
+    waterDrone.osc1.frequency.value=60+nx*200;
+    waterDrone.filter.frequency.value=200+ny*2000;
+    orb.style.left=(nx*(vis.clientWidth-50))+'px';
+    orb.style.top=(ny*(vis.clientHeight-50))+'px';
+    valBeta.textContent=Math.round(ny*180-90)+'°';
+    valGamma.textContent=Math.round(nx*180-90)+'°';
   });
 }
 
 function cleanupWater(){
   if(waterOrientHandler)window.removeEventListener('deviceorientation',waterOrientHandler);
   waterOrientHandler=null;
+  document.getElementById('waterReadout').style.opacity='0';
   if(waterDrone){waterDrone.osc1.stop();waterDrone.osc2.stop();waterDrone.lfo.stop();waterDrone=null;}
 }
 
@@ -1008,7 +1072,7 @@ function triggerFlameSound(int){
 function cleanupFire(){if(fireDrone){fireDrone.osc1.stop();fireDrone.osc2.stop();fireDrone=null;}}
 
 // ════════════════════════════════════════
-// 5. EARTH 土
+// 5. EARTH 土 — Stronger haptic pulse
 // ════════════════════════════════════════
 let earthDrone=null,earthHapticInterval=null,earthPulseContainer=null;
 
@@ -1019,23 +1083,37 @@ function initEarth(){
   earthPulseContainer=ta.parentElement;
   ta.addEventListener('touchstart',earthTS);
   ta.addEventListener('touchend',earthTE);
+  ta.addEventListener('touchcancel',earthTE);
 }
 
 function earthTS(e){
   e.preventDefault();hideCue('earthCue');
   document.getElementById('earthTouch').classList.add('active');
   earthDrone.gain.gain.linearRampToValueAtTime(0.25,audioCtx.currentTime+0.5);
-  if(navigator.vibrate)navigator.vibrate(50);
+
+  // Immediate first pulse — strong pattern: vibrate-pause-vibrate
+  doEarthVibrate();
+  spawnEarthPulse();
+
+  // Repeat every 1 second
   earthHapticInterval=setInterval(()=>{
-    if(navigator.vibrate)navigator.vibrate(50);
+    doEarthVibrate();
     spawnEarthPulse();
   },1000);
+}
+
+function doEarthVibrate(){
+  if(!navigator.vibrate) return;
+  // Pattern: 100ms on, 50ms off, 100ms on — a strong double-tap pulse
+  navigator.vibrate([100, 50, 100]);
 }
 
 function earthTE(){
   document.getElementById('earthTouch').classList.remove('active');
   if(earthDrone) earthDrone.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.8);
   if(earthHapticInterval){clearInterval(earthHapticInterval);earthHapticInterval=null;}
+  // Cancel any ongoing vibration
+  if(navigator.vibrate) navigator.vibrate(0);
 }
 
 function spawnEarthPulse(){
@@ -1052,9 +1130,11 @@ function spawnEarthPulse(){
 function cleanupEarth(){
   if(earthDrone){earthDrone.osc1.stop();earthDrone.osc2.stop();earthDrone=null;}
   if(earthHapticInterval){clearInterval(earthHapticInterval);earthHapticInterval=null;}
+  if(navigator.vibrate) navigator.vibrate(0);
   const ta=document.getElementById('earthTouch');
   ta.removeEventListener('touchstart',earthTS);
   ta.removeEventListener('touchend',earthTE);
+  ta.removeEventListener('touchcancel',earthTE);
 }
 
 document.addEventListener('touchmove',e=>{if(currentElement)e.preventDefault();},{passive:false});
