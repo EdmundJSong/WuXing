@@ -29,7 +29,7 @@
   }
 
   /* ═══════════════════════════════════
-     LANDING — Circular layout
+     LANDING
      ═══════════════════════════════════ */
   #landing {
     display: flex; align-items: center; justify-content: center;
@@ -165,7 +165,6 @@
     backdrop-filter: blur(8px);
   }
 
-  /* Cue visibility */
   .cue-visible { opacity: 0.45; transition: opacity 0.8s ease; }
   .cue-hidden { opacity: 0 !important; transition: opacity 0.5s ease; pointer-events: none; }
 
@@ -253,35 +252,95 @@
   }
 
   /* ═══════════════════════════════════
-     WATER — fluid visual
+     WATER — spirit level
      ═══════════════════════════════════ */
   #water-page { background: radial-gradient(ellipse at 50% 40%, #0a1220 0%, #060a10 100%); }
   #water-page .bg-char { color: var(--water); }
-  .water-visual {
-    width: clamp(180px, 50vw, 240px); height: clamp(180px, 50vw, 240px);
-    border-radius: 50%; border: 1px solid rgba(70,130,200,0.15);
-    display: flex; align-items: center; justify-content: center;
-    position: relative; overflow: hidden;
-  }
 
-  /* Water canvas for fluid simulation */
-  .water-canvas {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    border-radius: 50%;
-  }
-
-  .water-tilt-icon {
-    opacity: 0.45; z-index: 5;
+  /* Persistent tilt icon ABOVE the circle */
+  .water-tilt-hint {
+    margin-bottom: clamp(12px, 2vh, 20px);
+    opacity: 0.35;
     animation: tiltCueAnim 3s ease-in-out infinite;
-    transition: opacity 0.8s ease;
   }
-  .water-tilt-icon svg { width: 80px; height: 80px; }
+  .water-tilt-hint svg { width: 56px; height: 56px; }
   @keyframes tiltCueAnim {
     0%, 100% { transform: rotate(0deg); }
     20% { transform: rotate(18deg); }
     40% { transform: rotate(-3deg); }
     60% { transform: rotate(-18deg); }
     80% { transform: rotate(3deg); }
+  }
+
+  /* Spirit level container */
+  .spirit-level {
+    width: clamp(200px, 55vw, 260px); height: clamp(200px, 55vw, 260px);
+    border-radius: 50%;
+    border: 1px solid rgba(70,130,200,0.2);
+    position: relative; overflow: hidden;
+    background: radial-gradient(circle, rgba(10,20,40,0.8) 0%, rgba(5,10,20,0.9) 100%);
+  }
+
+  /* Crosshair lines */
+  .spirit-level::before {
+    content: ''; position: absolute;
+    top: 50%; left: 10%; right: 10%; height: 1px;
+    background: rgba(70,130,200,0.12);
+  }
+  .spirit-level::after {
+    content: ''; position: absolute;
+    left: 50%; top: 10%; bottom: 10%; width: 1px;
+    background: rgba(70,130,200,0.12);
+  }
+
+  /* Center target rings */
+  .spirit-target {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px; height: 40px;
+    border: 1px solid rgba(70,130,200,0.15);
+    border-radius: 50%; pointer-events: none;
+  }
+  .spirit-target-outer {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px; height: 80px;
+    border: 1px solid rgba(70,130,200,0.08);
+    border-radius: 50%; pointer-events: none;
+  }
+
+  /* The bubble */
+  .spirit-bubble {
+    position: absolute;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    transition: left 0.12s ease-out, top 0.12s ease-out;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .spirit-bubble-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,
+      rgba(130,185,240,0.5) 0%,
+      rgba(70,130,200,0.3) 40%,
+      rgba(50,100,180,0.15) 70%,
+      rgba(40,80,160,0.05) 100%);
+    box-shadow:
+      0 0 15px rgba(70,130,200,0.25),
+      inset 0 0 8px rgba(130,185,240,0.2);
+    position: relative;
+  }
+  /* Specular highlight on bubble */
+  .spirit-bubble-inner::before {
+    content: ''; position: absolute;
+    top: 20%; left: 25%;
+    width: 35%; height: 25%;
+    border-radius: 50%;
+    background: rgba(200,225,255,0.3);
+    filter: blur(2px);
   }
 
   .water-tilt-readout {
@@ -475,22 +534,30 @@
   <button class="home-btn" onclick="goHome()">⌂</button>
   <div class="bg-char">水</div>
   <div class="interaction-area">
-    <div class="water-visual" id="waterVisual">
-      <canvas class="water-canvas" id="waterCanvas"></canvas>
-      <div class="water-tilt-icon cue-visible" id="waterCue">
-        <svg viewBox="0 0 48 48" fill="none" stroke-linecap="round">
-          <rect x="16" y="10" width="16" height="26" rx="3" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
-          <path d="M8 23 L3 23" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
-          <path d="M6 19.5 L3 23 L6 26.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
-          <path d="M40 23 L45 23" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
-          <path d="M42 19.5 L45 23 L42 26.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
-          <path d="M24 5 L24 1" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
-          <path d="M20.5 3.5 L24 0.5 L27.5 3.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
-          <path d="M24 43 L24 47" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
-          <path d="M20.5 44.5 L24 47.5 L27.5 44.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
-        </svg>
+    <!-- Permanent tilt hint above the circle -->
+    <div class="water-tilt-hint" id="waterTiltHint">
+      <svg viewBox="0 0 48 48" fill="none" stroke-linecap="round">
+        <rect x="16" y="10" width="16" height="26" rx="3" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+        <path d="M8 23 L3 23" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+        <path d="M6 19.5 L3 23 L6 26.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
+        <path d="M40 23 L45 23" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+        <path d="M42 19.5 L45 23 L42 26.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
+        <path d="M24 5 L24 1" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+        <path d="M20.5 3.5 L24 0.5 L27.5 3.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
+        <path d="M24 43 L24 47" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
+        <path d="M20.5 44.5 L24 47.5 L27.5 44.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Spirit level -->
+    <div class="spirit-level" id="spiritLevel">
+      <div class="spirit-target-outer"></div>
+      <div class="spirit-target"></div>
+      <div class="spirit-bubble" id="spiritBubble">
+        <div class="spirit-bubble-inner"></div>
       </div>
     </div>
+
     <div class="water-tilt-readout" id="waterReadout" style="opacity:0;">
       <div class="tilt-axis"><span class="tilt-label">Tilt</span><span class="tilt-value" id="tiltBeta">0°</span></div>
       <div class="tilt-axis"><span class="tilt-label">Roll</span><span class="tilt-value" id="tiltGamma">0°</span></div>
@@ -547,9 +614,6 @@
 </div>
 
 <script>
-// ═══════════════════════════════════
-// Core
-// ═══════════════════════════════════
 let audioCtx=null,currentElement=null;
 function initAudio(){
   if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
@@ -590,8 +654,11 @@ function createDrone(f,t,d){
   return{osc1:o1,osc2:o2,gain:g,filter:fl};
 }
 
+function hideCue(id){const c=document.getElementById(id);if(c){c.classList.remove('cue-visible');c.classList.add('cue-hidden');}}
+function showCue(id){const c=document.getElementById(id);if(c){c.classList.remove('cue-hidden');c.classList.add('cue-visible');}}
+
 // ═══════════════════════════════════
-// METAL — icon returns after 3s idle
+// METAL — 1s idle timer
 // ═══════════════════════════════════
 let metalHandler=null,metalLastShake=0,metalIdleTimer=null;
 function initMetal(){
@@ -602,9 +669,8 @@ function initMetal(){
     if(m>18&&now-metalLastShake>120){
       metalLastShake=now;hideCue('metalCue');
       triggerMetalRing(Math.min(m/40,1));
-      // Reset idle timer — show cue again after 3s of no shaking
       clearTimeout(metalIdleTimer);
-      metalIdleTimer=setTimeout(()=>showCue('metalCue'),3000);
+      metalIdleTimer=setTimeout(()=>showCue('metalCue'),1000);
     }
   };
   window.addEventListener('devicemotion',metalHandler);
@@ -613,7 +679,7 @@ function initMetal(){
 function metalTap(){
   hideCue('metalCue');triggerMetalRing(0.7);
   clearTimeout(metalIdleTimer);
-  metalIdleTimer=setTimeout(()=>showCue('metalCue'),3000);
+  metalIdleTimer=setTimeout(()=>showCue('metalCue'),1000);
 }
 function triggerMetalRing(v){
   const r=document.getElementById('metalRing');
@@ -653,167 +719,57 @@ function triggerWoodPerc(f,isM){const t=audioCtx.currentTime;if(isM){const o=aud
 function cleanupWood(){if(woodDrone){woodDrone.osc1.stop();woodDrone.osc2.stop();woodDrone=null;}if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;}document.querySelectorAll('#wood-page .trigger-btn').forEach(b=>b.classList.remove('invite-glow'));}
 
 // ═══════════════════════════════════
-// WATER — fluid canvas + icon returns
+// WATER — spirit level + 1s delay
 // ═══════════════════════════════════
-let waterDrone=null,waterOrientHandler=null,waterAnimFrame=null,waterIdleTimer=null;
+let waterDrone=null,waterOrientHandler=null,waterReady=false,waterDelayTimer=null;
 const BETA_NEUTRAL=60;
-const TILT_THRESHOLD=12; // degrees from neutral before hiding cue
-
-// Water fluid state
-let waterBlobs=[];
-let waterTiltX=0,waterTiltY=0;
-
-function initWaterCanvas(){
-  const canvas=document.getElementById('waterCanvas');
-  const vis=document.getElementById('waterVisual');
-  canvas.width=vis.clientWidth*2;
-  canvas.height=vis.clientHeight*2;
-  canvas.style.width=vis.clientWidth+'px';
-  canvas.style.height=vis.clientHeight+'px';
-  const ctx=canvas.getContext('2d');
-
-  // Create blobs
-  waterBlobs=[];
-  const cx=canvas.width/2,cy=canvas.height/2;
-  for(let i=0;i<8;i++){
-    waterBlobs.push({
-      x:cx+Math.random()*40-20,
-      y:cy+Math.random()*40-20,
-      vx:0,vy:0,
-      r:30+Math.random()*25,
-      phase:Math.random()*Math.PI*2
-    });
-  }
-
-  function drawWater(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    const w=canvas.width,h=canvas.height;
-
-    // Physics: tilt = gravity
-    const gx=waterTiltX*0.8;
-    const gy=waterTiltY*0.8;
-    const centerX=w/2,centerY=h/2,radius=w/2-5;
-
-    for(const b of waterBlobs){
-      b.vx+=gx*0.15;
-      b.vy+=gy*0.15;
-      // Pull toward center
-      const dx=centerX-b.x,dy=centerY-b.y;
-      const dist=Math.sqrt(dx*dx+dy*dy);
-      b.vx+=dx*0.003;
-      b.vy+=dy*0.003;
-      // Damping
-      b.vx*=0.92;
-      b.vy*=0.92;
-      b.x+=b.vx;
-      b.y+=b.vy;
-      // Contain within circle
-      const d=Math.sqrt((b.x-centerX)**2+(b.y-centerY)**2);
-      if(d>radius-b.r){
-        const angle=Math.atan2(b.y-centerY,b.x-centerX);
-        b.x=centerX+Math.cos(angle)*(radius-b.r);
-        b.y=centerY+Math.sin(angle)*(radius-b.r);
-        b.vx*=-0.3;b.vy*=-0.3;
-      }
-      // Animate size
-      b.phase+=0.03;
-    }
-
-    // Draw metaball-style water
-    // Use radial gradients for each blob, composite for fluid look
-    ctx.globalCompositeOperation='source-over';
-
-    for(const b of waterBlobs){
-      const wobble=Math.sin(b.phase)*5;
-      const r=b.r+wobble;
-      const grad=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,r);
-      grad.addColorStop(0,'rgba(50,120,200,0.35)');
-      grad.addColorStop(0.4,'rgba(40,100,180,0.2)');
-      grad.addColorStop(0.7,'rgba(30,80,160,0.08)');
-      grad.addColorStop(1,'rgba(20,60,140,0)');
-      ctx.fillStyle=grad;
-      ctx.beginPath();
-      ctx.arc(b.x,b.y,r,0,Math.PI*2);
-      ctx.fill();
-    }
-
-    // Bright core highlights
-    ctx.globalCompositeOperation='lighter';
-    for(const b of waterBlobs){
-      const wobble=Math.sin(b.phase)*3;
-      const r=(b.r+wobble)*0.4;
-      const grad=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,r);
-      grad.addColorStop(0,'rgba(100,170,240,0.3)');
-      grad.addColorStop(1,'rgba(60,130,210,0)');
-      ctx.fillStyle=grad;
-      ctx.beginPath();
-      ctx.arc(b.x,b.y,r,0,Math.PI*2);
-      ctx.fill();
-    }
-
-    // Specular highlights
-    for(let i=0;i<3;i++){
-      const b=waterBlobs[i];
-      const sx=b.x-b.r*0.2,sy=b.y-b.r*0.3;
-      const grad=ctx.createRadialGradient(sx,sy,0,sx,sy,b.r*0.25);
-      grad.addColorStop(0,'rgba(180,220,255,0.15)');
-      grad.addColorStop(1,'rgba(180,220,255,0)');
-      ctx.fillStyle=grad;
-      ctx.beginPath();
-      ctx.arc(sx,sy,b.r*0.25,0,Math.PI*2);
-      ctx.fill();
-    }
-
-    ctx.globalCompositeOperation='source-over';
-    waterAnimFrame=requestAnimationFrame(drawWater);
-  }
-  drawWater();
-}
 
 function initWater(){
-  showCue('waterCue');
+  waterReady=false;
   document.getElementById('waterReadout').style.opacity='0';
-  waterTiltX=0;waterTiltY=0;
 
-  waterDrone=createDrone(80,'sine',3);waterDrone.gain.gain.value=0.15;
+  // Position bubble at center initially
+  const bubble=document.getElementById('spiritBubble');
+  bubble.style.left='50%';bubble.style.top='50%';
+
+  waterDrone=createDrone(80,'sine',3);waterDrone.gain.gain.value=0;
   const lfo=audioCtx.createOscillator(),lg=audioCtx.createGain();
   lfo.type='sine';lfo.frequency.value=0.3;lg.gain.value=20;
   lfo.connect(lg);lg.connect(waterDrone.filter.frequency);lfo.start();
   waterDrone.lfo=lfo;
 
-  initWaterCanvas();
-
   const readout=document.getElementById('waterReadout');
   const vB=document.getElementById('tiltBeta'),vG=document.getElementById('tiltGamma'),vA=document.getElementById('tiltAlpha');
-  const cue=document.getElementById('waterCue');
-  let cueVisible=true;
+  const level=document.getElementById('spiritLevel');
+
+  // 1-second delay before output starts
+  waterDelayTimer=setTimeout(()=>{
+    waterReady=true;
+    waterDrone.gain.gain.linearRampToValueAtTime(0.15,audioCtx.currentTime+0.3);
+    readout.style.opacity='1';
+  },1000);
 
   waterOrientHandler=e=>{
     const beta=e.beta||0,gamma=e.gamma||0,alpha=e.alpha||0;
-
     const relBeta=beta-BETA_NEUTRAL;
     const relGamma=gamma;
-    const tiltMagnitude=Math.sqrt(relBeta*relBeta+relGamma*relGamma);
 
-    // Only hide cue if tilt exceeds threshold
-    if(tiltMagnitude>TILT_THRESHOLD){
-      if(cueVisible){hideCue('waterCue');cueVisible=false;}
-      readout.style.opacity='1';
-      // Reset idle timer
-      clearTimeout(waterIdleTimer);
-      waterIdleTimer=setTimeout(()=>{
-        showCue('waterCue');cueVisible=true;
-        readout.style.opacity='0';
-      },3000);
-    }
-
+    // Always update readout values
     vB.textContent=Math.round(relBeta)+'°';
     vG.textContent=Math.round(relGamma)+'°';
     vA.textContent=Math.round(alpha)+'°';
 
-    // Feed fluid simulation — sensitive mapping
-    waterTiltX=relGamma*0.5;
-    waterTiltY=relBeta*0.5;
+    // Move spirit-level bubble (always responsive visually)
+    // Map tilt to bubble position: clamp within the circle
+    const levelSize=level.clientWidth;
+    const maxOffset=levelSize*0.38; // keep bubble inside ring
+    const bx=50+Math.max(-1,Math.min(1,relGamma/45))*38; // % from center
+    const by=50+Math.max(-1,Math.min(1,relBeta/45))*38;
+    bubble.style.left=bx+'%';
+    bubble.style.top=by+'%';
+
+    // Only drive audio after delay
+    if(!waterReady) return;
 
     const nx=(gamma+90)/180,ny=(beta+180)/360,nz=alpha/360;
     waterDrone.osc1.frequency.value=60+nx*200;waterDrone.osc2.frequency.value=62+nx*200;
@@ -822,25 +778,21 @@ function initWater(){
   window.addEventListener('deviceorientation',waterOrientHandler);
 
   // Touch fallback
-  const vis=document.getElementById('waterVisual');
+  const vis=level;
   vis.addEventListener('touchmove',e=>{
     e.preventDefault();
-    if(cueVisible){hideCue('waterCue');cueVisible=false;}
-    readout.style.opacity='1';
-    clearTimeout(waterIdleTimer);
-    waterIdleTimer=setTimeout(()=>{showCue('waterCue');cueVisible=true;readout.style.opacity='0';},3000);
     const r=vis.getBoundingClientRect(),t=e.touches[0];
     const nx=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),ny=Math.max(0,Math.min(1,(t.clientY-r.top)/r.height));
-    waterTiltX=(nx-0.5)*30;waterTiltY=(ny-0.5)*30;
-    waterDrone.osc1.frequency.value=60+nx*200;waterDrone.filter.frequency.value=200+ny*2000;
+    bubble.style.left=(nx*100)+'%';bubble.style.top=(ny*100)+'%';
     vB.textContent=Math.round(ny*180-90)+'°';vG.textContent=Math.round(nx*180-90)+'°';
+    if(!waterReady)return;
+    waterDrone.osc1.frequency.value=60+nx*200;waterDrone.filter.frequency.value=200+ny*2000;
   });
 }
 function cleanupWater(){
   if(waterOrientHandler)window.removeEventListener('deviceorientation',waterOrientHandler);
-  waterOrientHandler=null;
-  if(waterAnimFrame)cancelAnimationFrame(waterAnimFrame);waterAnimFrame=null;
-  clearTimeout(waterIdleTimer);
+  waterOrientHandler=null;waterReady=false;
+  clearTimeout(waterDelayTimer);
   document.getElementById('waterReadout').style.opacity='0';
   if(waterDrone){waterDrone.osc1.stop();waterDrone.osc2.stop();waterDrone.lfo.stop();waterDrone=null;}
 }
@@ -890,7 +842,6 @@ function earthTE(){
   if(earthDrone)earthDrone.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.8);
   if(earthHapticInterval){clearInterval(earthHapticInterval);earthHapticInterval=null;}
   if(navigator.vibrate)navigator.vibrate(0);
-  // Show thumbprint again
   showCue('earthCue');
 }
 function spawnEarthPulse(){
@@ -909,12 +860,6 @@ function cleanupEarth(){
   const ta=document.getElementById('earthTouch');
   ta.removeEventListener('touchstart',earthTS);ta.removeEventListener('touchend',earthTE);ta.removeEventListener('touchcancel',earthTE);
 }
-
-// ═══════════════════════════════════
-// Cue helpers
-// ═══════════════════════════════════
-function hideCue(id){const c=document.getElementById(id);if(c){c.classList.remove('cue-visible');c.classList.add('cue-hidden');}}
-function showCue(id){const c=document.getElementById(id);if(c){c.classList.remove('cue-hidden');c.classList.add('cue-visible');}}
 
 document.addEventListener('touchmove',e=>{if(currentElement)e.preventDefault();},{passive:false});
 </script>
