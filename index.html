@@ -652,7 +652,7 @@ const STATE_MAP={
 const STATE_LABELS={
   wuxing:{title:'五行',sub:'Five Elements'},
   sheng: {title:'生',sub:'Creation'},
-  ke:    {title:'剋',sub:'Destruction'}
+  ke:    {title:'克',sub:'Destruction'}
 };
 const STATE_ORDER=['wuxing','sheng','ke'];
 let landingState='wuxing';
@@ -947,8 +947,9 @@ function cleanupFire(){if(fireDrone){fireDrone.osc1.stop();fireDrone.osc2.stop()
 // ═══════════════════════════════════
 // EARTH — earthquake charging
 // ═══════════════════════════════════
-let earthDrone=null,earthAnimFrame=null,earthStartTime=null,earthLastVib=0,earthPulseContainer=null,earthQuaking=false;
-const QUAKE_TIME=6000; // 6 seconds to earthquake
+let earthDrone=null,earthAnimFrame=null,earthStartTime=null,earthLastVib=0,earthPulseContainer=null,earthQuaking=false,earthFirstQuake=true;
+const QUAKE_TIMES=[6000,11000,21000];
+let earthQuakeTime=6000; // first quake always 6s
 
 function initEarth(){
   showCue('earthCue');
@@ -963,6 +964,7 @@ function initEarth(){
 function earthTS(e){
   e.preventDefault();hideCue('earthCue');
   earthStartTime=Date.now();earthLastVib=0;earthQuaking=false;
+  earthQuakeTime=earthFirstQuake?6000:QUAKE_TIMES[Math.floor(Math.random()*QUAKE_TIMES.length)];
   earthDrone.gain.gain.setValueAtTime(0,audioCtx.currentTime);
   earthChargeLoop();
 }
@@ -981,7 +983,7 @@ function earthChargeLoop(){
     return;
   }
 
-  const progress=Math.min(elapsed/QUAKE_TIME,1);
+  const progress=Math.min(elapsed/earthQuakeTime,1);
 
   // Progressive drone volume
   earthDrone.gain.gain.setValueAtTime(progress*0.3,audioCtx.currentTime);
@@ -1016,6 +1018,9 @@ function earthChargeLoop(){
 
 function triggerEarthquake(){
   earthQuaking=true;
+  earthFirstQuake=false;
+  // Pick random duration for next cycle
+  earthQuakeTime=QUAKE_TIMES[Math.floor(Math.random()*QUAKE_TIMES.length)];
   const ta=document.getElementById('earthTouch');
 
   // Strong vibration burst
@@ -1067,7 +1072,7 @@ function spawnEarthPulse(){
 }
 
 function cleanupEarth(){
-  earthStartTime=null;earthQuaking=false;
+  earthStartTime=null;earthQuaking=false;earthFirstQuake=true;
   if(earthAnimFrame){cancelAnimationFrame(earthAnimFrame);earthAnimFrame=null;}
   if(earthDrone){earthDrone.osc1.stop();earthDrone.osc2.stop();earthDrone=null;}
   if(navigator.vibrate)navigator.vibrate(0);
