@@ -32,146 +32,80 @@
      LANDING — Circular layout
      ═══════════════════════════════════ */
   #landing {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     height: 100%; height: -webkit-fill-available;
-    padding: 20px;
-    background: #0a0a0a;
-    position: relative;
+    padding: 20px; background: #0a0a0a; position: relative;
   }
-
   .circle-layout {
     position: relative;
-    width: min(80vw, 80vh, 360px);
-    height: min(80vw, 80vh, 360px);
+    width: min(80vw, 80vh, 360px); height: min(80vw, 80vh, 360px);
   }
-
-  /* The connecting ring */
   .circle-layout::before {
-    content: '';
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 85%; height: 85%;
-    transform: translate(-50%, -50%);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 50%;
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 85%; height: 85%; transform: translate(-50%, -50%);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 50%;
   }
-
-  /* Thin connecting lines from center to each element */
-  .circle-layout::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none;
-  }
-
   .circle-center {
-    position: absolute;
-    top: 50%; left: 50%;
+    position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    text-align: center;
-    z-index: 5;
-    pointer-events: none;
+    text-align: center; z-index: 5; pointer-events: none;
   }
-
   .circle-center h1 {
-    font-family: 'Noto Serif SC', serif;
-    font-weight: 300;
-    font-size: clamp(1.4rem, 5vw, 2rem);
-    letter-spacing: 0.25em;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.2s forwards;
+    font-family: 'Noto Serif SC', serif; font-weight: 300;
+    font-size: clamp(1.4rem, 5vw, 2rem); letter-spacing: 0.25em;
+    opacity: 0; animation: fadeIn 1s ease 0.2s forwards;
   }
-
   .circle-center .subtitle {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-style: italic;
-    font-size: clamp(0.65rem, 2.5vw, 0.85rem);
-    letter-spacing: 0.12em;
-    color: rgba(255,255,255,0.4);
-    margin-top: 2px;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.5s forwards;
+    font-family: 'Cormorant Garamond', serif; font-weight: 300;
+    font-style: italic; font-size: clamp(0.65rem, 2.5vw, 0.85rem);
+    letter-spacing: 0.12em; color: rgba(255,255,255,0.4);
+    margin-top: 2px; opacity: 0; animation: fadeIn 1s ease 0.5s forwards;
   }
-
   .circle-el {
     position: absolute;
-    width: clamp(52px, 16vw, 68px);
-    height: clamp(52px, 16vw, 68px);
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.15);
+    width: clamp(52px, 16vw, 68px); height: clamp(52px, 16vw, 68px);
+    border-radius: 50%; border: 1px solid rgba(255,255,255,0.15);
     background: rgba(255,255,255,0.03);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s ease;
     transform: translate(-50%, -50%);
-    opacity: 0;
-    animation: fadeIn 0.6s ease forwards;
-    gap: 1px;
+    opacity: 0; animation: fadeIn 0.6s ease forwards; gap: 1px;
   }
-
-  .circle-el:active {
-    transform: translate(-50%, -50%) scale(0.93);
-  }
-
+  .circle-el:active { transform: translate(-50%, -50%) scale(0.93); }
   .circle-el .char {
     font-family: 'Noto Serif SC', serif;
-    font-size: clamp(1.1rem, 4vw, 1.5rem);
-    font-weight: 900;
-    line-height: 1;
+    font-size: clamp(1.1rem, 4vw, 1.5rem); font-weight: 900; line-height: 1;
   }
-
   .circle-el .elname {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(0.45rem, 1.8vw, 0.55rem);
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.5;
+    font-size: clamp(0.45rem, 1.8vw, 0.55rem); font-weight: 300;
+    letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.5;
   }
-
-  /* Position each element on the circle — Wu Xing order */
-  .circle-el:nth-child(1) { top: 5%; left: 50%; animation-delay: 0.4s; } /* Metal — top */
-  .circle-el:nth-child(2) { top: 30%; left: 97%; animation-delay: 0.5s; } /* Wood — top-right */
-  .circle-el:nth-child(3) { top: 80%; left: 82%; animation-delay: 0.6s; } /* Water — bottom-right */
-  .circle-el:nth-child(4) { top: 80%; left: 18%; animation-delay: 0.7s; } /* Fire — bottom-left */
-  .circle-el:nth-child(5) { top: 30%; left: 3%; animation-delay: 0.8s; } /* Earth — top-left */
-
+  .circle-el:nth-child(1) { top: 5%; left: 50%; animation-delay: 0.4s; }
+  .circle-el:nth-child(2) { top: 30%; left: 97%; animation-delay: 0.5s; }
+  .circle-el:nth-child(3) { top: 80%; left: 82%; animation-delay: 0.6s; }
+  .circle-el:nth-child(4) { top: 80%; left: 18%; animation-delay: 0.7s; }
+  .circle-el:nth-child(5) { top: 30%; left: 3%; animation-delay: 0.8s; }
   .circle-el.c-metal { border-color: rgba(212,175,55,0.3); }
   .circle-el.c-metal .char { color: var(--metal); }
-  .circle-el.c-metal:active { background: rgba(212,175,55,0.1); }
-
   .circle-el.c-wood { border-color: rgba(76,153,76,0.3); }
   .circle-el.c-wood .char { color: var(--wood); }
-  .circle-el.c-wood:active { background: rgba(76,153,76,0.1); }
-
   .circle-el.c-water { border-color: rgba(70,130,200,0.3); }
   .circle-el.c-water .char { color: var(--water); }
-  .circle-el.c-water:active { background: rgba(70,130,200,0.1); }
-
   .circle-el.c-fire { border-color: rgba(220,60,40,0.3); }
   .circle-el.c-fire .char { color: var(--fire); }
-  .circle-el.c-fire:active { background: rgba(220,60,40,0.1); }
-
   .circle-el.c-earth { border-color: rgba(139,94,60,0.3); }
   .circle-el.c-earth .char { color: var(--earth); }
-  .circle-el.c-earth:active { background: rgba(139,94,60,0.1); }
 
   /* ═══════════════════════════════════
-     ELEMENT PAGES — shared
+     SHARED
      ═══════════════════════════════════ */
   .element-page {
-    display: none; position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    flex-direction: column; overflow: hidden;
+    display: none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; flex-direction: column; overflow: hidden;
   }
   .element-page.active { display: flex; }
-
   .bg-char {
     position: absolute; top: 46%; left: 50%;
     transform: translate(-50%, -50%);
@@ -179,7 +113,6 @@
     font-size: min(70vw, 60vh); opacity: 0.06;
     pointer-events: none; user-select: none; z-index: 0;
   }
-
   .interaction-area {
     flex: 1; position: relative; z-index: 10;
     display: flex; flex-direction: column;
@@ -187,37 +120,29 @@
     padding-top: var(--safe-top);
     padding-bottom: calc(60px + var(--safe-bottom));
   }
-
-  /* ── Bottom Navigation ── */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; width: 100%;
-    height: calc(56px + var(--safe-bottom));
-    padding-bottom: var(--safe-bottom);
-    display: flex; z-index: 200;
-    background: rgba(0,0,0,0.8);
+    height: calc(56px + var(--safe-bottom)); padding-bottom: var(--safe-bottom);
+    display: flex; z-index: 200; background: rgba(0,0,0,0.8);
     backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid rgba(255,255,255,0.06);
   }
-
   .nav-item {
     flex: 1; display: flex; flex-direction: column;
     align-items: center; justify-content: center; gap: 2px;
     cursor: pointer; border: none; background: none;
-    color: rgba(255,255,255,0.25);
-    font-family: 'Noto Serif SC', serif;
+    color: rgba(255,255,255,0.25); font-family: 'Noto Serif SC', serif;
     font-size: clamp(1rem, 5vw, 1.3rem); font-weight: 900;
     transition: all 0.25s ease; position: relative;
   }
   .nav-item .nav-label {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(0.4rem, 1.8vw, 0.5rem);
-    font-weight: 300; letter-spacing: 0.06em;
-    text-transform: uppercase; opacity: 0.5;
+    font-size: clamp(0.4rem, 1.8vw, 0.5rem); font-weight: 300;
+    letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.5;
   }
   .nav-item.active { color: rgba(255,255,255,0.9); }
   .nav-item.active::before {
-    content: ''; position: absolute;
-    top: 0; left: 25%; right: 25%;
+    content: ''; position: absolute; top: 0; left: 25%; right: 25%;
     height: 2px; border-radius: 1px;
   }
   .nav-item.metal.active { color: var(--metal); }
@@ -230,47 +155,41 @@
   .nav-item.fire.active::before { background: var(--fire); }
   .nav-item.earth.active { color: var(--earth); }
   .nav-item.earth.active::before { background: var(--earth); }
-
   .home-btn {
-    position: absolute;
-    top: calc(12px + var(--safe-top)); left: 12px;
+    position: absolute; top: calc(12px + var(--safe-top)); left: 12px;
     z-index: 100; background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 50%; width: 34px; height: 34px;
-    color: rgba(255,255,255,0.4); font-size: 0.85rem;
-    cursor: pointer; display: flex;
-    align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 50%;
+    width: 34px; height: 34px; color: rgba(255,255,255,0.4);
+    font-size: 0.85rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(8px);
   }
 
-  .cue-hidden { opacity: 0 !important; pointer-events: none; transition: opacity 0.5s ease; }
+  /* Cue visibility */
+  .cue-visible { opacity: 0.45; transition: opacity 0.8s ease; }
+  .cue-hidden { opacity: 0 !important; transition: opacity 0.5s ease; pointer-events: none; }
 
   /* ═══════════════════════════════════
-     METAL 金 — shake icon INSIDE circle
+     METAL
      ═══════════════════════════════════ */
   #metal-page { background: radial-gradient(ellipse at 50% 40%, #1a1812 0%, #0d0c08 100%); }
   #metal-page .bg-char { color: var(--metal); }
-
   .metal-ring-visual {
     width: clamp(140px, 40vw, 180px); height: clamp(140px, 40vw, 180px);
-    border: 2px solid rgba(212,175,55,0.3);
-    border-radius: 50%; display: flex;
-    align-items: center; justify-content: center;
-    transition: all 0.15s; position: relative;
-    overflow: hidden;
+    border: 2px solid rgba(212,175,55,0.3); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; position: relative; overflow: hidden;
   }
   .metal-ring-visual.shaking {
     border-color: rgba(212,175,55,0.8);
     box-shadow: 0 0 40px rgba(212,175,55,0.3);
   }
-
   .metal-shake-icon {
-    opacity: 0.4;
+    opacity: 0.45;
     animation: shakeCueAnim 1.2s ease-in-out infinite;
     transition: opacity 0.5s ease;
   }
   .metal-shake-icon svg { width: 70px; height: 70px; }
-
   @keyframes shakeCueAnim {
     0%, 100% { transform: translateX(0) rotate(0deg); }
     12% { transform: translateX(-10px) rotate(-12deg); }
@@ -283,104 +202,80 @@
   }
 
   /* ═══════════════════════════════════
-     WOOD 木 — animated invitations
+     WOOD
      ═══════════════════════════════════ */
   #wood-page { background: radial-gradient(ellipse at 50% 40%, #0f1a0f 0%, #080d08 100%); }
   #wood-page .bg-char { color: var(--wood); }
-
   .xy-pad {
-    position: relative; width: min(75vw, 260px);
-    aspect-ratio: 1;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 12px; overflow: hidden;
-    touch-action: none;
+    position: relative; width: min(75vw, 260px); aspect-ratio: 1;
+    border: 1px solid rgba(255,255,255,0.15); border-radius: 12px;
+    overflow: hidden; touch-action: none;
   }
   .xy-pad .crosshair {
     position: absolute; width: 22px; height: 22px;
-    border: 2px solid rgba(255,255,255,0.6);
-    border-radius: 50%; transform: translate(-50%, -50%);
-    pointer-events: none;
-    left: 50%; top: 50%;
-    z-index: 2;
+    border: 2px solid rgba(255,255,255,0.6); border-radius: 50%;
+    transform: translate(-50%, -50%); pointer-events: none;
+    left: 50%; top: 50%; z-index: 2;
   }
-
-  /* Ghost cursor animation for XY pads */
   .xy-pad .ghost-cursor {
     position: absolute; width: 22px; height: 22px;
-    border: 1.5px solid rgba(255,255,255,0.25);
-    border-radius: 50%; transform: translate(-50%, -50%);
-    pointer-events: none; z-index: 1;
+    border: 1.5px solid rgba(255,255,255,0.25); border-radius: 50%;
+    transform: translate(-50%, -50%); pointer-events: none; z-index: 1;
     transition: opacity 0.5s ease;
   }
-
   .wood-ghost { animation: woodGhostMove 4s ease-in-out infinite; }
-
   @keyframes woodGhostMove {
-    0% { left: 50%; top: 50%; }
-    15% { left: 25%; top: 30%; }
-    30% { left: 70%; top: 25%; }
-    50% { left: 75%; top: 65%; }
-    70% { left: 30%; top: 70%; }
-    85% { left: 40%; top: 40%; }
+    0% { left: 50%; top: 50%; } 15% { left: 25%; top: 30%; }
+    30% { left: 70%; top: 25%; } 50% { left: 75%; top: 65%; }
+    70% { left: 30%; top: 70%; } 85% { left: 40%; top: 40%; }
     100% { left: 50%; top: 50%; }
   }
-
   .trigger-grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: clamp(6px, 2vw, 10px);
-    margin-top: clamp(10px, 2vh, 20px);
+    gap: clamp(6px, 2vw, 10px); margin-top: clamp(10px, 2vh, 20px);
     width: min(75vw, 260px);
   }
   .trigger-btn {
-    aspect-ratio: 1.4;
-    border: 1px solid rgba(76,153,76,0.3);
+    aspect-ratio: 1.4; border: 1px solid rgba(76,153,76,0.3);
     border-radius: 8px; background: rgba(76,153,76,0.08);
-    color: rgba(255,255,255,0.7);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(0.65rem, 2.5vw, 0.75rem);
-    cursor: pointer; display: flex;
-    align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.7); font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(0.65rem, 2.5vw, 0.75rem); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
     transition: all 0.15s;
   }
   .trigger-btn:active {
-    background: rgba(76,153,76,0.3);
-    border-color: rgba(76,153,76,0.7);
+    background: rgba(76,153,76,0.3); border-color: rgba(76,153,76,0.7);
     transform: scale(0.95);
   }
   .trigger-btn.invite-glow {
-    border-color: rgba(76,153,76,0.6);
-    background: rgba(76,153,76,0.15);
+    border-color: rgba(76,153,76,0.6); background: rgba(76,153,76,0.15);
     box-shadow: 0 0 12px rgba(76,153,76,0.15);
   }
 
   /* ═══════════════════════════════════
-     WATER 水 — tilt icon INSIDE circle
+     WATER — fluid visual
      ═══════════════════════════════════ */
   #water-page { background: radial-gradient(ellipse at 50% 40%, #0a1220 0%, #060a10 100%); }
   #water-page .bg-char { color: var(--water); }
-
   .water-visual {
-    width: clamp(160px, 42vw, 210px); height: clamp(160px, 42vw, 210px);
-    border-radius: 50%;
-    border: 1px solid rgba(70,130,200,0.2);
+    width: clamp(180px, 50vw, 240px); height: clamp(180px, 50vw, 240px);
+    border-radius: 50%; border: 1px solid rgba(70,130,200,0.15);
     display: flex; align-items: center; justify-content: center;
     position: relative; overflow: hidden;
   }
-  .water-orb {
-    width: 50px; height: 50px;
-    background: radial-gradient(circle, rgba(70,130,200,0.6), rgba(70,130,200,0));
-    border-radius: 50%; position: absolute;
-    transition: all 0.15s ease-out;
+
+  /* Water canvas for fluid simulation */
+  .water-canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%;
   }
 
   .water-tilt-icon {
-    opacity: 0.45;
+    opacity: 0.45; z-index: 5;
     animation: tiltCueAnim 3s ease-in-out infinite;
-    transition: opacity 0.5s ease;
-    z-index: 5;
+    transition: opacity 0.8s ease;
   }
   .water-tilt-icon svg { width: 80px; height: 80px; }
-
   @keyframes tiltCueAnim {
     0%, 100% { transform: rotate(0deg); }
     20% { transform: rotate(18deg); }
@@ -390,135 +285,98 @@
   }
 
   .water-tilt-readout {
-    position: absolute;
-    bottom: calc(80px + var(--safe-bottom));
+    position: absolute; bottom: calc(80px + var(--safe-bottom));
     left: 0; right: 0; z-index: 20;
     display: flex; justify-content: center;
-    gap: clamp(16px, 5vw, 30px);
-    pointer-events: none;
+    gap: clamp(16px, 5vw, 30px); pointer-events: none;
+    transition: opacity 0.5s ease;
   }
   .tilt-axis { display: flex; flex-direction: column; align-items: center; gap: 2px; }
   .tilt-axis .tilt-label {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(0.6rem, 2.5vw, 0.75rem);
-    font-weight: 300; font-style: italic;
-    opacity: 0.4; text-transform: uppercase; letter-spacing: 0.1em;
+    font-size: clamp(0.6rem, 2.5vw, 0.75rem); font-weight: 300;
+    font-style: italic; opacity: 0.4; text-transform: uppercase; letter-spacing: 0.1em;
   }
   .tilt-axis .tilt-value {
     font-family: 'Noto Serif SC', serif;
-    font-size: clamp(1.8rem, 8vw, 2.8rem);
-    font-weight: 300; color: rgba(255,255,255,0.7); line-height: 1;
+    font-size: clamp(1.8rem, 8vw, 2.8rem); font-weight: 300;
+    color: rgba(255,255,255,0.7); line-height: 1;
   }
 
   /* ═══════════════════════════════════
-     FIRE 火 — animated invitations
+     FIRE
      ═══════════════════════════════════ */
   #fire-page { background: radial-gradient(ellipse at 50% 60%, #1a0a08 0%, #0d0604 100%); }
   #fire-page .bg-char { color: var(--fire); }
-
   .fire-swipe-area {
     width: min(88vw, 320px); flex: 1; max-height: 42vh;
-    border: 1px solid rgba(220,60,40,0.15);
-    border-radius: 16px; position: relative;
-    overflow: hidden; touch-action: none;
+    border: 1px solid rgba(220,60,40,0.15); border-radius: 16px;
+    position: relative; overflow: hidden; touch-action: none;
   }
-
   .flame-particle {
-    position: absolute; border-radius: 50%;
-    pointer-events: none;
+    position: absolute; border-radius: 50%; pointer-events: none;
     animation: flameRise 0.8s ease-out forwards;
   }
   @keyframes flameRise {
     0% { opacity: 1; transform: scale(1) translateY(0); }
     100% { opacity: 0; transform: scale(0.2) translateY(-80px); }
   }
-
   .fire-xy-container { margin-bottom: clamp(8px, 2vh, 16px); }
-
   .fire-ghost { animation: fireGhostMove 3s ease-in-out infinite; }
   @keyframes fireGhostMove {
-    0% { left: 50%; top: 50%; }
-    20% { left: 30%; top: 30%; }
-    40% { left: 70%; top: 40%; }
-    60% { left: 60%; top: 70%; }
-    80% { left: 35%; top: 55%; }
-    100% { left: 50%; top: 50%; }
+    0% { left: 50%; top: 50%; } 20% { left: 30%; top: 30%; }
+    40% { left: 70%; top: 40%; } 60% { left: 60%; top: 70%; }
+    80% { left: 35%; top: 55%; } 100% { left: 50%; top: 50%; }
   }
-
-  /* Swipe suggestion — ghost trail */
   .swipe-ghost {
-    position: absolute;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: rgba(220,60,40,0.25);
-    pointer-events: none;
+    position: absolute; width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(220,60,40,0.25); pointer-events: none;
     animation: swipeGhostMove 2.5s ease-in-out infinite;
     transition: opacity 0.5s ease;
   }
   .swipe-ghost::after {
-    content: '';
-    position: absolute;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: rgba(220,60,40,0.15);
-    top: -14px; left: 3px;
-    animation: swipeTrail 2.5s ease-in-out infinite;
+    content: ''; position: absolute; width: 10px; height: 10px;
+    border-radius: 50%; background: rgba(220,60,40,0.15);
+    top: -14px; left: 3px; animation: swipeTrail 2.5s ease-in-out infinite;
   }
-
   @keyframes swipeGhostMove {
-    0% { left: 20%; top: 70%; opacity: 0; }
-    10% { opacity: 0.6; }
-    50% { left: 75%; top: 30%; opacity: 0.6; }
-    60% { opacity: 0; }
+    0% { left: 20%; top: 70%; opacity: 0; } 10% { opacity: 0.6; }
+    50% { left: 75%; top: 30%; opacity: 0.6; } 60% { opacity: 0; }
     100% { left: 20%; top: 70%; opacity: 0; }
   }
-
   @keyframes swipeTrail {
-    0% { opacity: 0; }
-    15% { opacity: 0.5; }
-    45% { opacity: 0.5; }
-    55% { opacity: 0; }
-    100% { opacity: 0; }
+    0% { opacity: 0; } 15% { opacity: 0.5; } 45% { opacity: 0.5; }
+    55% { opacity: 0; } 100% { opacity: 0; }
   }
 
   /* ═══════════════════════════════════
-     EARTH 土 — thumbprint inside circle
+     EARTH
      ═══════════════════════════════════ */
   #earth-page { background: radial-gradient(ellipse at 50% 50%, #1a1008 0%, #0d0904 100%); }
   #earth-page .bg-char { color: var(--earth); }
-
   .earth-touch-area {
     width: clamp(160px, 42vw, 210px); height: clamp(160px, 42vw, 210px);
-    border: 2px solid rgba(139,94,60,0.25);
-    border-radius: 50%; display: flex;
-    align-items: center; justify-content: center;
-    transition: all 0.3s; cursor: pointer;
-    position: relative;
+    border: 2px solid rgba(139,94,60,0.25); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s; cursor: pointer; position: relative;
   }
   .earth-touch-area.active {
-    border-color: rgba(139,94,60,0.7);
-    background: rgba(139,94,60,0.12);
+    border-color: rgba(139,94,60,0.7); background: rgba(139,94,60,0.12);
     box-shadow: 0 0 60px rgba(139,94,60,0.2);
   }
-
   .earth-thumbprint {
-    opacity: 0.35;
-    transition: opacity 0.4s ease;
+    opacity: 0.35; transition: opacity 0.4s ease;
     animation: thumbPulse 2.5s ease-in-out infinite;
   }
   .earth-thumbprint svg { width: clamp(60px, 18vw, 80px); height: clamp(60px, 18vw, 80px); }
   .earth-touch-area.active .earth-thumbprint { opacity: 0.6; animation: none; }
-
   @keyframes thumbPulse {
     0%, 100% { transform: scale(1); opacity: 0.35; }
     50% { transform: scale(1.06); opacity: 0.5; }
   }
-
   .earth-pulse {
-    position: absolute;
-    border: 1px solid rgba(139,94,60,0.3);
-    border-radius: 50%;
-    animation: earthPulse 1s ease-out forwards;
+    position: absolute; border: 1px solid rgba(139,94,60,0.3);
+    border-radius: 50%; animation: earthPulse 1s ease-out forwards;
     pointer-events: none;
   }
   @keyframes earthPulse {
@@ -526,50 +384,36 @@
     100% { transform: scale(2); opacity: 0; }
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-  /* ── Permission overlay ── */
+  /* Permission */
   .permission-overlay {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.94);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    z-index: 1000; padding: 40px;
-    padding-top: calc(40px + var(--safe-top));
-    text-align: center;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.94); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; z-index: 1000;
+    padding: 40px; padding-top: calc(40px + var(--safe-top)); text-align: center;
   }
   .permission-overlay.hidden { display: none; }
   .permission-overlay h2 {
-    font-family: 'Noto Serif SC', serif;
-    font-weight: 300; font-size: clamp(1.2rem, 5vw, 1.5rem);
-    margin-bottom: 12px;
+    font-family: 'Noto Serif SC', serif; font-weight: 300;
+    font-size: clamp(1.2rem, 5vw, 1.5rem); margin-bottom: 12px;
   }
   .permission-overlay p {
-    font-weight: 300; font-style: italic;
-    opacity: 0.6; margin-bottom: 24px;
-    line-height: 1.6; font-size: clamp(0.75rem, 3vw, 0.9rem);
+    font-weight: 300; font-style: italic; opacity: 0.6;
+    margin-bottom: 24px; line-height: 1.6; font-size: clamp(0.75rem, 3vw, 0.9rem);
   }
   .permission-btn {
-    padding: 14px 40px;
-    border: 1px solid rgba(255,255,255,0.3);
+    padding: 14px 40px; border: 1px solid rgba(255,255,255,0.3);
     border-radius: 8px; background: rgba(255,255,255,0.08);
     color: #fff; font-family: 'Cormorant Garamond', serif;
     font-size: 1rem; letter-spacing: 0.1em; cursor: pointer;
   }
   .permission-btn:active { background: rgba(255,255,255,0.15); }
-  .permission-status {
-    margin-top: 16px; font-size: 0.7rem;
-    opacity: 0.35; font-style: italic; min-height: 1.2em;
-  }
+  .permission-status { margin-top: 16px; font-size: 0.7rem; opacity: 0.35; font-style: italic; }
 </style>
 </head>
 <body>
 
-<!-- Permission Overlay -->
 <div class="permission-overlay" id="permissionOverlay">
   <h2>五行</h2>
   <p>This experience uses your device's<br>motion sensors, audio, and haptics.</p>
@@ -577,28 +421,14 @@
   <div class="permission-status" id="permStatus"></div>
 </div>
 
-<!-- Landing — Circular Layout -->
 <div id="landing">
   <div class="circle-layout">
-    <div class="circle-el c-metal" onclick="openElement('metal')">
-      <span class="char">金</span><span class="elname">Metal</span>
-    </div>
-    <div class="circle-el c-wood" onclick="openElement('wood')">
-      <span class="char">木</span><span class="elname">Wood</span>
-    </div>
-    <div class="circle-el c-water" onclick="openElement('water')">
-      <span class="char">水</span><span class="elname">Water</span>
-    </div>
-    <div class="circle-el c-fire" onclick="openElement('fire')">
-      <span class="char">火</span><span class="elname">Fire</span>
-    </div>
-    <div class="circle-el c-earth" onclick="openElement('earth')">
-      <span class="char">土</span><span class="elname">Earth</span>
-    </div>
-    <div class="circle-center">
-      <h1>五行</h1>
-      <div class="subtitle">Five Elements</div>
-    </div>
+    <div class="circle-el c-metal" onclick="openElement('metal')"><span class="char">金</span><span class="elname">Metal</span></div>
+    <div class="circle-el c-wood" onclick="openElement('wood')"><span class="char">木</span><span class="elname">Wood</span></div>
+    <div class="circle-el c-water" onclick="openElement('water')"><span class="char">水</span><span class="elname">Water</span></div>
+    <div class="circle-el c-fire" onclick="openElement('fire')"><span class="char">火</span><span class="elname">Fire</span></div>
+    <div class="circle-el c-earth" onclick="openElement('earth')"><span class="char">土</span><span class="elname">Earth</span></div>
+    <div class="circle-center"><h1>五行</h1><div class="subtitle">Five Elements</div></div>
   </div>
 </div>
 
@@ -608,15 +438,12 @@
   <div class="bg-char">金</div>
   <div class="interaction-area">
     <div class="metal-ring-visual" id="metalRing">
-      <div class="metal-shake-icon" id="metalCue">
+      <div class="metal-shake-icon cue-visible" id="metalCue">
         <svg viewBox="0 0 40 40" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round">
           <rect x="13" y="7" width="14" height="26" rx="3"/>
-          <line x1="5" y1="13" x2="9" y2="10"/>
-          <line x1="4" y1="20" x2="9" y2="20"/>
-          <line x1="5" y1="27" x2="9" y2="30"/>
-          <line x1="35" y1="13" x2="31" y2="10"/>
-          <line x1="36" y1="20" x2="31" y2="20"/>
-          <line x1="35" y1="27" x2="31" y2="30"/>
+          <line x1="5" y1="13" x2="9" y2="10"/><line x1="4" y1="20" x2="9" y2="20"/>
+          <line x1="5" y1="27" x2="9" y2="30"/><line x1="35" y1="13" x2="31" y2="10"/>
+          <line x1="36" y1="20" x2="31" y2="20"/><line x1="35" y1="27" x2="31" y2="30"/>
         </svg>
       </div>
     </div>
@@ -649,8 +476,8 @@
   <div class="bg-char">水</div>
   <div class="interaction-area">
     <div class="water-visual" id="waterVisual">
-      <div class="water-orb" id="waterOrb"></div>
-      <div class="water-tilt-icon" id="waterCue">
+      <canvas class="water-canvas" id="waterCanvas"></canvas>
+      <div class="water-tilt-icon cue-visible" id="waterCue">
         <svg viewBox="0 0 48 48" fill="none" stroke-linecap="round">
           <rect x="16" y="10" width="16" height="26" rx="3" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
           <path d="M8 23 L3 23" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
@@ -665,18 +492,9 @@
       </div>
     </div>
     <div class="water-tilt-readout" id="waterReadout" style="opacity:0;">
-      <div class="tilt-axis">
-        <span class="tilt-label">Tilt</span>
-        <span class="tilt-value" id="tiltBeta">0°</span>
-      </div>
-      <div class="tilt-axis">
-        <span class="tilt-label">Roll</span>
-        <span class="tilt-value" id="tiltGamma">0°</span>
-      </div>
-      <div class="tilt-axis">
-        <span class="tilt-label">Spin</span>
-        <span class="tilt-value" id="tiltAlpha">0°</span>
-      </div>
+      <div class="tilt-axis"><span class="tilt-label">Tilt</span><span class="tilt-value" id="tiltBeta">0°</span></div>
+      <div class="tilt-axis"><span class="tilt-label">Roll</span><span class="tilt-value" id="tiltGamma">0°</span></div>
+      <div class="tilt-axis"><span class="tilt-label">Spin</span><span class="tilt-value" id="tiltAlpha">0°</span></div>
     </div>
   </div>
 </div>
@@ -706,12 +524,10 @@
     <div class="earth-touch-area" id="earthTouch">
       <div class="earth-thumbprint" id="earthCue">
         <svg viewBox="0 0 64 64" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linecap="round">
-          <!-- Fingerprint pattern -->
           <path d="M32 58 C18 58 10 48 10 36 C10 24 18 14 32 14 C46 14 54 24 54 36 C54 48 46 58 32 58"/>
           <path d="M32 52 C22 52 16 44 16 36 C16 28 22 20 32 20 C42 20 48 28 48 36 C48 44 42 52 32 52"/>
           <path d="M32 46 C26 46 22 42 22 36 C22 30 26 26 32 26 C38 26 42 30 42 36 C42 42 38 46 32 46"/>
           <path d="M32 40 C30 40 28 39 28 36 C28 33 30 32 32 32 C34 32 36 33 36 36 C36 39 34 40 32 40"/>
-          <!-- Arch lines -->
           <path d="M20 50 C14 44 12 40 12 34 C12 26 20 16 32 16"/>
           <path d="M44 50 C50 44 52 40 52 34 C52 26 44 16 32 16"/>
           <path d="M24 48 C18 42 16 38 16 34 C16 28 22 20 32 20"/>
@@ -722,7 +538,6 @@
   </div>
 </div>
 
-<!-- Bottom Navigation -->
 <div class="bottom-nav" id="bottomNav" style="display:none;">
   <button class="nav-item metal" onclick="switchElement('metal')"><span>金</span><span class="nav-label">Metal</span></button>
   <button class="nav-item wood" onclick="switchElement('wood')"><span>木</span><span class="nav-label">Wood</span></button>
@@ -735,36 +550,22 @@
 // ═══════════════════════════════════
 // Core
 // ═══════════════════════════════════
-let audioCtx=null, currentElement=null;
-
+let audioCtx=null,currentElement=null;
 function initAudio(){
-  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  if(audioCtx.state==='suspended') audioCtx.resume();
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended')audioCtx.resume();
 }
-
-document.getElementById('startBtn').addEventListener('click', async()=>{
-  const s=document.getElementById('permStatus'); s.textContent='Requesting permissions…';
+document.getElementById('startBtn').addEventListener('click',async()=>{
+  const s=document.getElementById('permStatus');s.textContent='Requesting permissions…';
   initAudio();
-  if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
-    try{await DeviceMotionEvent.requestPermission();}catch(e){}
-  }
-  if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
-    try{await DeviceOrientationEvent.requestPermission();}catch(e){}
-  }
-  if(navigator.vibrate) navigator.vibrate(1);
+  if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){try{await DeviceMotionEvent.requestPermission();}catch(e){}}
+  if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){try{await DeviceOrientationEvent.requestPermission();}catch(e){}}
+  if(navigator.vibrate)navigator.vibrate(1);
   if('wakeLock' in navigator){try{await navigator.wakeLock.request('screen');}catch(e){}}
   document.getElementById('permissionOverlay').classList.add('hidden');
 });
 
-// ═══════════════════════════════════
-// Navigation
-// ═══════════════════════════════════
-function openElement(n){
-  initAudio();
-  document.getElementById('landing').style.display='none';
-  document.getElementById('bottomNav').style.display='flex';
-  switchElement(n);
-}
+function openElement(n){initAudio();document.getElementById('landing').style.display='none';document.getElementById('bottomNav').style.display='flex';switchElement(n);}
 function switchElement(n){
   if(currentElement===n)return;
   if(currentElement)cleanupCurrent();
@@ -772,21 +573,11 @@ function switchElement(n){
   document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
   document.querySelector(`.nav-item.${n}`).classList.add('active');
   document.getElementById(n+'-page').classList.add('active');
-  currentElement=n; initAudio();
+  currentElement=n;initAudio();
   ({metal:initMetal,wood:initWood,water:initWater,fire:initFire,earth:initEarth})[n]();
 }
-function goHome(){
-  cleanupCurrent();
-  document.querySelectorAll('.element-page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('bottomNav').style.display='none';
-  document.getElementById('landing').style.display='flex';
-  currentElement=null;
-}
-function cleanupCurrent(){
-  ({metal:cleanupMetal,wood:cleanupWood,water:cleanupWater,fire:cleanupFire,earth:cleanupEarth})[currentElement]();
-}
-function hideCue(id){const c=document.getElementById(id);if(c)c.classList.add('cue-hidden');}
-function resetCue(id){const c=document.getElementById(id);if(c)c.classList.remove('cue-hidden');}
+function goHome(){cleanupCurrent();document.querySelectorAll('.element-page').forEach(p=>p.classList.remove('active'));document.getElementById('bottomNav').style.display='none';document.getElementById('landing').style.display='flex';currentElement=null;}
+function cleanupCurrent(){({metal:cleanupMetal,wood:cleanupWood,water:cleanupWater,fire:cleanupFire,earth:cleanupEarth})[currentElement]();}
 
 function createDrone(f,t,d){
   const o1=audioCtx.createOscillator(),o2=audioCtx.createOscillator();
@@ -800,20 +591,30 @@ function createDrone(f,t,d){
 }
 
 // ═══════════════════════════════════
-// METAL 金
+// METAL — icon returns after 3s idle
 // ═══════════════════════════════════
-let metalHandler=null,metalLastShake=0;
+let metalHandler=null,metalLastShake=0,metalIdleTimer=null;
 function initMetal(){
-  resetCue('metalCue');
+  showCue('metalCue');
   metalHandler=e=>{
     const a=e.accelerationIncludingGravity||e.acceleration;if(!a)return;
     const m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z),now=Date.now();
-    if(m>18&&now-metalLastShake>120){metalLastShake=now;hideCue('metalCue');triggerMetalRing(Math.min(m/40,1));}
+    if(m>18&&now-metalLastShake>120){
+      metalLastShake=now;hideCue('metalCue');
+      triggerMetalRing(Math.min(m/40,1));
+      // Reset idle timer — show cue again after 3s of no shaking
+      clearTimeout(metalIdleTimer);
+      metalIdleTimer=setTimeout(()=>showCue('metalCue'),3000);
+    }
   };
   window.addEventListener('devicemotion',metalHandler);
   document.getElementById('metalRing').addEventListener('touchstart',metalTap);
 }
-function metalTap(){hideCue('metalCue');triggerMetalRing(0.7);}
+function metalTap(){
+  hideCue('metalCue');triggerMetalRing(0.7);
+  clearTimeout(metalIdleTimer);
+  metalIdleTimer=setTimeout(()=>showCue('metalCue'),3000);
+}
 function triggerMetalRing(v){
   const r=document.getElementById('metalRing');
   r.classList.add('shaking');setTimeout(()=>r.classList.remove('shaking'),200);
@@ -828,166 +629,253 @@ function triggerMetalRing(v){
 function cleanupMetal(){
   if(metalHandler)window.removeEventListener('devicemotion',metalHandler);
   document.getElementById('metalRing').removeEventListener('touchstart',metalTap);
-  metalHandler=null;
+  clearTimeout(metalIdleTimer);metalHandler=null;
 }
 
 // ═══════════════════════════════════
-// WOOD 木 — with animated invitations
+// WOOD
 // ═══════════════════════════════════
 let woodDrone=null,woodPadActive=false,woodGlowInterval=null;
 function initWood(){
   woodDrone=createDrone(110,'sawtooth',5);woodDrone.filter.frequency.value=300;
   const pad=document.getElementById('woodPad'),cross=document.getElementById('woodCrosshair');
-  const ghost=document.getElementById('woodGhost');
-  ghost.style.opacity='1';
-
-  const mv=(x,y)=>{
-    const r=pad.getBoundingClientRect();
-    const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));
-    cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';
-    woodDrone.filter.frequency.value=200+nx*2000;woodDrone.gain.gain.value=(1-ny)*0.3;
-  };
+  const ghost=document.getElementById('woodGhost');ghost.style.opacity='1';
+  const mv=(x,y)=>{const r=pad.getBoundingClientRect();const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';woodDrone.filter.frequency.value=200+nx*2000;woodDrone.gain.gain.value=(1-ny)*0.3;};
   pad.addEventListener('touchstart',e=>{e.preventDefault();woodPadActive=true;ghost.style.opacity='0';mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchmove',e=>{e.preventDefault();if(woodPadActive)mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchend',()=>{woodPadActive=false;woodDrone.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);cross.style.left='50%';cross.style.top='50%';});
-
-  // Button glow sequence
-  const btns=document.querySelectorAll('#wood-page .trigger-btn');
-  let glowIdx=0;
-  woodGlowInterval=setInterval(()=>{
-    btns.forEach(b=>b.classList.remove('invite-glow'));
-    btns[glowIdx].classList.add('invite-glow');
-    glowIdx=(glowIdx+1)%btns.length;
-  },600);
-
+  const btns=document.querySelectorAll('#wood-page .trigger-btn');let gi=0;
+  woodGlowInterval=setInterval(()=>{btns.forEach(b=>b.classList.remove('invite-glow'));btns[gi].classList.add('invite-glow');gi=(gi+1)%btns.length;},600);
   const notes=[261.6,293.7,329.6,392.0,440.0,466.2];
-  btns.forEach((b,i)=>{
-    b.addEventListener('touchstart',e=>{
-      e.preventDefault();
-      // Stop glow animation once user taps
-      if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;btns.forEach(bb=>bb.classList.remove('invite-glow'));}
-      triggerWoodPerc(notes[i],i<4);
-    });
-  });
+  btns.forEach((b,i)=>{b.addEventListener('touchstart',e=>{e.preventDefault();if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;btns.forEach(bb=>bb.classList.remove('invite-glow'));}triggerWoodPerc(notes[i],i<4);});});
 }
-function triggerWoodPerc(f,isM){
-  const t=audioCtx.currentTime;
-  if(isM){const o=audioCtx.createOscillator(),e=audioCtx.createGain();o.type='sine';o.frequency.value=f;o.connect(e);e.connect(audioCtx.destination);e.gain.setValueAtTime(0.3,t);e.gain.exponentialRampToValueAtTime(0.001,t+0.5);o.start(t);o.stop(t+0.6);
-  }else{const bs=audioCtx.sampleRate*0.08,buf=audioCtx.createBuffer(1,bs,audioCtx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<bs;i++)d[i]=Math.random()*2-1;const s=audioCtx.createBufferSource();s.buffer=buf;const bp=audioCtx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=f*2;bp.Q.value=10;const e=audioCtx.createGain();e.gain.setValueAtTime(0.25,t);e.gain.exponentialRampToValueAtTime(0.001,t+0.1);s.connect(bp);bp.connect(e);e.connect(audioCtx.destination);s.start(t);}
-}
-function cleanupWood(){
-  if(woodDrone){woodDrone.osc1.stop();woodDrone.osc2.stop();woodDrone=null;}
-  if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;}
-  document.querySelectorAll('#wood-page .trigger-btn').forEach(b=>b.classList.remove('invite-glow'));
-}
+function triggerWoodPerc(f,isM){const t=audioCtx.currentTime;if(isM){const o=audioCtx.createOscillator(),e=audioCtx.createGain();o.type='sine';o.frequency.value=f;o.connect(e);e.connect(audioCtx.destination);e.gain.setValueAtTime(0.3,t);e.gain.exponentialRampToValueAtTime(0.001,t+0.5);o.start(t);o.stop(t+0.6);}else{const bs=audioCtx.sampleRate*0.08,buf=audioCtx.createBuffer(1,bs,audioCtx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<bs;i++)d[i]=Math.random()*2-1;const s=audioCtx.createBufferSource();s.buffer=buf;const bp=audioCtx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=f*2;bp.Q.value=10;const e=audioCtx.createGain();e.gain.setValueAtTime(0.25,t);e.gain.exponentialRampToValueAtTime(0.001,t+0.1);s.connect(bp);bp.connect(e);e.connect(audioCtx.destination);s.start(t);}}
+function cleanupWood(){if(woodDrone){woodDrone.osc1.stop();woodDrone.osc2.stop();woodDrone=null;}if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;}document.querySelectorAll('#wood-page .trigger-btn').forEach(b=>b.classList.remove('invite-glow'));}
 
 // ═══════════════════════════════════
-// WATER 水
+// WATER — fluid canvas + icon returns
 // ═══════════════════════════════════
-let waterDrone=null,waterOrientHandler=null;
+let waterDrone=null,waterOrientHandler=null,waterAnimFrame=null,waterIdleTimer=null;
 const BETA_NEUTRAL=60;
+const TILT_THRESHOLD=12; // degrees from neutral before hiding cue
+
+// Water fluid state
+let waterBlobs=[];
+let waterTiltX=0,waterTiltY=0;
+
+function initWaterCanvas(){
+  const canvas=document.getElementById('waterCanvas');
+  const vis=document.getElementById('waterVisual');
+  canvas.width=vis.clientWidth*2;
+  canvas.height=vis.clientHeight*2;
+  canvas.style.width=vis.clientWidth+'px';
+  canvas.style.height=vis.clientHeight+'px';
+  const ctx=canvas.getContext('2d');
+
+  // Create blobs
+  waterBlobs=[];
+  const cx=canvas.width/2,cy=canvas.height/2;
+  for(let i=0;i<8;i++){
+    waterBlobs.push({
+      x:cx+Math.random()*40-20,
+      y:cy+Math.random()*40-20,
+      vx:0,vy:0,
+      r:30+Math.random()*25,
+      phase:Math.random()*Math.PI*2
+    });
+  }
+
+  function drawWater(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const w=canvas.width,h=canvas.height;
+
+    // Physics: tilt = gravity
+    const gx=waterTiltX*0.8;
+    const gy=waterTiltY*0.8;
+    const centerX=w/2,centerY=h/2,radius=w/2-5;
+
+    for(const b of waterBlobs){
+      b.vx+=gx*0.15;
+      b.vy+=gy*0.15;
+      // Pull toward center
+      const dx=centerX-b.x,dy=centerY-b.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      b.vx+=dx*0.003;
+      b.vy+=dy*0.003;
+      // Damping
+      b.vx*=0.92;
+      b.vy*=0.92;
+      b.x+=b.vx;
+      b.y+=b.vy;
+      // Contain within circle
+      const d=Math.sqrt((b.x-centerX)**2+(b.y-centerY)**2);
+      if(d>radius-b.r){
+        const angle=Math.atan2(b.y-centerY,b.x-centerX);
+        b.x=centerX+Math.cos(angle)*(radius-b.r);
+        b.y=centerY+Math.sin(angle)*(radius-b.r);
+        b.vx*=-0.3;b.vy*=-0.3;
+      }
+      // Animate size
+      b.phase+=0.03;
+    }
+
+    // Draw metaball-style water
+    // Use radial gradients for each blob, composite for fluid look
+    ctx.globalCompositeOperation='source-over';
+
+    for(const b of waterBlobs){
+      const wobble=Math.sin(b.phase)*5;
+      const r=b.r+wobble;
+      const grad=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,r);
+      grad.addColorStop(0,'rgba(50,120,200,0.35)');
+      grad.addColorStop(0.4,'rgba(40,100,180,0.2)');
+      grad.addColorStop(0.7,'rgba(30,80,160,0.08)');
+      grad.addColorStop(1,'rgba(20,60,140,0)');
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      ctx.arc(b.x,b.y,r,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    // Bright core highlights
+    ctx.globalCompositeOperation='lighter';
+    for(const b of waterBlobs){
+      const wobble=Math.sin(b.phase)*3;
+      const r=(b.r+wobble)*0.4;
+      const grad=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,r);
+      grad.addColorStop(0,'rgba(100,170,240,0.3)');
+      grad.addColorStop(1,'rgba(60,130,210,0)');
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      ctx.arc(b.x,b.y,r,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    // Specular highlights
+    for(let i=0;i<3;i++){
+      const b=waterBlobs[i];
+      const sx=b.x-b.r*0.2,sy=b.y-b.r*0.3;
+      const grad=ctx.createRadialGradient(sx,sy,0,sx,sy,b.r*0.25);
+      grad.addColorStop(0,'rgba(180,220,255,0.15)');
+      grad.addColorStop(1,'rgba(180,220,255,0)');
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      ctx.arc(sx,sy,b.r*0.25,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    ctx.globalCompositeOperation='source-over';
+    waterAnimFrame=requestAnimationFrame(drawWater);
+  }
+  drawWater();
+}
+
 function initWater(){
-  resetCue('waterCue');
+  showCue('waterCue');
   document.getElementById('waterReadout').style.opacity='0';
+  waterTiltX=0;waterTiltY=0;
+
   waterDrone=createDrone(80,'sine',3);waterDrone.gain.gain.value=0.15;
   const lfo=audioCtx.createOscillator(),lg=audioCtx.createGain();
   lfo.type='sine';lfo.frequency.value=0.3;lg.gain.value=20;
   lfo.connect(lg);lg.connect(waterDrone.filter.frequency);lfo.start();
   waterDrone.lfo=lfo;
-  const orb=document.getElementById('waterOrb'),vis=document.getElementById('waterVisual');
+
+  initWaterCanvas();
+
   const readout=document.getElementById('waterReadout');
   const vB=document.getElementById('tiltBeta'),vG=document.getElementById('tiltGamma'),vA=document.getElementById('tiltAlpha');
+  const cue=document.getElementById('waterCue');
+  let cueVisible=true;
 
   waterOrientHandler=e=>{
     const beta=e.beta||0,gamma=e.gamma||0,alpha=e.alpha||0;
-    hideCue('waterCue');readout.style.opacity='1';
-    vB.textContent=Math.round(beta-BETA_NEUTRAL)+'°';
-    vG.textContent=Math.round(gamma)+'°';
+
+    const relBeta=beta-BETA_NEUTRAL;
+    const relGamma=gamma;
+    const tiltMagnitude=Math.sqrt(relBeta*relBeta+relGamma*relGamma);
+
+    // Only hide cue if tilt exceeds threshold
+    if(tiltMagnitude>TILT_THRESHOLD){
+      if(cueVisible){hideCue('waterCue');cueVisible=false;}
+      readout.style.opacity='1';
+      // Reset idle timer
+      clearTimeout(waterIdleTimer);
+      waterIdleTimer=setTimeout(()=>{
+        showCue('waterCue');cueVisible=true;
+        readout.style.opacity='0';
+      },3000);
+    }
+
+    vB.textContent=Math.round(relBeta)+'°';
+    vG.textContent=Math.round(relGamma)+'°';
     vA.textContent=Math.round(alpha)+'°';
+
+    // Feed fluid simulation — sensitive mapping
+    waterTiltX=relGamma*0.5;
+    waterTiltY=relBeta*0.5;
+
     const nx=(gamma+90)/180,ny=(beta+180)/360,nz=alpha/360;
     waterDrone.osc1.frequency.value=60+nx*200;waterDrone.osc2.frequency.value=62+nx*200;
     waterDrone.filter.frequency.value=200+ny*2000;waterDrone.lfo.frequency.value=0.1+nz*4;
-    const sz=vis.clientWidth;
-    orb.style.left=(nx*(sz-50))+'px';orb.style.top=(ny*(sz-50))+'px';
-    orb.style.width=(35+nz*30)+'px';orb.style.height=(35+nz*30)+'px';
   };
   window.addEventListener('deviceorientation',waterOrientHandler);
+
+  // Touch fallback
+  const vis=document.getElementById('waterVisual');
   vis.addEventListener('touchmove',e=>{
-    e.preventDefault();hideCue('waterCue');readout.style.opacity='1';
+    e.preventDefault();
+    if(cueVisible){hideCue('waterCue');cueVisible=false;}
+    readout.style.opacity='1';
+    clearTimeout(waterIdleTimer);
+    waterIdleTimer=setTimeout(()=>{showCue('waterCue');cueVisible=true;readout.style.opacity='0';},3000);
     const r=vis.getBoundingClientRect(),t=e.touches[0];
     const nx=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),ny=Math.max(0,Math.min(1,(t.clientY-r.top)/r.height));
+    waterTiltX=(nx-0.5)*30;waterTiltY=(ny-0.5)*30;
     waterDrone.osc1.frequency.value=60+nx*200;waterDrone.filter.frequency.value=200+ny*2000;
-    orb.style.left=(nx*(vis.clientWidth-50))+'px';orb.style.top=(ny*(vis.clientHeight-50))+'px';
     vB.textContent=Math.round(ny*180-90)+'°';vG.textContent=Math.round(nx*180-90)+'°';
   });
 }
 function cleanupWater(){
   if(waterOrientHandler)window.removeEventListener('deviceorientation',waterOrientHandler);
-  waterOrientHandler=null;document.getElementById('waterReadout').style.opacity='0';
+  waterOrientHandler=null;
+  if(waterAnimFrame)cancelAnimationFrame(waterAnimFrame);waterAnimFrame=null;
+  clearTimeout(waterIdleTimer);
+  document.getElementById('waterReadout').style.opacity='0';
   if(waterDrone){waterDrone.osc1.stop();waterDrone.osc2.stop();waterDrone.lfo.stop();waterDrone=null;}
 }
 
 // ═══════════════════════════════════
-// FIRE 火 — with animated invitations
+// FIRE
 // ═══════════════════════════════════
 let fireDrone=null,firePadActive=false,fireLastSwipe=0;
 function initFire(){
   fireDrone=createDrone(150,'sawtooth',8);fireDrone.filter.frequency.value=400;
   const pad=document.getElementById('firePad'),cross=document.getElementById('fireCrosshair');
-  const ghost=document.getElementById('fireGhost');
-  const swipeGhost=document.getElementById('fireSwipeGhost');
+  const ghost=document.getElementById('fireGhost'),swipeGhost=document.getElementById('fireSwipeGhost');
   ghost.style.opacity='1';swipeGhost.style.opacity='1';
-
-  const mv=(x,y)=>{
-    const r=pad.getBoundingClientRect();
-    const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));
-    cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';
-    fireDrone.filter.frequency.value=300+nx*3000;fireDrone.gain.gain.value=(1-ny)*0.25;
-  };
+  const mv=(x,y)=>{const r=pad.getBoundingClientRect();const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';fireDrone.filter.frequency.value=300+nx*3000;fireDrone.gain.gain.value=(1-ny)*0.25;};
   pad.addEventListener('touchstart',e=>{e.preventDefault();firePadActive=true;ghost.style.opacity='0';mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchmove',e=>{e.preventDefault();if(firePadActive)mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchend',()=>{firePadActive=false;fireDrone.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);cross.style.left='50%';cross.style.top='50%';});
-
   const sa=document.getElementById('fireSwipeArea');let ss=null;
   sa.addEventListener('touchstart',e=>{e.preventDefault();swipeGhost.style.opacity='0';ss={x:e.touches[0].clientX,y:e.touches[0].clientY};});
-  sa.addEventListener('touchmove',e=>{
-    e.preventDefault();if(!ss)return;const now=Date.now();if(now-fireLastSwipe<80)return;
-    const dx=e.touches[0].clientX-ss.x,dy=e.touches[0].clientY-ss.y,dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist>20){fireLastSwipe=now;const r=sa.getBoundingClientRect();
-      spawnFlame(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top,sa);
-      triggerFlameSound(dist/200);ss={x:e.touches[0].clientX,y:e.touches[0].clientY};}
-  });
+  sa.addEventListener('touchmove',e=>{e.preventDefault();if(!ss)return;const now=Date.now();if(now-fireLastSwipe<80)return;const dx=e.touches[0].clientX-ss.x,dy=e.touches[0].clientY-ss.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist>20){fireLastSwipe=now;const r=sa.getBoundingClientRect();spawnFlame(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top,sa);triggerFlameSound(dist/200);ss={x:e.touches[0].clientX,y:e.touches[0].clientY};}});
   sa.addEventListener('touchend',()=>{ss=null;});
 }
-function spawnFlame(x,y,c){
-  const el=document.createElement('div');el.className='flame-particle';
-  el.style.background=`hsl(${10+Math.random()*30},90%,55%)`;
-  el.style.left=x+'px';el.style.top=y+'px';
-  const s=6+Math.random()*10;el.style.width=s+'px';el.style.height=s+'px';
-  c.appendChild(el);setTimeout(()=>el.remove(),800);
-}
-function triggerFlameSound(v){
-  const t=audioCtx.currentTime,bs=audioCtx.sampleRate*0.15,buf=audioCtx.createBuffer(1,bs,audioCtx.sampleRate);
-  const d=buf.getChannelData(0);for(let i=0;i<bs;i++)d[i]=Math.random()*2-1;
-  const s=audioCtx.createBufferSource();s.buffer=buf;
-  const bp=audioCtx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1000+Math.random()*3000;bp.Q.value=2;
-  const e=audioCtx.createGain();e.gain.setValueAtTime(Math.min(v,1)*0.2,t);e.gain.exponentialRampToValueAtTime(0.001,t+0.15);
-  s.connect(bp);bp.connect(e);e.connect(audioCtx.destination);s.start(t);
-}
+function spawnFlame(x,y,c){const el=document.createElement('div');el.className='flame-particle';el.style.background=`hsl(${10+Math.random()*30},90%,55%)`;el.style.left=x+'px';el.style.top=y+'px';const s=6+Math.random()*10;el.style.width=s+'px';el.style.height=s+'px';c.appendChild(el);setTimeout(()=>el.remove(),800);}
+function triggerFlameSound(v){const t=audioCtx.currentTime,bs=audioCtx.sampleRate*0.15,buf=audioCtx.createBuffer(1,bs,audioCtx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<bs;i++)d[i]=Math.random()*2-1;const s=audioCtx.createBufferSource();s.buffer=buf;const bp=audioCtx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1000+Math.random()*3000;bp.Q.value=2;const e=audioCtx.createGain();e.gain.setValueAtTime(Math.min(v,1)*0.2,t);e.gain.exponentialRampToValueAtTime(0.001,t+0.15);s.connect(bp);bp.connect(e);e.connect(audioCtx.destination);s.start(t);}
 function cleanupFire(){if(fireDrone){fireDrone.osc1.stop();fireDrone.osc2.stop();fireDrone=null;}}
 
 // ═══════════════════════════════════
-// EARTH 土
+// EARTH
 // ═══════════════════════════════════
 let earthDrone=null,earthHapticInterval=null,earthPulseContainer=null;
 function initEarth(){
-  resetCue('earthCue');
+  showCue('earthCue');
   earthDrone=createDrone(55,'sine',2);earthDrone.filter.frequency.value=400;
-  const ta=document.getElementById('earthTouch');
-  earthPulseContainer=ta.parentElement;
-  ta.addEventListener('touchstart',earthTS);
-  ta.addEventListener('touchend',earthTE);
-  ta.addEventListener('touchcancel',earthTE);
+  const ta=document.getElementById('earthTouch');earthPulseContainer=ta.parentElement;
+  ta.addEventListener('touchstart',earthTS);ta.addEventListener('touchend',earthTE);ta.addEventListener('touchcancel',earthTE);
 }
 function earthTS(e){
   e.preventDefault();hideCue('earthCue');
@@ -1002,13 +890,14 @@ function earthTE(){
   if(earthDrone)earthDrone.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.8);
   if(earthHapticInterval){clearInterval(earthHapticInterval);earthHapticInterval=null;}
   if(navigator.vibrate)navigator.vibrate(0);
+  // Show thumbprint again
+  showCue('earthCue');
 }
 function spawnEarthPulse(){
   const el=document.createElement('div');el.className='earth-pulse';
   const ta=document.getElementById('earthTouch');
   const r=ta.getBoundingClientRect(),pr=earthPulseContainer.getBoundingClientRect();
-  const sz=ta.clientWidth;
-  el.style.width=sz+'px';el.style.height=sz+'px';
+  const sz=ta.clientWidth;el.style.width=sz+'px';el.style.height=sz+'px';
   el.style.left=(r.left-pr.left+r.width/2-sz/2)+'px';
   el.style.top=(r.top-pr.top+r.height/2-sz/2)+'px';
   earthPulseContainer.appendChild(el);setTimeout(()=>el.remove(),1000);
@@ -1018,10 +907,14 @@ function cleanupEarth(){
   if(earthHapticInterval){clearInterval(earthHapticInterval);earthHapticInterval=null;}
   if(navigator.vibrate)navigator.vibrate(0);
   const ta=document.getElementById('earthTouch');
-  ta.removeEventListener('touchstart',earthTS);
-  ta.removeEventListener('touchend',earthTE);
-  ta.removeEventListener('touchcancel',earthTE);
+  ta.removeEventListener('touchstart',earthTS);ta.removeEventListener('touchend',earthTE);ta.removeEventListener('touchcancel',earthTE);
 }
+
+// ═══════════════════════════════════
+// Cue helpers
+// ═══════════════════════════════════
+function hideCue(id){const c=document.getElementById(id);if(c){c.classList.remove('cue-visible');c.classList.add('cue-hidden');}}
+function showCue(id){const c=document.getElementById(id);if(c){c.classList.remove('cue-hidden');c.classList.add('cue-visible');}}
 
 document.addEventListener('touchmove',e=>{if(currentElement)e.preventDefault();},{passive:false});
 </script>
