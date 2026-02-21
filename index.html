@@ -20,7 +20,6 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  
   html, body {
     width: 100%; height: 100%; height: -webkit-fill-available;
     overflow: hidden; touch-action: none;
@@ -29,7 +28,40 @@
   }
 
   /* ═══════════════════════════════════
-     LANDING
+     PERMISSION OVERLAY
+     ═══════════════════════════════════ */
+  .permission-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.94); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; z-index: 1000;
+    padding: 40px; padding-top: calc(40px + var(--safe-top)); text-align: center;
+  }
+  .permission-overlay.hidden { display: none; }
+  .permission-overlay h2 {
+    font-family: 'Noto Serif SC', serif; font-weight: 300;
+    font-size: clamp(1.2rem, 5vw, 1.5rem); margin-bottom: 12px;
+  }
+  .permission-overlay p {
+    font-weight: 300; font-style: italic; opacity: 0.6;
+    margin-bottom: 20px; line-height: 1.6; font-size: clamp(0.75rem, 3vw, 0.9rem);
+  }
+  .setup-hint {
+    font-weight: 300; font-style: italic;
+    opacity: 0.3; margin-bottom: 20px;
+    font-size: clamp(0.6rem, 2.5vw, 0.75rem);
+    letter-spacing: 0.08em;
+  }
+  .permission-btn {
+    padding: 14px 40px; border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px; background: rgba(255,255,255,0.08);
+    color: #fff; font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem; letter-spacing: 0.1em; cursor: pointer;
+  }
+  .permission-btn:active { background: rgba(255,255,255,0.15); }
+  .permission-status { margin-top: 16px; font-size: 0.7rem; opacity: 0.35; font-style: italic; }
+
+  /* ═══════════════════════════════════
+     LANDING — Circular layout
      ═══════════════════════════════════ */
   #landing {
     display: flex; align-items: center; justify-content: center;
@@ -40,26 +72,34 @@
     position: relative;
     width: min(80vw, 80vh, 360px); height: min(80vw, 80vh, 360px);
   }
-  .circle-layout::before {
-    content: ''; position: absolute; top: 50%; left: 50%;
+  .circle-ring {
+    position: absolute; top: 50%; left: 50%;
     width: 85%; height: 85%; transform: translate(-50%, -50%);
     border: 1px solid rgba(255,255,255,0.08); border-radius: 50%;
+    pointer-events: none;
+  }
+  .energy-canvas {
+    position: absolute; top: 0; left: 0;
+    pointer-events: none; z-index: 1;
   }
   .circle-center {
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    text-align: center; z-index: 5; pointer-events: none;
+    text-align: center; z-index: 5; cursor: pointer;
+    padding: 16px;
   }
   .circle-center h1 {
     font-family: 'Noto Serif SC', serif; font-weight: 300;
     font-size: clamp(1.4rem, 5vw, 2rem); letter-spacing: 0.25em;
     opacity: 0; animation: fadeIn 1s ease 0.2s forwards;
+    transition: opacity 0.3s ease;
   }
   .circle-center .subtitle {
     font-family: 'Cormorant Garamond', serif; font-weight: 300;
     font-style: italic; font-size: clamp(0.65rem, 2.5vw, 0.85rem);
     letter-spacing: 0.12em; color: rgba(255,255,255,0.4);
     margin-top: 2px; opacity: 0; animation: fadeIn 1s ease 0.5s forwards;
+    transition: opacity 0.3s ease;
   }
   .circle-el {
     position: absolute;
@@ -68,11 +108,13 @@
     background: rgba(255,255,255,0.03);
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    cursor: pointer; transition: all 0.3s ease;
+    cursor: pointer;
     transform: translate(-50%, -50%);
     opacity: 0; animation: fadeIn 0.6s ease forwards; gap: 1px;
+    z-index: 10;
+    transition: top 0.7s cubic-bezier(0.4,0,0.2,1), left 0.7s cubic-bezier(0.4,0,0.2,1);
   }
-  .circle-el:active { transform: translate(-50%, -50%) scale(0.93); }
+  .circle-el:active { filter: brightness(1.3); }
   .circle-el .char {
     font-family: 'Noto Serif SC', serif;
     font-size: clamp(1.1rem, 4vw, 1.5rem); font-weight: 900; line-height: 1;
@@ -82,11 +124,11 @@
     font-size: clamp(0.45rem, 1.8vw, 0.55rem); font-weight: 300;
     letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.5;
   }
-  .circle-el:nth-child(1) { top: 5%; left: 50%; animation-delay: 0.4s; }
-  .circle-el:nth-child(2) { top: 30%; left: 97%; animation-delay: 0.5s; }
-  .circle-el:nth-child(3) { top: 80%; left: 82%; animation-delay: 0.6s; }
-  .circle-el:nth-child(4) { top: 80%; left: 18%; animation-delay: 0.7s; }
-  .circle-el:nth-child(5) { top: 30%; left: 3%; animation-delay: 0.8s; }
+  .circle-el:nth-child(1) { animation-delay: 0.4s; }
+  .circle-el:nth-child(2) { animation-delay: 0.5s; }
+  .circle-el:nth-child(3) { animation-delay: 0.6s; }
+  .circle-el:nth-child(4) { animation-delay: 0.7s; }
+  .circle-el:nth-child(5) { animation-delay: 0.8s; }
   .circle-el.c-metal { border-color: rgba(212,175,55,0.3); }
   .circle-el.c-metal .char { color: var(--metal); }
   .circle-el.c-wood { border-color: rgba(76,153,76,0.3); }
@@ -99,7 +141,7 @@
   .circle-el.c-earth .char { color: var(--earth); }
 
   /* ═══════════════════════════════════
-     SHARED
+     SHARED ELEMENT PAGES
      ═══════════════════════════════════ */
   .element-page {
     display: none; position: fixed; top: 0; left: 0;
@@ -164,7 +206,6 @@
     display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(8px);
   }
-
   .cue-visible { opacity: 0.45; transition: opacity 0.8s ease; }
   .cue-hidden { opacity: 0 !important; transition: opacity 0.5s ease; pointer-events: none; }
 
@@ -184,8 +225,7 @@
     box-shadow: 0 0 40px rgba(212,175,55,0.3);
   }
   .metal-shake-icon {
-    opacity: 0.45;
-    animation: shakeCueAnim 1.2s ease-in-out infinite;
+    opacity: 0.45; animation: shakeCueAnim 1.2s ease-in-out infinite;
     transition: opacity 0.5s ease;
   }
   .metal-shake-icon svg { width: 70px; height: 70px; }
@@ -197,7 +237,6 @@
     48% { transform: translateX(8px) rotate(8deg); }
     60% { transform: translateX(-4px) rotate(-3deg); }
     72% { transform: translateX(4px) rotate(3deg); }
-    84% { transform: translateX(0) rotate(0); }
   }
 
   /* ═══════════════════════════════════
@@ -239,49 +278,31 @@
     border-radius: 8px; background: rgba(76,153,76,0.08);
     color: rgba(255,255,255,0.7); font-family: 'Cormorant Garamond', serif;
     font-size: clamp(0.65rem, 2.5vw, 0.75rem); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
   }
-  .trigger-btn:active {
-    background: rgba(76,153,76,0.3); border-color: rgba(76,153,76,0.7);
-    transform: scale(0.95);
-  }
-  .trigger-btn.invite-glow {
-    border-color: rgba(76,153,76,0.6); background: rgba(76,153,76,0.15);
-    box-shadow: 0 0 12px rgba(76,153,76,0.15);
-  }
+  .trigger-btn:active { background: rgba(76,153,76,0.3); border-color: rgba(76,153,76,0.7); transform: scale(0.95); }
+  .trigger-btn.invite-glow { border-color: rgba(76,153,76,0.6); background: rgba(76,153,76,0.15); box-shadow: 0 0 12px rgba(76,153,76,0.15); }
 
   /* ═══════════════════════════════════
-     WATER — spirit level
+     WATER
      ═══════════════════════════════════ */
   #water-page { background: radial-gradient(ellipse at 50% 40%, #0a1220 0%, #060a10 100%); }
   #water-page .bg-char { color: var(--water); }
-
-  /* Persistent tilt icon ABOVE the circle */
   .water-tilt-hint {
     margin-bottom: clamp(12px, 2vh, 20px);
-    opacity: 0.35;
-    animation: tiltCueAnim 3s ease-in-out infinite;
+    opacity: 0.35; animation: tiltCueAnim 3s ease-in-out infinite;
   }
   .water-tilt-hint svg { width: 56px; height: 56px; }
   @keyframes tiltCueAnim {
-    0%, 100% { transform: rotate(0deg); }
-    20% { transform: rotate(18deg); }
-    40% { transform: rotate(-3deg); }
-    60% { transform: rotate(-18deg); }
+    0%, 100% { transform: rotate(0deg); } 20% { transform: rotate(18deg); }
+    40% { transform: rotate(-3deg); } 60% { transform: rotate(-18deg); }
     80% { transform: rotate(3deg); }
   }
-
-  /* Spirit level container */
   .spirit-level {
     width: clamp(200px, 55vw, 260px); height: clamp(200px, 55vw, 260px);
-    border-radius: 50%;
-    border: 1px solid rgba(70,130,200,0.15);
-    position: relative; overflow: hidden;
-    background: transparent;
+    border-radius: 50%; border: 1px solid rgba(70,130,200,0.15);
+    position: relative; overflow: hidden; background: transparent;
   }
-
-  /* Crosshair lines */
   .spirit-level::before {
     content: ''; position: absolute;
     top: 50%; left: 10%; right: 10%; height: 1px;
@@ -292,8 +313,6 @@
     left: 50%; top: 10%; bottom: 10%; width: 1px;
     background: rgba(70,130,200,0.12);
   }
-
-  /* Center target rings */
   .spirit-target {
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
@@ -308,41 +327,26 @@
     border: 1px solid rgba(70,130,200,0.08);
     border-radius: 50%; pointer-events: none;
   }
-
-  /* The bubble */
   .spirit-bubble {
-    position: absolute;
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    top: 50%; left: 50%;
+    position: absolute; width: 36px; height: 36px;
+    border-radius: 50%; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     transition: left 0.12s ease-out, top 0.12s ease-out;
-    pointer-events: none;
-    z-index: 5;
+    pointer-events: none; z-index: 5;
   }
   .spirit-bubble-inner {
-    width: 100%; height: 100%;
-    border-radius: 50%;
+    width: 100%; height: 100%; border-radius: 50%;
     background: radial-gradient(circle at 35% 35%,
-      rgba(130,185,240,0.5) 0%,
-      rgba(70,130,200,0.3) 40%,
-      rgba(50,100,180,0.15) 70%,
-      rgba(40,80,160,0.05) 100%);
-    box-shadow:
-      0 0 15px rgba(70,130,200,0.25),
-      inset 0 0 8px rgba(130,185,240,0.2);
+      rgba(130,185,240,0.5) 0%, rgba(70,130,200,0.3) 40%,
+      rgba(50,100,180,0.15) 70%, rgba(40,80,160,0.05) 100%);
+    box-shadow: 0 0 15px rgba(70,130,200,0.25), inset 0 0 8px rgba(130,185,240,0.2);
     position: relative;
   }
-  /* Specular highlight on bubble */
   .spirit-bubble-inner::before {
-    content: ''; position: absolute;
-    top: 20%; left: 25%;
-    width: 35%; height: 25%;
-    border-radius: 50%;
-    background: rgba(200,225,255,0.3);
-    filter: blur(2px);
+    content: ''; position: absolute; top: 20%; left: 25%;
+    width: 35%; height: 25%; border-radius: 50%;
+    background: rgba(200,225,255,0.3); filter: blur(2px);
   }
-
   .water-tilt-readout {
     position: absolute; bottom: calc(80px + var(--safe-bottom));
     left: 0; right: 0; z-index: 20;
@@ -372,14 +376,8 @@
     border: 1px solid rgba(220,60,40,0.15); border-radius: 16px;
     position: relative; overflow: hidden; touch-action: none;
   }
-  .flame-particle {
-    position: absolute; border-radius: 50%; pointer-events: none;
-    animation: flameRise 0.8s ease-out forwards;
-  }
-  @keyframes flameRise {
-    0% { opacity: 1; transform: scale(1) translateY(0); }
-    100% { opacity: 0; transform: scale(0.2) translateY(-80px); }
-  }
+  .flame-particle { position: absolute; border-radius: 50%; pointer-events: none; animation: flameRise 0.8s ease-out forwards; }
+  @keyframes flameRise { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.2) translateY(-80px); } }
   .fire-xy-container { margin-bottom: clamp(8px, 2vh, 16px); }
   .fire-ghost { animation: fireGhostMove 3s ease-in-out infinite; }
   @keyframes fireGhostMove {
@@ -390,8 +388,7 @@
   .swipe-ghost {
     position: absolute; width: 16px; height: 16px; border-radius: 50%;
     background: rgba(220,60,40,0.25); pointer-events: none;
-    animation: swipeGhostMove 2.5s ease-in-out infinite;
-    transition: opacity 0.5s ease;
+    animation: swipeGhostMove 2.5s ease-in-out infinite; transition: opacity 0.5s ease;
   }
   .swipe-ghost::after {
     content: ''; position: absolute; width: 10px; height: 10px;
@@ -403,13 +400,10 @@
     50% { left: 75%; top: 30%; opacity: 0.6; } 60% { opacity: 0; }
     100% { left: 20%; top: 70%; opacity: 0; }
   }
-  @keyframes swipeTrail {
-    0% { opacity: 0; } 15% { opacity: 0.5; } 45% { opacity: 0.5; }
-    55% { opacity: 0; } 100% { opacity: 0; }
-  }
+  @keyframes swipeTrail { 0% { opacity: 0; } 15% { opacity: 0.5; } 45% { opacity: 0.5; } 55% { opacity: 0; } 100% { opacity: 0; } }
 
   /* ═══════════════════════════════════
-     EARTH
+     EARTH — progressive glow
      ═══════════════════════════════════ */
   #earth-page { background: radial-gradient(ellipse at 50% 50%, #1a1008 0%, #0d0904 100%); }
   #earth-page .bg-char { color: var(--earth); }
@@ -417,77 +411,65 @@
     width: clamp(160px, 42vw, 210px); height: clamp(160px, 42vw, 210px);
     border: 2px solid rgba(139,94,60,0.25); border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s; cursor: pointer; position: relative;
-  }
-  .earth-touch-area.active {
-    border-color: rgba(139,94,60,0.7); background: rgba(139,94,60,0.12);
-    box-shadow: 0 0 60px rgba(139,94,60,0.2);
+    cursor: pointer; position: relative;
+    transition: none; /* JS controls glow */
   }
   .earth-thumbprint {
     opacity: 0.35; transition: opacity 0.4s ease;
     animation: thumbPulse 2.5s ease-in-out infinite;
   }
   .earth-thumbprint svg { width: clamp(56px, 16vw, 72px); height: clamp(70px, 20vw, 90px); }
-  .earth-touch-area.active .earth-thumbprint { opacity: 0.6; animation: none; }
   @keyframes thumbPulse {
     0%, 100% { transform: scale(1); opacity: 0.35; }
     50% { transform: scale(1.06); opacity: 0.5; }
   }
   .earth-pulse {
     position: absolute; border: 1px solid rgba(139,94,60,0.3);
-    border-radius: 50%; animation: earthPulse 1s ease-out forwards;
-    pointer-events: none;
+    border-radius: 50%; animation: earthPulse 1s ease-out forwards; pointer-events: none;
   }
-  @keyframes earthPulse {
-    0% { transform: scale(1); opacity: 0.5; }
-    100% { transform: scale(2); opacity: 0; }
+  @keyframes earthPulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(2); opacity: 0; } }
+
+  @keyframes screenShake {
+    0%, 100% { transform: translate(0,0); }
+    10% { transform: translate(-5px,-3px); }
+    20% { transform: translate(5px,3px); }
+    30% { transform: translate(-4px,4px); }
+    40% { transform: translate(4px,-4px); }
+    50% { transform: translate(-3px,2px); }
+    60% { transform: translate(3px,-2px); }
+    70% { transform: translate(-2px,3px); }
+    80% { transform: translate(2px,-1px); }
+    90% { transform: translate(-1px,1px); }
   }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-  /* Permission */
-  .permission-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.94); display: flex; flex-direction: column;
-    align-items: center; justify-content: center; z-index: 1000;
-    padding: 40px; padding-top: calc(40px + var(--safe-top)); text-align: center;
-  }
-  .permission-overlay.hidden { display: none; }
-  .permission-overlay h2 {
-    font-family: 'Noto Serif SC', serif; font-weight: 300;
-    font-size: clamp(1.2rem, 5vw, 1.5rem); margin-bottom: 12px;
-  }
-  .permission-overlay p {
-    font-weight: 300; font-style: italic; opacity: 0.6;
-    margin-bottom: 24px; line-height: 1.6; font-size: clamp(0.75rem, 3vw, 0.9rem);
-  }
-  .permission-btn {
-    padding: 14px 40px; border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 8px; background: rgba(255,255,255,0.08);
-    color: #fff; font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem; letter-spacing: 0.1em; cursor: pointer;
-  }
-  .permission-btn:active { background: rgba(255,255,255,0.15); }
-  .permission-status { margin-top: 16px; font-size: 0.7rem; opacity: 0.35; font-style: italic; }
 </style>
 </head>
 <body>
 
+<!-- Permission -->
 <div class="permission-overlay" id="permissionOverlay">
   <h2>五行</h2>
   <p>This experience uses your device's<br>motion sensors, audio, and haptics.</p>
+  <div class="setup-hint">unmute · volume up · brightness up</div>
   <button class="permission-btn" id="startBtn">Enter</button>
   <div class="permission-status" id="permStatus"></div>
 </div>
 
+<!-- Landing -->
 <div id="landing">
-  <div class="circle-layout">
-    <div class="circle-el c-metal" onclick="openElement('metal')"><span class="char">金</span><span class="elname">Metal</span></div>
-    <div class="circle-el c-wood" onclick="openElement('wood')"><span class="char">木</span><span class="elname">Wood</span></div>
-    <div class="circle-el c-water" onclick="openElement('water')"><span class="char">水</span><span class="elname">Water</span></div>
-    <div class="circle-el c-fire" onclick="openElement('fire')"><span class="char">火</span><span class="elname">Fire</span></div>
-    <div class="circle-el c-earth" onclick="openElement('earth')"><span class="char">土</span><span class="elname">Earth</span></div>
-    <div class="circle-center"><h1>五行</h1><div class="subtitle">Five Elements</div></div>
+  <div class="circle-layout" id="circleLayout">
+    <div class="circle-ring"></div>
+    <canvas class="energy-canvas" id="energyCanvas"></canvas>
+    <div class="circle-el c-metal" id="el-metal" onclick="openElement('metal')"><span class="char">金</span><span class="elname">Metal</span></div>
+    <div class="circle-el c-wood" id="el-wood" onclick="openElement('wood')"><span class="char">木</span><span class="elname">Wood</span></div>
+    <div class="circle-el c-water" id="el-water" onclick="openElement('water')"><span class="char">水</span><span class="elname">Water</span></div>
+    <div class="circle-el c-fire" id="el-fire" onclick="openElement('fire')"><span class="char">火</span><span class="elname">Fire</span></div>
+    <div class="circle-el c-earth" id="el-earth" onclick="openElement('earth')"><span class="char">土</span><span class="elname">Earth</span></div>
+    <div class="circle-center" id="circleCenter" onclick="cycleLandingState()">
+      <h1 id="centerTitle">五行</h1>
+      <div class="subtitle" id="centerSub">Five Elements</div>
+    </div>
   </div>
 </div>
 
@@ -518,7 +500,7 @@
       <div class="crosshair" id="woodCrosshair"></div>
       <div class="ghost-cursor wood-ghost" id="woodGhost"></div>
     </div>
-    <div class="trigger-grid" id="woodTriggerGrid">
+    <div class="trigger-grid">
       <button class="trigger-btn" data-note="0">C</button>
       <button class="trigger-btn" data-note="1">D</button>
       <button class="trigger-btn" data-note="2">E</button>
@@ -534,8 +516,7 @@
   <button class="home-btn" onclick="goHome()">⌂</button>
   <div class="bg-char">水</div>
   <div class="interaction-area">
-    <!-- Permanent tilt hint above the circle -->
-    <div class="water-tilt-hint" id="waterTiltHint">
+    <div class="water-tilt-hint">
       <svg viewBox="0 0 48 48" fill="none" stroke-linecap="round">
         <rect x="16" y="10" width="16" height="26" rx="3" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
         <path d="M8 23 L3 23" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
@@ -548,16 +529,11 @@
         <path d="M20.5 44.5 L24 47.5 L27.5 44.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
       </svg>
     </div>
-
-    <!-- Spirit level -->
     <div class="spirit-level" id="spiritLevel">
       <div class="spirit-target-outer"></div>
       <div class="spirit-target"></div>
-      <div class="spirit-bubble" id="spiritBubble">
-        <div class="spirit-bubble-inner"></div>
-      </div>
+      <div class="spirit-bubble" id="spiritBubble"><div class="spirit-bubble-inner"></div></div>
     </div>
-
     <div class="water-tilt-readout" id="waterReadout" style="opacity:0;">
       <div class="tilt-axis"><span class="tilt-label">Tilt</span><span class="tilt-value" id="tiltBeta">0°</span></div>
       <div class="tilt-axis"><span class="tilt-label">Roll</span><span class="tilt-value" id="tiltGamma">0°</span></div>
@@ -572,7 +548,7 @@
   <div class="bg-char">火</div>
   <div class="interaction-area">
     <div class="fire-xy-container">
-      <div class="xy-pad" id="firePad" style="border-color: rgba(220,60,40,0.15); max-width: 200px;">
+      <div class="xy-pad" id="firePad" style="border-color:rgba(220,60,40,0.15);max-width:200px;">
         <div class="crosshair" id="fireCrosshair"></div>
         <div class="ghost-cursor fire-ghost" id="fireGhost"></div>
       </div>
@@ -591,22 +567,17 @@
     <div class="earth-touch-area" id="earthTouch">
       <div class="earth-thumbprint" id="earthCue">
         <svg viewBox="0 0 64 80" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.1" stroke-linecap="round">
-          <!-- Thumb outline -->
           <path d="M18 70 C12 62 10 52 10 42 C10 22 18 10 32 8 C46 10 54 22 54 42 C54 52 52 62 46 70" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
-          <!-- Ridge lines — horizontal arches -->
           <path d="M20 60 C24 54 28 52 32 52 C36 52 40 54 44 60"/>
           <path d="M18 56 C23 48 27 46 32 46 C37 46 41 48 46 56"/>
           <path d="M17 51 C22 43 27 40 32 40 C37 40 42 43 47 51"/>
           <path d="M17 46 C22 38 27 35 32 35 C37 35 42 38 47 46"/>
-          <!-- Core loop -->
           <path d="M24 40 C24 34 27 30 32 30 C37 30 40 34 40 40 C40 44 37 47 32 47 C27 47 24 44 24 40"/>
           <path d="M27 39 C27 36 29 33 32 33 C35 33 37 36 37 39 C37 42 35 44 32 44 C29 44 27 42 27 39"/>
-          <!-- Upper arches -->
           <path d="M18 40 C20 30 25 24 32 24 C39 24 44 30 46 40"/>
           <path d="M16 36 C19 24 25 18 32 18 C39 18 45 24 48 36"/>
           <path d="M15 32 C18 20 24 14 32 14 C40 14 46 20 49 32"/>
           <path d="M16 28 C19 18 24 12 32 12 C40 12 45 18 48 28"/>
-          <!-- Downward press arrows -->
           <path d="M32 68 L32 76" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"/>
           <path d="M28 73 L32 77 L36 73" stroke="rgba(255,255,255,0.3)" stroke-width="1.3" fill="none"/>
         </svg>
@@ -615,6 +586,7 @@
   </div>
 </div>
 
+<!-- Nav -->
 <div class="bottom-nav" id="bottomNav" style="display:none;">
   <button class="nav-item metal" onclick="switchElement('metal')"><span>金</span><span class="nav-label">Metal</span></button>
   <button class="nav-item wood" onclick="switchElement('wood')"><span>木</span><span class="nav-label">Wood</span></button>
@@ -624,6 +596,9 @@
 </div>
 
 <script>
+// ═══════════════════════════════════
+// CORE
+// ═══════════════════════════════════
 let audioCtx=null,currentElement=null;
 function initAudio(){
   if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
@@ -637,21 +612,8 @@ document.getElementById('startBtn').addEventListener('click',async()=>{
   if(navigator.vibrate)navigator.vibrate(1);
   if('wakeLock' in navigator){try{await navigator.wakeLock.request('screen');}catch(e){}}
   document.getElementById('permissionOverlay').classList.add('hidden');
+  initLanding();
 });
-
-function openElement(n){initAudio();document.getElementById('landing').style.display='none';document.getElementById('bottomNav').style.display='flex';switchElement(n);}
-function switchElement(n){
-  if(currentElement===n)return;
-  if(currentElement)cleanupCurrent();
-  document.querySelectorAll('.element-page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
-  document.querySelector(`.nav-item.${n}`).classList.add('active');
-  document.getElementById(n+'-page').classList.add('active');
-  currentElement=n;initAudio();
-  ({metal:initMetal,wood:initWood,water:initWater,fire:initFire,earth:initEarth})[n]();
-}
-function goHome(){cleanupCurrent();document.querySelectorAll('.element-page').forEach(p=>p.classList.remove('active'));document.getElementById('bottomNav').style.display='none';document.getElementById('landing').style.display='flex';currentElement=null;}
-function cleanupCurrent(){({metal:cleanupMetal,wood:cleanupWood,water:cleanupWater,fire:cleanupFire,earth:cleanupEarth})[currentElement]();}
 
 function createDrone(f,t,d){
   const o1=audioCtx.createOscillator(),o2=audioCtx.createOscillator();
@@ -663,12 +625,169 @@ function createDrone(f,t,d){
   o1.start();o2.start();
   return{osc1:o1,osc2:o2,gain:g,filter:fl};
 }
-
 function hideCue(id){const c=document.getElementById(id);if(c){c.classList.remove('cue-visible');c.classList.add('cue-hidden');}}
 function showCue(id){const c=document.getElementById(id);if(c){c.classList.remove('cue-hidden');c.classList.add('cue-visible');}}
 
 // ═══════════════════════════════════
-// METAL — 1s idle timer
+// LANDING — Circle states & energy
+// ═══════════════════════════════════
+// Pentagon positions (% from top-left of container)
+// Clockwise from top: P0=top, P1=top-right, P2=bottom-right, P3=bottom-left, P4=top-left
+const PPOS=[
+  {top:7.5,left:50},
+  {top:34.5,left:90},
+  {top:84,left:74},
+  {top:84,left:26},
+  {top:34.5,left:10}
+];
+// Element DOM IDs in order: metal, wood, water, fire, earth
+const EL_IDS=['el-metal','el-wood','el-water','el-fire','el-earth'];
+// State mappings: which pentagon position each element occupies
+// [metal→P?, wood→P?, water→P?, fire→P?, earth→P?]
+const STATE_MAP={
+  wuxing:[0,1,2,3,4],  // 金木水火土 clockwise
+  sheng: [0,2,1,3,4],  // 金水木火土 clockwise (creation)
+  ke:    [0,4,2,1,3]   // 金木土水火 counter-clockwise (destruction)
+};
+const STATE_LABELS={
+  wuxing:{title:'五行',sub:'Five Elements'},
+  sheng: {title:'生',sub:'Creation'},
+  ke:    {title:'剋',sub:'Destruction'}
+};
+const STATE_ORDER=['wuxing','sheng','ke'];
+let landingState='wuxing';
+let energyAnimFrame=null;
+let energyParticles=[];
+let energyDirection=0; // 1=CW, -1=CCW
+
+function initLanding(){
+  const layout=document.getElementById('circleLayout');
+  const canvas=document.getElementById('energyCanvas');
+  const sz=layout.clientWidth;
+  canvas.width=sz*2;canvas.height=sz*2;
+  canvas.style.width=sz+'px';canvas.style.height=sz+'px';
+  setElementPositions('wuxing');
+}
+
+function setElementPositions(state){
+  const map=STATE_MAP[state];
+  for(let i=0;i<5;i++){
+    const el=document.getElementById(EL_IDS[i]);
+    const p=PPOS[map[i]];
+    el.style.top=p.top+'%';
+    el.style.left=p.left+'%';
+  }
+}
+
+function cycleLandingState(){
+  stopEnergyFlow();
+  const idx=STATE_ORDER.indexOf(landingState);
+  const next=STATE_ORDER[(idx+1)%3];
+  landingState=next;
+  // Update center text
+  document.getElementById('centerTitle').textContent=STATE_LABELS[next].title;
+  document.getElementById('centerSub').textContent=STATE_LABELS[next].sub;
+  // Animate elements to new positions
+  setElementPositions(next);
+  // Start energy after transition (700ms)
+  if(next!=='wuxing'){
+    setTimeout(()=>{
+      startEnergyFlow(next==='sheng'?1:-1);
+    },750);
+  }
+}
+
+function startEnergyFlow(dir){
+  energyDirection=dir;
+  energyParticles=[];
+  const count=6;
+  for(let i=0;i<count;i++){
+    energyParticles.push({
+      angle:(i/count)*Math.PI*2,
+      speed:0.012+Math.random()*0.004,
+      size:2+Math.random()*1.5
+    });
+  }
+  drawEnergy();
+}
+
+function stopEnergyFlow(){
+  if(energyAnimFrame){cancelAnimationFrame(energyAnimFrame);energyAnimFrame=null;}
+  const canvas=document.getElementById('energyCanvas');
+  if(canvas){
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+function drawEnergy(){
+  const canvas=document.getElementById('energyCanvas');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  const cx=w/2,cy=h/2,r=w*0.425;
+  ctx.clearRect(0,0,w,h);
+
+  for(const p of energyParticles){
+    p.angle+=p.speed*energyDirection;
+    const x=cx+r*Math.sin(p.angle);
+    const y=cy-r*Math.cos(p.angle);
+
+    // Outer glow
+    const g=ctx.createRadialGradient(x,y,0,x,y,16);
+    g.addColorStop(0,'rgba(255,255,255,0.4)');
+    g.addColorStop(0.4,'rgba(255,255,255,0.1)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g;
+    ctx.beginPath();ctx.arc(x,y,16,0,Math.PI*2);ctx.fill();
+
+    // Core
+    ctx.fillStyle='rgba(255,255,255,0.7)';
+    ctx.beginPath();ctx.arc(x,y,p.size,0,Math.PI*2);ctx.fill();
+
+    // Short trail
+    for(let t=1;t<=3;t++){
+      const ta=p.angle-p.speed*energyDirection*t*3;
+      const tx=cx+r*Math.sin(ta);
+      const ty=cy-r*Math.cos(ta);
+      const a=0.2-t*0.06;
+      ctx.fillStyle=`rgba(255,255,255,${a})`;
+      ctx.beginPath();ctx.arc(tx,ty,p.size*0.7,0,Math.PI*2);ctx.fill();
+    }
+  }
+  energyAnimFrame=requestAnimationFrame(drawEnergy);
+}
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+function openElement(n){initAudio();stopEnergyFlow();document.getElementById('landing').style.display='none';document.getElementById('bottomNav').style.display='flex';switchElement(n);}
+function switchElement(n){
+  if(currentElement===n)return;
+  if(currentElement)cleanupCurrent();
+  document.querySelectorAll('.element-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelector(`.nav-item.${n}`).classList.add('active');
+  document.getElementById(n+'-page').classList.add('active');
+  currentElement=n;initAudio();
+  ({metal:initMetal,wood:initWood,water:initWater,fire:initFire,earth:initEarth})[n]();
+}
+function goHome(){
+  cleanupCurrent();
+  document.querySelectorAll('.element-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('bottomNav').style.display='none';
+  document.getElementById('landing').style.display='flex';
+  currentElement=null;
+  // Re-init canvas size in case of orientation change
+  initLanding();
+  // Restart energy if in a cycle state
+  if(landingState!=='wuxing'){
+    setTimeout(()=>startEnergyFlow(landingState==='sheng'?1:-1),100);
+  }
+}
+function cleanupCurrent(){({metal:cleanupMetal,wood:cleanupWood,water:cleanupWater,fire:cleanupFire,earth:cleanupEarth})[currentElement]();}
+
+// ═══════════════════════════════════
+// METAL — 1s idle
 // ═══════════════════════════════════
 let metalHandler=null,metalLastShake=0,metalIdleTimer=null;
 function initMetal(){
@@ -677,26 +796,18 @@ function initMetal(){
     const a=e.accelerationIncludingGravity||e.acceleration;if(!a)return;
     const m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z),now=Date.now();
     if(m>18&&now-metalLastShake>120){
-      metalLastShake=now;hideCue('metalCue');
-      triggerMetalRing(Math.min(m/40,1));
-      clearTimeout(metalIdleTimer);
-      metalIdleTimer=setTimeout(()=>showCue('metalCue'),1000);
+      metalLastShake=now;hideCue('metalCue');triggerMetalRing(Math.min(m/40,1));
+      clearTimeout(metalIdleTimer);metalIdleTimer=setTimeout(()=>showCue('metalCue'),1000);
     }
   };
   window.addEventListener('devicemotion',metalHandler);
   document.getElementById('metalRing').addEventListener('touchstart',metalTap);
 }
-function metalTap(){
-  hideCue('metalCue');triggerMetalRing(0.7);
-  clearTimeout(metalIdleTimer);
-  metalIdleTimer=setTimeout(()=>showCue('metalCue'),1000);
-}
+function metalTap(){hideCue('metalCue');triggerMetalRing(0.7);clearTimeout(metalIdleTimer);metalIdleTimer=setTimeout(()=>showCue('metalCue'),1000);}
 function triggerMetalRing(v){
-  const r=document.getElementById('metalRing');
-  r.classList.add('shaking');setTimeout(()=>r.classList.remove('shaking'),200);
+  const r=document.getElementById('metalRing');r.classList.add('shaking');setTimeout(()=>r.classList.remove('shaking'),200);
   const t=audioCtx.currentTime,f=800+Math.random()*600;
-  const m=audioCtx.createOscillator(),mg=audioCtx.createGain();
-  const c=audioCtx.createOscillator(),e=audioCtx.createGain();
+  const m=audioCtx.createOscillator(),mg=audioCtx.createGain(),c=audioCtx.createOscillator(),e=audioCtx.createGain();
   m.frequency.value=f*1.4;mg.gain.value=f*2;c.frequency.value=f;
   m.connect(mg);mg.connect(c.frequency);c.connect(e);e.connect(audioCtx.destination);
   e.gain.setValueAtTime(v*0.25,t);e.gain.exponentialRampToValueAtTime(0.001,t+1.5);
@@ -714,8 +825,8 @@ function cleanupMetal(){
 let woodDrone=null,woodPadActive=false,woodGlowInterval=null;
 function initWood(){
   woodDrone=createDrone(110,'sawtooth',5);woodDrone.filter.frequency.value=300;
-  const pad=document.getElementById('woodPad'),cross=document.getElementById('woodCrosshair');
-  const ghost=document.getElementById('woodGhost');ghost.style.opacity='1';
+  const pad=document.getElementById('woodPad'),cross=document.getElementById('woodCrosshair'),ghost=document.getElementById('woodGhost');
+  ghost.style.opacity='1';
   const mv=(x,y)=>{const r=pad.getBoundingClientRect();const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';woodDrone.filter.frequency.value=200+nx*2000;woodDrone.gain.gain.value=(1-ny)*0.3;};
   pad.addEventListener('touchstart',e=>{e.preventDefault();woodPadActive=true;ghost.style.opacity='0';mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchmove',e=>{e.preventDefault();if(woodPadActive)mv(e.touches[0].clientX,e.touches[0].clientY);});
@@ -729,16 +840,14 @@ function triggerWoodPerc(f,isM){const t=audioCtx.currentTime;if(isM){const o=aud
 function cleanupWood(){if(woodDrone){woodDrone.osc1.stop();woodDrone.osc2.stop();woodDrone=null;}if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;}document.querySelectorAll('#wood-page .trigger-btn').forEach(b=>b.classList.remove('invite-glow'));}
 
 // ═══════════════════════════════════
-// WATER — spirit level + 1s delay
+// WATER — clamped tilt + 1s delay
 // ═══════════════════════════════════
-let waterDrone=null,waterOrientHandler=null,waterReady=false,waterDelayTimer=null;
-const BETA_NEUTRAL=60;
+let waterDrone=null,waterOrientHandler=null,waterReady=false,waterDelayTimer=null,waterBaseAlpha=null;
+const BETA_NEUTRAL=60,TILT_CLAMP=50,ROLL_CLAMP=50,SPIN_CLAMP=60;
 
 function initWater(){
-  waterReady=false;
+  waterReady=false;waterBaseAlpha=null;
   document.getElementById('waterReadout').style.opacity='0';
-
-  // Position bubble at center initially
   const bubble=document.getElementById('spiritBubble');
   bubble.style.left='50%';bubble.style.top='50%';
 
@@ -752,7 +861,6 @@ function initWater(){
   const vB=document.getElementById('tiltBeta'),vG=document.getElementById('tiltGamma'),vA=document.getElementById('tiltAlpha');
   const level=document.getElementById('spiritLevel');
 
-  // 1-second delay before output starts
   waterDelayTimer=setTimeout(()=>{
     waterReady=true;
     waterDrone.gain.gain.setValueAtTime(0,audioCtx.currentTime);
@@ -762,47 +870,54 @@ function initWater(){
 
   waterOrientHandler=e=>{
     const beta=e.beta||0,gamma=e.gamma||0,alpha=e.alpha||0;
+    // Capture baseline alpha
+    if(waterBaseAlpha===null)waterBaseAlpha=alpha;
+
     const relBeta=beta-BETA_NEUTRAL;
     const relGamma=gamma;
+    let relAlpha=alpha-waterBaseAlpha;
+    if(relAlpha>180)relAlpha-=360;
+    if(relAlpha<-180)relAlpha+=360;
 
-    // Always update readout values
-    vB.textContent=Math.round(relBeta)+'°';
-    vG.textContent=Math.round(relGamma)+'°';
-    vA.textContent=Math.round(alpha)+'°';
+    // Clamp to wrist range
+    const cB=Math.max(-TILT_CLAMP,Math.min(TILT_CLAMP,relBeta));
+    const cG=Math.max(-ROLL_CLAMP,Math.min(ROLL_CLAMP,relGamma));
+    const cA=Math.max(-SPIN_CLAMP,Math.min(SPIN_CLAMP,relAlpha));
 
-    // Move spirit-level bubble (always responsive visually)
-    // Map tilt to bubble position: clamp within the circle
-    const levelSize=level.clientWidth;
-    const maxOffset=levelSize*0.38; // keep bubble inside ring
-    const bx=50+Math.max(-1,Math.min(1,relGamma/45))*38; // % from center
-    const by=50+Math.max(-1,Math.min(1,relBeta/45))*38;
-    bubble.style.left=bx+'%';
-    bubble.style.top=by+'%';
+    // Normalize 0–1
+    const nx=(cG+ROLL_CLAMP)/(ROLL_CLAMP*2);
+    const ny=(cB+TILT_CLAMP)/(TILT_CLAMP*2);
+    const nz=(cA+SPIN_CLAMP)/(SPIN_CLAMP*2);
 
-    // Only drive audio after delay
-    if(!waterReady) return;
+    vB.textContent=Math.round(cB)+'°';
+    vG.textContent=Math.round(cG)+'°';
+    vA.textContent=Math.round(cA)+'°';
 
-    const nx=(gamma+90)/180,ny=(beta+180)/360,nz=alpha/360;
+    // Spirit level bubble
+    const bx=50+(cG/ROLL_CLAMP)*38;
+    const by=50+(cB/TILT_CLAMP)*38;
+    bubble.style.left=bx+'%';bubble.style.top=by+'%';
+
+    if(!waterReady)return;
     waterDrone.osc1.frequency.value=60+nx*200;waterDrone.osc2.frequency.value=62+nx*200;
     waterDrone.filter.frequency.value=200+ny*2000;waterDrone.lfo.frequency.value=0.1+nz*4;
   };
   window.addEventListener('deviceorientation',waterOrientHandler);
 
   // Touch fallback
-  const vis=level;
-  vis.addEventListener('touchmove',e=>{
+  level.addEventListener('touchmove',e=>{
     e.preventDefault();
-    const r=vis.getBoundingClientRect(),t=e.touches[0];
+    const r=level.getBoundingClientRect(),t=e.touches[0];
     const nx=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),ny=Math.max(0,Math.min(1,(t.clientY-r.top)/r.height));
     bubble.style.left=(nx*100)+'%';bubble.style.top=(ny*100)+'%';
-    vB.textContent=Math.round(ny*180-90)+'°';vG.textContent=Math.round(nx*180-90)+'°';
+    vB.textContent=Math.round((ny-0.5)*TILT_CLAMP*2)+'°';vG.textContent=Math.round((nx-0.5)*ROLL_CLAMP*2)+'°';
     if(!waterReady)return;
     waterDrone.osc1.frequency.value=60+nx*200;waterDrone.filter.frequency.value=200+ny*2000;
   });
 }
 function cleanupWater(){
   if(waterOrientHandler)window.removeEventListener('deviceorientation',waterOrientHandler);
-  waterOrientHandler=null;waterReady=false;
+  waterOrientHandler=null;waterReady=false;waterBaseAlpha=null;
   clearTimeout(waterDelayTimer);
   document.getElementById('waterReadout').style.opacity='0';
   if(waterDrone){waterDrone.osc1.stop();waterDrone.osc2.stop();waterDrone.lfo.stop();waterDrone=null;}
@@ -814,8 +929,7 @@ function cleanupWater(){
 let fireDrone=null,firePadActive=false,fireLastSwipe=0;
 function initFire(){
   fireDrone=createDrone(150,'sawtooth',8);fireDrone.filter.frequency.value=400;
-  const pad=document.getElementById('firePad'),cross=document.getElementById('fireCrosshair');
-  const ghost=document.getElementById('fireGhost'),swipeGhost=document.getElementById('fireSwipeGhost');
+  const pad=document.getElementById('firePad'),cross=document.getElementById('fireCrosshair'),ghost=document.getElementById('fireGhost'),swipeGhost=document.getElementById('fireSwipeGhost');
   ghost.style.opacity='1';swipeGhost.style.opacity='1';
   const mv=(x,y)=>{const r=pad.getBoundingClientRect();const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';fireDrone.filter.frequency.value=300+nx*3000;fireDrone.gain.gain.value=(1-ny)*0.25;};
   pad.addEventListener('touchstart',e=>{e.preventDefault();firePadActive=true;ghost.style.opacity='0';mv(e.touches[0].clientX,e.touches[0].clientY);});
@@ -831,30 +945,117 @@ function triggerFlameSound(v){const t=audioCtx.currentTime,bs=audioCtx.sampleRat
 function cleanupFire(){if(fireDrone){fireDrone.osc1.stop();fireDrone.osc2.stop();fireDrone=null;}}
 
 // ═══════════════════════════════════
-// EARTH
+// EARTH — earthquake charging
 // ═══════════════════════════════════
-let earthDrone=null,earthHapticInterval=null,earthPulseContainer=null;
+let earthDrone=null,earthAnimFrame=null,earthStartTime=null,earthLastVib=0,earthPulseContainer=null,earthQuaking=false;
+const QUAKE_TIME=6000; // 6 seconds to earthquake
+
 function initEarth(){
   showCue('earthCue');
   earthDrone=createDrone(55,'sine',2);earthDrone.filter.frequency.value=400;
-  const ta=document.getElementById('earthTouch');earthPulseContainer=ta.parentElement;
-  ta.addEventListener('touchstart',earthTS);ta.addEventListener('touchend',earthTE);ta.addEventListener('touchcancel',earthTE);
+  const ta=document.getElementById('earthTouch');
+  earthPulseContainer=ta.parentElement;
+  ta.addEventListener('touchstart',earthTS);
+  ta.addEventListener('touchend',earthTE);
+  ta.addEventListener('touchcancel',earthTE);
 }
+
 function earthTS(e){
   e.preventDefault();hideCue('earthCue');
-  document.getElementById('earthTouch').classList.add('active');
-  earthDrone.gain.gain.linearRampToValueAtTime(0.25,audioCtx.currentTime+0.5);
-  doEarthVibrate();spawnEarthPulse();
-  earthHapticInterval=setInterval(()=>{doEarthVibrate();spawnEarthPulse();},1000);
+  earthStartTime=Date.now();earthLastVib=0;earthQuaking=false;
+  earthDrone.gain.gain.setValueAtTime(0,audioCtx.currentTime);
+  earthChargeLoop();
 }
-function doEarthVibrate(){if(navigator.vibrate)navigator.vibrate([100,50,100]);}
+
+function earthChargeLoop(){
+  if(!earthStartTime)return;
+  const elapsed=Date.now()-earthStartTime;
+  const ta=document.getElementById('earthTouch');
+
+  if(earthQuaking){
+    // After quake, reset and start charging again
+    earthStartTime=Date.now();earthQuaking=false;earthLastVib=0;
+    earthDrone.gain.gain.setValueAtTime(0.02,audioCtx.currentTime);
+    ta.style.boxShadow='none';ta.style.borderColor='rgba(139,94,60,0.25)';ta.style.background='transparent';
+    earthAnimFrame=requestAnimationFrame(earthChargeLoop);
+    return;
+  }
+
+  const progress=Math.min(elapsed/QUAKE_TIME,1);
+
+  // Progressive drone volume
+  earthDrone.gain.gain.setValueAtTime(progress*0.3,audioCtx.currentTime);
+
+  // Progressive glow
+  const glowSize=20+progress*80;
+  const glowOp=0.05+progress*0.35;
+  const borderOp=0.25+progress*0.6;
+  const bgOp=progress*0.2;
+  ta.style.boxShadow=`0 0 ${glowSize}px rgba(139,94,60,${glowOp})`;
+  ta.style.borderColor=`rgba(139,94,60,${borderOp})`;
+  ta.style.background=`rgba(139,94,60,${bgOp})`;
+
+  // Progressive haptic: interval from 800ms down to 150ms
+  const now=Date.now();
+  const vibInterval=800-progress*650;
+  if(now-earthLastVib>vibInterval){
+    const vibStr=Math.round(30+progress*120);
+    if(navigator.vibrate)navigator.vibrate(vibStr);
+    earthLastVib=now;
+    // Spawn pulse ring at intervals
+    spawnEarthPulse();
+  }
+
+  if(progress>=1){
+    triggerEarthquake();
+    return;
+  }
+
+  earthAnimFrame=requestAnimationFrame(earthChargeLoop);
+}
+
+function triggerEarthquake(){
+  earthQuaking=true;
+  const ta=document.getElementById('earthTouch');
+
+  // Strong vibration burst
+  if(navigator.vibrate)navigator.vibrate([200,80,300,80,200]);
+
+  // Screen shake
+  const page=document.getElementById('earth-page');
+  page.style.animation='screenShake 0.6s ease';
+  setTimeout(()=>{page.style.animation='';},700);
+
+  // Visual flash
+  ta.style.boxShadow='0 0 120px rgba(139,94,60,0.7)';
+  ta.style.borderColor='rgba(139,94,60,1)';
+  ta.style.background='rgba(139,94,60,0.35)';
+
+  // Drone peak
+  earthDrone.gain.gain.setValueAtTime(0.45,audioCtx.currentTime);
+  earthDrone.gain.gain.linearRampToValueAtTime(0.02,audioCtx.currentTime+1.5);
+
+  // Resume charging after 1.5s
+  setTimeout(()=>{
+    if(earthStartTime){earthAnimFrame=requestAnimationFrame(earthChargeLoop);}
+  },1500);
+}
+
 function earthTE(){
-  document.getElementById('earthTouch').classList.remove('active');
-  if(earthDrone)earthDrone.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.8);
-  if(earthHapticInterval){clearInterval(earthHapticInterval);earthHapticInterval=null;}
+  earthStartTime=null;earthQuaking=false;
+  if(earthAnimFrame){cancelAnimationFrame(earthAnimFrame);earthAnimFrame=null;}
   if(navigator.vibrate)navigator.vibrate(0);
+
+  const ta=document.getElementById('earthTouch');
+  ta.style.boxShadow='none';
+  ta.style.borderColor='rgba(139,94,60,0.25)';
+  ta.style.background='transparent';
+
+  if(earthDrone)earthDrone.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.5);
+
   showCue('earthCue');
 }
+
 function spawnEarthPulse(){
   const el=document.createElement('div');el.className='earth-pulse';
   const ta=document.getElementById('earthTouch');
@@ -864,11 +1065,14 @@ function spawnEarthPulse(){
   el.style.top=(r.top-pr.top+r.height/2-sz/2)+'px';
   earthPulseContainer.appendChild(el);setTimeout(()=>el.remove(),1000);
 }
+
 function cleanupEarth(){
+  earthStartTime=null;earthQuaking=false;
+  if(earthAnimFrame){cancelAnimationFrame(earthAnimFrame);earthAnimFrame=null;}
   if(earthDrone){earthDrone.osc1.stop();earthDrone.osc2.stop();earthDrone=null;}
-  if(earthHapticInterval){clearInterval(earthHapticInterval);earthHapticInterval=null;}
   if(navigator.vibrate)navigator.vibrate(0);
   const ta=document.getElementById('earthTouch');
+  ta.style.boxShadow='none';ta.style.borderColor='rgba(139,94,60,0.25)';ta.style.background='transparent';
   ta.removeEventListener('touchstart',earthTS);ta.removeEventListener('touchend',earthTE);ta.removeEventListener('touchcancel',earthTE);
 }
 
