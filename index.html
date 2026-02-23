@@ -262,49 +262,55 @@
     transform: translate(-50%, -50%); pointer-events: none; z-index: 1;
     transition: opacity 0.5s ease;
   }
-  /* Wood ambience pad */
-  .wood-pad {
-    position: relative; width: min(75vw, 260px); aspect-ratio: 1;
-    border: 1px solid rgba(76,153,76,0.25); border-radius: 4px;
-    overflow: hidden; touch-action: none;
+  /* Tree of life */
+  .tree-container {
+    position: relative; width: 100%; flex: 1;
+    max-width: 340px; max-height: 520px;
+  }
+  .tree-branches {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1;
+  }
+  .tree-leaf-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 5; overflow: hidden;
+  }
+  .tree-node {
+    position: absolute; width: clamp(42px, 12vw, 52px); height: clamp(42px, 12vw, 52px);
+    border: 1px solid rgba(76,153,76,0.3); border-radius: 50%;
+    background: rgba(76,153,76,0.06);
+    color: rgba(255,255,255,0.6); font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(0.6rem, 2.5vw, 0.72rem); cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transform: translate(-50%, -50%); z-index: 10;
+    transition: all 0.15s;
   }
-  .wood-pad.active {
-    border-color: rgba(76,153,76,0.5);
-    box-shadow: 0 0 30px rgba(76,153,76,0.1);
+  .tree-node:active {
+    background: rgba(76,153,76,0.3); border-color: rgba(76,153,76,0.7);
+    transform: translate(-50%, -50%) scale(0.92);
   }
-  .wood-pad-label {
-    font-family: 'Noto Serif SC', serif; font-weight: 900;
-    font-size: clamp(2rem, 8vw, 3rem); color: rgba(76,153,76,0.12);
-    pointer-events: none; user-select: none;
+  .tree-root {
+    position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%);
+    width: clamp(72px, 20vw, 88px); height: clamp(72px, 20vw, 88px);
+    border: 2px solid rgba(76,153,76,0.25); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10; cursor: pointer;
+    transition: all 0.3s ease;
   }
-  .leaf {
-    position: absolute; pointer-events: none;
-    animation: leafDrift 2.5s ease-out forwards;
+  .tree-root.active {
+    border-color: rgba(76,153,76,0.6);
+    box-shadow: 0 0 40px rgba(76,153,76,0.2);
+    background: rgba(76,153,76,0.08);
   }
-  .leaf svg { width: 16px; height: 16px; }
-  @keyframes leafDrift {
-    0% { opacity: 0.8; transform: translate(0, 0) rotate(0deg) scale(1); }
-    30% { opacity: 0.7; transform: translate(12px, -40px) rotate(45deg) scale(0.9); }
-    60% { opacity: 0.5; transform: translate(-8px, -90px) rotate(120deg) scale(0.7); }
-    100% { opacity: 0; transform: translate(15px, -160px) rotate(200deg) scale(0.4); }
+  .tree-root-cue {
+    opacity: 0.35; animation: thumbPulse 2.5s ease-in-out infinite;
+    transition: opacity 0.4s ease;
   }
-  /* wood ghost removed - using ambience pad */
-  .trigger-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: clamp(6px, 2vw, 10px); margin-top: clamp(10px, 2vh, 20px);
-    width: min(75vw, 260px);
+  .tree-root-cue svg { width: clamp(40px, 12vw, 52px); height: clamp(50px, 15vw, 65px); }
+  .tree-leaf {
+    position: absolute; pointer-events: none; z-index: 5;
   }
-  .trigger-btn {
-    aspect-ratio: 1.4; border: 1px solid rgba(76,153,76,0.3);
-    border-radius: 8px; background: rgba(76,153,76,0.08);
-    color: rgba(255,255,255,0.7); font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(0.65rem, 2.5vw, 0.75rem); cursor: pointer;
-    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
-  }
-  .trigger-btn:active { background: rgba(76,153,76,0.3); border-color: rgba(76,153,76,0.7); transform: scale(0.95); }
-  .trigger-btn.invite-glow { border-color: rgba(76,153,76,0.6); background: rgba(76,153,76,0.15); box-shadow: 0 0 12px rgba(76,153,76,0.15); }
+  .tree-leaf svg { width: 14px; height: 14px; }
 
   /* ═══════════════════════════════════
      WATER
@@ -506,16 +512,38 @@
   <button class="home-btn" onclick="goHome()">⌂</button>
   <div class="bg-char">木</div>
   <div class="interaction-area">
-    <div class="wood-pad" id="woodPad">
-      <span class="wood-pad-label">木</span>
-    </div>
-    <div class="trigger-grid">
-      <button class="trigger-btn" data-note="0">C</button>
-      <button class="trigger-btn" data-note="1">D♭</button>
-      <button class="trigger-btn" data-note="2">F</button>
-      <button class="trigger-btn" data-note="3">G</button>
-      <button class="trigger-btn" data-note="4">A♭</button>
-      <button class="trigger-btn" data-note="5">WB</button>
+    <div class="tree-container" id="treeContainer">
+      <!-- Branches SVG drawn by JS -->
+      <svg class="tree-branches" id="treeBranches" viewBox="0 0 300 500" preserveAspectRatio="xMidYMid meet"></svg>
+      <!-- Leaf container -->
+      <div class="tree-leaf-layer" id="treeLeafLayer"></div>
+      <!-- Marimba nodes -->
+      <button class="tree-node" id="tn0" style="left:22%;top:62%;" data-note="0">C</button>
+      <button class="tree-node" id="tn1" style="left:72%;top:57%;" data-note="1">D♭</button>
+      <button class="tree-node" id="tn2" style="left:12%;top:38%;" data-note="2">F</button>
+      <button class="tree-node" id="tn3" style="left:82%;top:34%;" data-note="3">G</button>
+      <button class="tree-node" id="tn4" style="left:32%;top:14%;" data-note="4">A♭</button>
+      <button class="tree-node" id="tn5" style="left:68%;top:18%;" data-note="5">WB</button>
+      <!-- Root -->
+      <div class="tree-root" id="woodRoot">
+        <div class="tree-root-cue cue-visible" id="woodCue">
+          <svg viewBox="0 0 64 80" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.1" stroke-linecap="round">
+            <path d="M18 70 C12 62 10 52 10 42 C10 22 18 10 32 8 C46 10 54 22 54 42 C54 52 52 62 46 70" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <path d="M20 60 C24 54 28 52 32 52 C36 52 40 54 44 60"/>
+            <path d="M18 56 C23 48 27 46 32 46 C37 46 41 48 46 56"/>
+            <path d="M17 51 C22 43 27 40 32 40 C37 40 42 43 47 51"/>
+            <path d="M17 46 C22 38 27 35 32 35 C37 35 42 38 47 46"/>
+            <path d="M24 40 C24 34 27 30 32 30 C37 30 40 34 40 40 C40 44 37 47 32 47 C27 47 24 44 24 40"/>
+            <path d="M27 39 C27 36 29 33 32 33 C35 33 37 36 37 39 C37 42 35 44 32 44 C29 44 27 42 27 39"/>
+            <path d="M18 40 C20 30 25 24 32 24 C39 24 44 30 46 40"/>
+            <path d="M16 36 C19 24 25 18 32 18 C39 18 45 24 48 36"/>
+            <path d="M15 32 C18 20 24 14 32 14 C40 14 46 20 49 32"/>
+            <path d="M16 28 C19 18 24 12 32 12 C40 12 45 18 48 28"/>
+            <path d="M32 68 L32 76" stroke="rgba(255,255,255,0.3)" stroke-width="1.3"/>
+            <path d="M28 73 L32 77 L36 73" stroke="rgba(255,255,255,0.3)" stroke-width="1.3" fill="none"/>
+          </svg>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -814,9 +842,9 @@ function cleanupMetal(){
 }
 
 // ═══════════════════════════════════
-// WOOD — MP3 XY pad + marimba/WB samples
+// WOOD — Tree of life
 // ═══════════════════════════════════
-let woodLoop=null,woodPadActive=false,woodGlowInterval=null,woodLeafInterval=null,woodBreathPhase=0,woodBreathFrame=null;
+let woodLoop=null,woodSynth=null,woodSynthLfo=null,woodSynthLfoGain=null,woodPadActive=false,woodLeafInterval=null,woodBreathPhase=0,woodBreathFrame=null,woodHoldStart=0;
 
 // Round robin config
 const WOOD_NOTES=[
@@ -829,87 +857,168 @@ const WOOD_NOTES=[
 ];
 let woodTapCounts=[0,0,0,0,0,0];
 
+// Node positions (% of container) for branch drawing
+const TREE_NODES=[
+  {x:22,y:62},{x:72,y:57},{x:12,y:38},{x:82,y:34},{x:32,y:14},{x:68,y:18}
+];
+const TREE_ROOT={x:50,y:94};
+
 function initWood(){
   woodTapCounts=[0,0,0,0,0,0];
+  showCue('woodCue');
+  drawBranches();
 
   // MP3 loop through filter
   woodLoop=playBufferWithChain('wood_long',true);
   if(woodLoop){woodLoop.filter.frequency.value=600;woodLoop.gain.gain.value=0;}
 
-  const pad=document.getElementById('woodPad');
+  // Sine synth bed with slow LFO (pulsing ember)
+  woodSynth=createDrone(88,'sine',2);
+  woodSynth.filter.frequency.value=600;woodSynth.gain.gain.value=0;
+  woodSynthLfo=audioCtx.createOscillator();
+  woodSynthLfoGain=audioCtx.createGain();
+  woodSynthLfo.type='sine';woodSynthLfo.frequency.value=0.15;
+  woodSynthLfoGain.gain.value=0.03;
+  woodSynthLfo.connect(woodSynthLfoGain);
+  woodSynthLfoGain.connect(woodSynth.gain.gain);
+  woodSynthLfo.start();
 
-  pad.addEventListener('touchstart',woodTS);
-  pad.addEventListener('touchend',woodTE);
-  pad.addEventListener('touchcancel',woodTE);
+  const root=document.getElementById('woodRoot');
+  root.addEventListener('touchstart',woodTS);
+  root.addEventListener('touchend',woodTE);
+  root.addEventListener('touchcancel',woodTE);
 
-  // Trigger buttons glow
-  const btns=document.querySelectorAll('#wood-page .trigger-btn');let gi=0;
-  woodGlowInterval=setInterval(()=>{btns.forEach(b=>b.classList.remove('invite-glow'));btns[gi].classList.add('invite-glow');gi=(gi+1)%btns.length;},600);
-
-  btns.forEach((b,i)=>{
-    b.addEventListener('touchstart',e=>{
+  // Marimba nodes
+  const nodes=document.querySelectorAll('#wood-page .tree-node');
+  nodes.forEach((n,i)=>{
+    n.addEventListener('touchstart',e=>{
       e.preventDefault();
-      if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;btns.forEach(bb=>bb.classList.remove('invite-glow'));}
       triggerWoodSample(i);
     });
   });
 }
 
+function drawBranches(){
+  const svg=document.getElementById('treeBranches');
+  const vw=300,vh=500;
+  const rx=TREE_ROOT.x/100*vw,ry=TREE_ROOT.y/100*vh;
+  let paths='';
+  // Trunk: root up to center split point
+  const trunkTop={x:vw/2,y:vh*0.52};
+  paths+=`<path d="M${rx} ${ry} Q${rx} ${ry-40} ${trunkTop.x} ${trunkTop.y}" stroke="rgba(76,153,76,0.15)" stroke-width="1.2" fill="none"/>`;
+  // Branches to each node
+  TREE_NODES.forEach(n=>{
+    const nx=n.x/100*vw,ny=n.y/100*vh;
+    // Control point: between trunk top and node, biased toward center
+    const cpx=(trunkTop.x+nx)/2+(Math.random()-0.5)*20;
+    const cpy=Math.min(trunkTop.y,ny)+(Math.abs(trunkTop.y-ny)*0.3);
+    paths+=`<path d="M${trunkTop.x} ${trunkTop.y} Q${cpx} ${cpy} ${nx} ${ny}" stroke="rgba(76,153,76,0.12)" stroke-width="0.8" fill="none"/>`;
+  });
+  svg.innerHTML=paths;
+}
+
 function woodTS(e){
   e.preventDefault();
-  woodPadActive=true;
-  const pad=document.getElementById('woodPad');
-  pad.classList.add('active');
+  woodPadActive=true;woodHoldStart=Date.now();
+  hideCue('woodCue');
+  const root=document.getElementById('woodRoot');
+  root.classList.add('active');
+
   if(woodLoop){
     woodLoop.gain.gain.setValueAtTime(woodLoop.gain.gain.value,audioCtx.currentTime);
-    woodLoop.gain.gain.linearRampToValueAtTime(0.35,audioCtx.currentTime+0.5);
+    woodLoop.gain.gain.linearRampToValueAtTime(0.35,audioCtx.currentTime+0.8);
   }
-  // Start leaves from touch point
-  const r=pad.getBoundingClientRect();
-  const tx=e.touches[0].clientX-r.left,ty=e.touches[0].clientY-r.top;
-  woodLeafInterval=setInterval(()=>spawnLeaf(pad,tx,ty),200);
-  spawnLeaf(pad,tx,ty);
-  // Start breathing filter
+  if(woodSynth){
+    woodSynth.gain.gain.setValueAtTime(0,audioCtx.currentTime);
+    woodSynth.gain.gain.linearRampToValueAtTime(0.06,audioCtx.currentTime+1.5);
+  }
+
+  // Start leaves — initial interval 300ms
+  woodLeafTick();
   woodBreathPhase=0;
   woodBreathLoop();
 }
 
+function woodLeafTick(){
+  if(!woodPadActive)return;
+  // Density increases: 300ms → 80ms over 10 seconds
+  const elapsed=Date.now()-woodHoldStart;
+  const progress=Math.min(elapsed/10000,1);
+  const interval=300-progress*220;
+  spawnTreeLeaf();
+  woodLeafInterval=setTimeout(woodLeafTick,interval);
+}
+
 function woodTE(){
   woodPadActive=false;
-  const pad=document.getElementById('woodPad');
-  pad.classList.remove('active');
+  const root=document.getElementById('woodRoot');
+  root.classList.remove('active');
+  showCue('woodCue');
   if(woodLoop)woodLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
-  if(woodLeafInterval){clearInterval(woodLeafInterval);woodLeafInterval=null;}
+  if(woodSynth)woodSynth.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.5);
+  if(woodLeafInterval){clearTimeout(woodLeafInterval);woodLeafInterval=null;}
   if(woodBreathFrame){cancelAnimationFrame(woodBreathFrame);woodBreathFrame=null;}
 }
 
 function woodBreathLoop(){
   if(!woodPadActive||!woodLoop)return;
   woodBreathPhase+=0.008;
-  // Slow sine breath: filter sweeps between 300 and 2500Hz
   const freq=1400+1100*Math.sin(woodBreathPhase);
   woodLoop.filter.frequency.setTargetAtTime(freq,audioCtx.currentTime,0.1);
+  if(woodSynth)woodSynth.filter.frequency.setTargetAtTime(freq*0.5,audioCtx.currentTime,0.1);
   woodBreathFrame=requestAnimationFrame(woodBreathLoop);
 }
 
-function spawnLeaf(container,cx,cy){
+function spawnTreeLeaf(){
+  const layer=document.getElementById('treeLeafLayer');
+  const container=document.getElementById('treeContainer');
+  if(!container||!layer)return;
+  const cw=container.clientWidth,ch=container.clientHeight;
+
+  // Spawn from root rim (randomize around the edge of the root circle)
+  const rootCx=cw*0.5,rootCy=ch*0.94;
+  const angle=Math.random()*Math.PI*2;
+  const rootR=40;
+  const sx=rootCx+Math.cos(angle)*rootR;
+  const sy=rootCy+Math.sin(angle)*rootR;
+
+  // Target: pick a random node or just above center
+  const target=TREE_NODES[Math.floor(Math.random()*TREE_NODES.length)];
+  const tx=(target.x/100)*cw,ty=(target.y/100)*ch;
+  const dx=tx-sx,dy=ty-sy;
+  // Add randomness to path
+  const sway=(Math.random()-0.5)*60;
+  const dur=2.5+Math.random()*1.5;
+
   const leaf=document.createElement('div');
-  leaf.className='leaf';
-  // Randomize position around touch point
-  const ox=(Math.random()-0.5)*40;
-  const oy=(Math.random()-0.5)*20;
-  leaf.style.left=(cx+ox)+'px';leaf.style.top=(cy+oy)+'px';
-  // Random drift direction
-  const drift=(Math.random()-0.5)*60;
-  leaf.style.animationDuration=(2+Math.random()*1.5)+'s';
-  leaf.innerHTML=`<svg viewBox="0 0 20 20" fill="rgba(76,153,76,${0.3+Math.random()*0.3})" stroke="rgba(76,153,76,0.4)" stroke-width="0.5">
+  leaf.className='tree-leaf';
+  leaf.style.left=sx+'px';leaf.style.top=sy+'px';
+  leaf.innerHTML=`<svg viewBox="0 0 20 20" fill="rgba(76,153,76,${0.3+Math.random()*0.35})" stroke="rgba(76,153,76,0.3)" stroke-width="0.5">
     <path d="M10 2 C6 6 3 10 4 14 C5 18 9 19 10 19 C11 19 15 18 16 14 C17 10 14 6 10 2Z"/>
-    <path d="M10 5 L10 17" fill="none" stroke="rgba(76,153,76,0.3)" stroke-width="0.4"/>
-    <path d="M10 8 L7 11" fill="none" stroke="rgba(76,153,76,0.2)" stroke-width="0.3"/>
-    <path d="M10 10 L13 13" fill="none" stroke="rgba(76,153,76,0.2)" stroke-width="0.3"/>
+    <path d="M10 5 L10 17" fill="none" stroke="rgba(76,153,76,0.25)" stroke-width="0.4"/>
   </svg>`;
-  container.appendChild(leaf);
-  setTimeout(()=>leaf.remove(),3000);
+
+  // Animate with JS for full path control
+  const startTime=performance.now();
+  const rot=Math.random()*360;
+  const rotSpeed=120+Math.random()*180;
+
+  function animLeaf(now){
+    const t=Math.min((now-startTime)/(dur*1000),1);
+    const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    const cx=sx+dx*ease+sway*Math.sin(t*Math.PI*2);
+    const cy=sy+dy*ease;
+    const r=rot+rotSpeed*t;
+    const op=t<0.15?t/0.15:(t>0.7?Math.max(0,(1-t)/0.3):1);
+    const sc=0.6+0.4*(1-t);
+    leaf.style.transform=`translate(-50%,-50%) rotate(${r}deg) scale(${sc})`;
+    leaf.style.left=cx+'px';leaf.style.top=cy+'px';
+    leaf.style.opacity=op*0.7;
+    if(t<1)requestAnimationFrame(animLeaf);
+    else leaf.remove();
+  }
+  layer.appendChild(leaf);
+  requestAnimationFrame(animLeaf);
 }
 
 function triggerWoodSample(idx){
@@ -931,15 +1040,21 @@ function cleanupWood(){
     woodLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
     setTimeout(()=>{try{woodLoop.source.stop();}catch(e){}woodLoop=null;},200);
   }else{woodLoop=null;}
-  if(woodLeafInterval){clearInterval(woodLeafInterval);woodLeafInterval=null;}
+  if(woodSynth){
+    woodSynth.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
+    if(woodSynthLfo)try{woodSynthLfo.stop();}catch(e){}
+    setTimeout(()=>{try{woodSynth.osc1.stop();woodSynth.osc2.stop();}catch(e){}woodSynth=null;woodSynthLfo=null;woodSynthLfoGain=null;},200);
+  }else{woodSynth=null;woodSynthLfo=null;woodSynthLfoGain=null;}
+  if(woodLeafInterval){clearTimeout(woodLeafInterval);woodLeafInterval=null;}
   if(woodBreathFrame){cancelAnimationFrame(woodBreathFrame);woodBreathFrame=null;}
-  if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;}
-  document.querySelectorAll('#wood-page .trigger-btn').forEach(b=>b.classList.remove('invite-glow'));
-  const pad=document.getElementById('woodPad');
-  pad.classList.remove('active');
-  pad.removeEventListener('touchstart',woodTS);
-  pad.removeEventListener('touchend',woodTE);
-  pad.removeEventListener('touchcancel',woodTE);
+  const root=document.getElementById('woodRoot');
+  root.classList.remove('active');
+  root.removeEventListener('touchstart',woodTS);
+  root.removeEventListener('touchend',woodTE);
+  root.removeEventListener('touchcancel',woodTE);
+  // Clear leaves
+  const layer=document.getElementById('treeLeafLayer');
+  if(layer)layer.innerHTML='';
 }
 
 // ═══════════════════════════════════
