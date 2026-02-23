@@ -262,13 +262,35 @@
     transform: translate(-50%, -50%); pointer-events: none; z-index: 1;
     transition: opacity 0.5s ease;
   }
-  .wood-ghost { animation: woodGhostMove 4s ease-in-out infinite; }
-  @keyframes woodGhostMove {
-    0% { left: 50%; top: 50%; } 15% { left: 25%; top: 30%; }
-    30% { left: 70%; top: 25%; } 50% { left: 75%; top: 65%; }
-    70% { left: 30%; top: 70%; } 85% { left: 40%; top: 40%; }
-    100% { left: 50%; top: 50%; }
+  /* Wood ambience pad */
+  .wood-pad {
+    position: relative; width: min(75vw, 260px); aspect-ratio: 1;
+    border: 1px solid rgba(76,153,76,0.25); border-radius: 4px;
+    overflow: hidden; touch-action: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
+  .wood-pad.active {
+    border-color: rgba(76,153,76,0.5);
+    box-shadow: 0 0 30px rgba(76,153,76,0.1);
+  }
+  .wood-pad-label {
+    font-family: 'Noto Serif SC', serif; font-weight: 900;
+    font-size: clamp(2rem, 8vw, 3rem); color: rgba(76,153,76,0.12);
+    pointer-events: none; user-select: none;
+  }
+  .leaf {
+    position: absolute; pointer-events: none;
+    animation: leafDrift 2.5s ease-out forwards;
+  }
+  .leaf svg { width: 16px; height: 16px; }
+  @keyframes leafDrift {
+    0% { opacity: 0.8; transform: translate(0, 0) rotate(0deg) scale(1); }
+    30% { opacity: 0.7; transform: translate(12px, -40px) rotate(45deg) scale(0.9); }
+    60% { opacity: 0.5; transform: translate(-8px, -90px) rotate(120deg) scale(0.7); }
+    100% { opacity: 0; transform: translate(15px, -160px) rotate(200deg) scale(0.4); }
+  }
+  /* wood ghost removed - using ambience pad */
   .trigger-grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: clamp(6px, 2vw, 10px); margin-top: clamp(10px, 2vh, 20px);
@@ -484,9 +506,8 @@
   <button class="home-btn" onclick="goHome()">⌂</button>
   <div class="bg-char">木</div>
   <div class="interaction-area">
-    <div class="xy-pad" id="woodPad">
-      <div class="crosshair" id="woodCrosshair"></div>
-      <div class="ghost-cursor wood-ghost" id="woodGhost"></div>
+    <div class="wood-pad" id="woodPad">
+      <span class="wood-pad-label">木</span>
     </div>
     <div class="trigger-grid">
       <button class="trigger-btn" data-note="0">C</button>
@@ -795,9 +816,9 @@ function cleanupMetal(){
 // ═══════════════════════════════════
 // WOOD — MP3 XY pad + marimba/WB samples
 // ═══════════════════════════════════
-let woodLoop=null,woodPadActive=false,woodGlowInterval=null;
+let woodLoop=null,woodPadActive=false,woodGlowInterval=null,woodLeafInterval=null,woodBreathPhase=0,woodBreathFrame=null;
 
-// Round robin config: [samples[], defaultKey, defaultCount]
+// Round robin config
 const WOOD_NOTES=[
   {keys:['C2','C3','C4','C5','C6'], def:'C3', defCount:2},
   {keys:['Db2','Db3','Db4','Db5'], def:'Db3', defCount:2},
@@ -811,32 +832,15 @@ let woodTapCounts=[0,0,0,0,0,0];
 function initWood(){
   woodTapCounts=[0,0,0,0,0,0];
 
-  // XY pad with MP3 loop
+  // MP3 loop through filter
   woodLoop=playBufferWithChain('wood_long',true);
-  if(woodLoop){woodLoop.filter.frequency.value=300;woodLoop.gain.gain.value=0;}
+  if(woodLoop){woodLoop.filter.frequency.value=600;woodLoop.gain.gain.value=0;}
 
-  const pad=document.getElementById('woodPad'),cross=document.getElementById('woodCrosshair'),ghost=document.getElementById('woodGhost');
-  ghost.style.opacity='1';
+  const pad=document.getElementById('woodPad');
 
-  const mv=(x,y)=>{
-    const r=pad.getBoundingClientRect();
-    const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));
-    cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';
-    // Log filter: 200Hz to 4000Hz
-    const logFreq=200*Math.pow(20,nx);
-    // Log volume with floor
-    const vol=Math.max(0.05,Math.pow(1-ny,2)*0.35);
-    if(woodLoop){
-      woodLoop.filter.frequency.setTargetAtTime(logFreq,audioCtx.currentTime,0.05);
-      woodLoop.gain.gain.setTargetAtTime(vol,audioCtx.currentTime,0.05);
-    }
-  };
-  pad.addEventListener('touchstart',e=>{e.preventDefault();woodPadActive=true;ghost.style.opacity='0';mv(e.touches[0].clientX,e.touches[0].clientY);});
-  pad.addEventListener('touchmove',e=>{e.preventDefault();if(woodPadActive)mv(e.touches[0].clientX,e.touches[0].clientY);});
-  pad.addEventListener('touchend',()=>{
-    woodPadActive=false;cross.style.left='50%';cross.style.top='50%';
-    if(woodLoop)woodLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
-  });
+  pad.addEventListener('touchstart',woodTS);
+  pad.addEventListener('touchend',woodTE);
+  pad.addEventListener('touchcancel',woodTE);
 
   // Trigger buttons glow
   const btns=document.querySelectorAll('#wood-page .trigger-btn');let gi=0;
@@ -849,6 +853,63 @@ function initWood(){
       triggerWoodSample(i);
     });
   });
+}
+
+function woodTS(e){
+  e.preventDefault();
+  woodPadActive=true;
+  const pad=document.getElementById('woodPad');
+  pad.classList.add('active');
+  if(woodLoop){
+    woodLoop.gain.gain.setValueAtTime(woodLoop.gain.gain.value,audioCtx.currentTime);
+    woodLoop.gain.gain.linearRampToValueAtTime(0.35,audioCtx.currentTime+0.5);
+  }
+  // Start leaves from touch point
+  const r=pad.getBoundingClientRect();
+  const tx=e.touches[0].clientX-r.left,ty=e.touches[0].clientY-r.top;
+  woodLeafInterval=setInterval(()=>spawnLeaf(pad,tx,ty),200);
+  spawnLeaf(pad,tx,ty);
+  // Start breathing filter
+  woodBreathPhase=0;
+  woodBreathLoop();
+}
+
+function woodTE(){
+  woodPadActive=false;
+  const pad=document.getElementById('woodPad');
+  pad.classList.remove('active');
+  if(woodLoop)woodLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
+  if(woodLeafInterval){clearInterval(woodLeafInterval);woodLeafInterval=null;}
+  if(woodBreathFrame){cancelAnimationFrame(woodBreathFrame);woodBreathFrame=null;}
+}
+
+function woodBreathLoop(){
+  if(!woodPadActive||!woodLoop)return;
+  woodBreathPhase+=0.008;
+  // Slow sine breath: filter sweeps between 300 and 2500Hz
+  const freq=1400+1100*Math.sin(woodBreathPhase);
+  woodLoop.filter.frequency.setTargetAtTime(freq,audioCtx.currentTime,0.1);
+  woodBreathFrame=requestAnimationFrame(woodBreathLoop);
+}
+
+function spawnLeaf(container,cx,cy){
+  const leaf=document.createElement('div');
+  leaf.className='leaf';
+  // Randomize position around touch point
+  const ox=(Math.random()-0.5)*40;
+  const oy=(Math.random()-0.5)*20;
+  leaf.style.left=(cx+ox)+'px';leaf.style.top=(cy+oy)+'px';
+  // Random drift direction
+  const drift=(Math.random()-0.5)*60;
+  leaf.style.animationDuration=(2+Math.random()*1.5)+'s';
+  leaf.innerHTML=`<svg viewBox="0 0 20 20" fill="rgba(76,153,76,${0.3+Math.random()*0.3})" stroke="rgba(76,153,76,0.4)" stroke-width="0.5">
+    <path d="M10 2 C6 6 3 10 4 14 C5 18 9 19 10 19 C11 19 15 18 16 14 C17 10 14 6 10 2Z"/>
+    <path d="M10 5 L10 17" fill="none" stroke="rgba(76,153,76,0.3)" stroke-width="0.4"/>
+    <path d="M10 8 L7 11" fill="none" stroke="rgba(76,153,76,0.2)" stroke-width="0.3"/>
+    <path d="M10 10 L13 13" fill="none" stroke="rgba(76,153,76,0.2)" stroke-width="0.3"/>
+  </svg>`;
+  container.appendChild(leaf);
+  setTimeout(()=>leaf.remove(),3000);
 }
 
 function triggerWoodSample(idx){
@@ -865,12 +926,20 @@ function triggerWoodSample(idx){
 }
 
 function cleanupWood(){
+  woodPadActive=false;
   if(woodLoop){
     woodLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
     setTimeout(()=>{try{woodLoop.source.stop();}catch(e){}woodLoop=null;},200);
   }else{woodLoop=null;}
+  if(woodLeafInterval){clearInterval(woodLeafInterval);woodLeafInterval=null;}
+  if(woodBreathFrame){cancelAnimationFrame(woodBreathFrame);woodBreathFrame=null;}
   if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;}
   document.querySelectorAll('#wood-page .trigger-btn').forEach(b=>b.classList.remove('invite-glow'));
+  const pad=document.getElementById('woodPad');
+  pad.classList.remove('active');
+  pad.removeEventListener('touchstart',woodTS);
+  pad.removeEventListener('touchend',woodTE);
+  pad.removeEventListener('touchcancel',woodTE);
 }
 
 // ═══════════════════════════════════
@@ -993,7 +1062,7 @@ function cleanupWater(){
 let fireLoop=null,firePadActive=false,fireLastSwipe=0;
 function initFire(){
   fireLoop=playBufferWithChain('fire_long',true);
-  if(fireLoop){fireLoop.filter.frequency.value=400;fireLoop.gain.gain.value=0;}
+  if(fireLoop){fireLoop.filter.frequency.value=400;fireLoop.filter.Q.value=1;fireLoop.gain.gain.value=0;}
 
   const pad=document.getElementById('firePad'),cross=document.getElementById('fireCrosshair');
   const ghost=document.getElementById('fireGhost'),swipeGhost=document.getElementById('fireSwipeGhost');
@@ -1003,19 +1072,25 @@ function initFire(){
     const r=pad.getBoundingClientRect();
     const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));
     cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';
-    // Log filter: 300Hz to 6000Hz
+    // Log filter cutoff: 300Hz to 6000Hz
     const logFreq=300*Math.pow(20,nx);
-    // Log volume with floor
-    const vol=Math.max(0.05,Math.pow(1-ny,2)*0.3);
+    // Y = resonance (Q): top=1, bottom=18
+    const q=1+(1-ny)*17;
+    // Constant volume
     if(fireLoop){
       fireLoop.filter.frequency.setTargetAtTime(logFreq,audioCtx.currentTime,0.05);
-      fireLoop.gain.gain.setTargetAtTime(vol,audioCtx.currentTime,0.05);
+      fireLoop.filter.Q.setTargetAtTime(q,audioCtx.currentTime,0.05);
+      fireLoop.gain.gain.setTargetAtTime(0.3,audioCtx.currentTime,0.05);
     }
+    // Red glow: intensity based on average of both axes
+    const intensity=(nx+(1-ny))/2;
+    pad.style.background=`rgba(220,60,40,${intensity*0.4})`;
   };
   pad.addEventListener('touchstart',e=>{e.preventDefault();firePadActive=true;ghost.style.opacity='0';mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchmove',e=>{e.preventDefault();if(firePadActive)mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchend',()=>{
     firePadActive=false;cross.style.left='50%';cross.style.top='50%';
+    pad.style.background='transparent';
     if(fireLoop)fireLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
   });
 
@@ -1044,6 +1119,8 @@ function cleanupFire(){
     fireLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
     setTimeout(()=>{try{fireLoop.source.stop();}catch(e){}fireLoop=null;},200);
   }else{fireLoop=null;}
+  const pad=document.getElementById('firePad');
+  if(pad)pad.style.background='transparent';
 }
 
 // ═══════════════════════════════════
