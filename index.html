@@ -795,7 +795,7 @@ function cleanupMetal(){
 // ═══════════════════════════════════
 // WOOD — MP3 XY pad + marimba/WB samples
 // ═══════════════════════════════════
-let woodLoop=null,woodPadActive=false,woodGlowInterval=null;
+let woodLoop=null,woodSynth=null,woodPadActive=false,woodGlowInterval=null;
 
 // Round robin config: [samples[], defaultKey, defaultCount]
 const WOOD_NOTES=[
@@ -815,22 +815,37 @@ function initWood(){
   woodLoop=playBufferWithChain('wood_long',true);
   if(woodLoop){woodLoop.filter.frequency.value=300;woodLoop.gain.gain.value=0;}
 
+  // Square wave synth bed (very quiet)
+  woodSynth=createDrone(110,'square',5);
+  woodSynth.filter.frequency.value=300;woodSynth.gain.gain.value=0;
+
   const pad=document.getElementById('woodPad'),cross=document.getElementById('woodCrosshair'),ghost=document.getElementById('woodGhost');
   ghost.style.opacity='1';
 
   const mv=(x,y)=>{
-    if(!woodLoop)return;
     const r=pad.getBoundingClientRect();
     const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));
     cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';
-    woodLoop.filter.frequency.value=200+nx*4000;
-    woodLoop.gain.gain.setTargetAtTime((1-ny)*0.35,audioCtx.currentTime,0.05);
+    // Log filter: 200Hz to 4000Hz
+    const logFreq=200*Math.pow(20,nx);
+    // Log volume with floor
+    const vol=Math.max(0.05,Math.pow(1-ny,2)*0.35);
+    const synthVol=Math.max(0.02,Math.pow(1-ny,2)*0.08);
+    if(woodLoop){
+      woodLoop.filter.frequency.setTargetAtTime(logFreq,audioCtx.currentTime,0.05);
+      woodLoop.gain.gain.setTargetAtTime(vol,audioCtx.currentTime,0.05);
+    }
+    if(woodSynth){
+      woodSynth.filter.frequency.setTargetAtTime(logFreq,audioCtx.currentTime,0.05);
+      woodSynth.gain.gain.setTargetAtTime(synthVol,audioCtx.currentTime,0.05);
+    }
   };
   pad.addEventListener('touchstart',e=>{e.preventDefault();woodPadActive=true;ghost.style.opacity='0';mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchmove',e=>{e.preventDefault();if(woodPadActive)mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchend',()=>{
     woodPadActive=false;cross.style.left='50%';cross.style.top='50%';
     if(woodLoop)woodLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
+    if(woodSynth)woodSynth.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
   });
 
   // Trigger buttons glow
@@ -864,6 +879,10 @@ function cleanupWood(){
     woodLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
     setTimeout(()=>{try{woodLoop.source.stop();}catch(e){}woodLoop=null;},200);
   }else{woodLoop=null;}
+  if(woodSynth){
+    woodSynth.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
+    setTimeout(()=>{try{woodSynth.osc1.stop();woodSynth.osc2.stop();}catch(e){}woodSynth=null;},200);
+  }else{woodSynth=null;}
   if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;}
   document.querySelectorAll('#wood-page .trigger-btn').forEach(b=>b.classList.remove('invite-glow'));
 }
@@ -871,7 +890,7 @@ function cleanupWood(){
 // ═══════════════════════════════════
 // WATER — MP3 loop, clamped tilt
 // ═══════════════════════════════════
-let waterLoop=null,waterLfo=null,waterLfoGain=null,waterOrientHandler=null,waterReady=false,waterDelayTimer=null,waterBaseAlpha=null;
+let waterLoop=null,waterSynth=null,waterLfo=null,waterLfoGain=null,waterOrientHandler=null,waterReady=false,waterDelayTimer=null,waterBaseAlpha=null;
 const BETA_NEUTRAL=60,TILT_CLAMP=50,ROLL_CLAMP=50,SPIN_CLAMP=60;
 
 function initWater(){
@@ -895,6 +914,10 @@ function initWater(){
     waterLfo.start();
   }
 
+  // Triangle wave synth bed (very quiet)
+  waterSynth=createDrone(80,'triangle',3);
+  waterSynth.filter.frequency.value=800;waterSynth.gain.gain.value=0;
+
   const readout=document.getElementById('waterReadout');
   const vB=document.getElementById('tiltBeta'),vG=document.getElementById('tiltGamma'),vA=document.getElementById('tiltAlpha');
   const level=document.getElementById('spiritLevel');
@@ -904,6 +927,10 @@ function initWater(){
     if(waterLoop){
       waterLoop.gain.gain.setValueAtTime(0,audioCtx.currentTime);
       waterLoop.gain.gain.linearRampToValueAtTime(0.35,audioCtx.currentTime+2.0);
+    }
+    if(waterSynth){
+      waterSynth.gain.gain.setValueAtTime(0,audioCtx.currentTime);
+      waterSynth.gain.gain.linearRampToValueAtTime(0.06,audioCtx.currentTime+2.0);
     }
     readout.style.opacity='1';
   },1000);
@@ -939,6 +966,8 @@ function initWater(){
     waterLoop.filter.frequency.setTargetAtTime(200+ny*4000,audioCtx.currentTime,0.1);
     // Spin → LFO speed
     if(waterLfo)waterLfo.frequency.setTargetAtTime(0.1+nz*6,audioCtx.currentTime,0.1);
+    // Synth bed follows filter
+    if(waterSynth)waterSynth.filter.frequency.setTargetAtTime(200+ny*4000,audioCtx.currentTime,0.1);
   };
   window.addEventListener('deviceorientation',waterOrientHandler);
 
@@ -966,33 +995,52 @@ function cleanupWater(){
     if(waterLfo)try{waterLfo.stop();}catch(e){}
     setTimeout(()=>{try{waterLoop.source.stop();}catch(e){}waterLoop=null;waterLfo=null;waterLfoGain=null;},350);
   }else{waterLoop=null;waterLfo=null;waterLfoGain=null;}
+  if(waterSynth){
+    waterSynth.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
+    setTimeout(()=>{try{waterSynth.osc1.stop();waterSynth.osc2.stop();}catch(e){}waterSynth=null;},350);
+  }else{waterSynth=null;}
 }
 
 // ═══════════════════════════════════
 // FIRE — MP3 XY pad + synth swipe
 // ═══════════════════════════════════
-let fireLoop=null,firePadActive=false,fireLastSwipe=0;
+let fireLoop=null,fireSynth=null,firePadActive=false,fireLastSwipe=0;
 function initFire(){
   fireLoop=playBufferWithChain('fire_long',true);
   if(fireLoop){fireLoop.filter.frequency.value=400;fireLoop.gain.gain.value=0;}
+
+  // Sawtooth synth bed (very quiet)
+  fireSynth=createDrone(150,'sawtooth',8);
+  fireSynth.filter.frequency.value=400;fireSynth.gain.gain.value=0;
 
   const pad=document.getElementById('firePad'),cross=document.getElementById('fireCrosshair');
   const ghost=document.getElementById('fireGhost'),swipeGhost=document.getElementById('fireSwipeGhost');
   ghost.style.opacity='1';swipeGhost.style.opacity='1';
 
   const mv=(x,y)=>{
-    if(!fireLoop)return;
     const r=pad.getBoundingClientRect();
     const nx=Math.max(0,Math.min(1,(x-r.left)/r.width)),ny=Math.max(0,Math.min(1,(y-r.top)/r.height));
     cross.style.left=(nx*100)+'%';cross.style.top=(ny*100)+'%';
-    fireLoop.filter.frequency.setTargetAtTime(300+nx*4000,audioCtx.currentTime,0.05);
-    fireLoop.gain.gain.setTargetAtTime((1-ny)*0.3,audioCtx.currentTime,0.05);
+    // Log filter: 300Hz to 6000Hz
+    const logFreq=300*Math.pow(20,nx);
+    // Log volume with floor
+    const vol=Math.max(0.05,Math.pow(1-ny,2)*0.3);
+    const synthVol=Math.max(0.02,Math.pow(1-ny,2)*0.07);
+    if(fireLoop){
+      fireLoop.filter.frequency.setTargetAtTime(logFreq,audioCtx.currentTime,0.05);
+      fireLoop.gain.gain.setTargetAtTime(vol,audioCtx.currentTime,0.05);
+    }
+    if(fireSynth){
+      fireSynth.filter.frequency.setTargetAtTime(logFreq,audioCtx.currentTime,0.05);
+      fireSynth.gain.gain.setTargetAtTime(synthVol,audioCtx.currentTime,0.05);
+    }
   };
   pad.addEventListener('touchstart',e=>{e.preventDefault();firePadActive=true;ghost.style.opacity='0';mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchmove',e=>{e.preventDefault();if(firePadActive)mv(e.touches[0].clientX,e.touches[0].clientY);});
   pad.addEventListener('touchend',()=>{
     firePadActive=false;cross.style.left='50%';cross.style.top='50%';
     if(fireLoop)fireLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
+    if(fireSynth)fireSynth.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
   });
 
   const sa=document.getElementById('fireSwipeArea');let ss=null;
@@ -1020,6 +1068,10 @@ function cleanupFire(){
     fireLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
     setTimeout(()=>{try{fireLoop.source.stop();}catch(e){}fireLoop=null;},200);
   }else{fireLoop=null;}
+  if(fireSynth){
+    fireSynth.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
+    setTimeout(()=>{try{fireSynth.osc1.stop();fireSynth.osc2.stop();}catch(e){}fireSynth=null;},200);
+  }else{fireSynth=null;}
 }
 
 // ═══════════════════════════════════
