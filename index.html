@@ -277,22 +277,26 @@
   }
   .tree-node {
     position: absolute; width: clamp(42px, 12vw, 52px); height: clamp(42px, 12vw, 52px);
-    border: 1px solid rgba(76,153,76,0.3); border-radius: 50%;
+    border: 1px solid rgba(76,153,76,0.3); border-radius: 4px;
     background: rgba(76,153,76,0.06);
     color: rgba(255,255,255,0.6); font-family: 'Cormorant Garamond', serif;
     font-size: clamp(0.6rem, 2.5vw, 0.72rem); cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transform: translate(-50%, -50%); z-index: 10;
-    transition: all 0.15s;
+    transition: all 0.2s;
   }
   .tree-node:active {
     background: rgba(76,153,76,0.3); border-color: rgba(76,153,76,0.7);
     transform: translate(-50%, -50%) scale(0.92);
   }
+  .tree-node.invite-glow {
+    border-color: rgba(76,153,76,0.6); background: rgba(76,153,76,0.15);
+    box-shadow: 0 0 12px rgba(76,153,76,0.15);
+  }
   .tree-root {
     position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%);
     width: clamp(72px, 20vw, 88px); height: clamp(72px, 20vw, 88px);
-    border: 2px solid rgba(76,153,76,0.25); border-radius: 50%;
+    border: 2px solid rgba(76,153,76,0.25); border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
     z-index: 10; cursor: pointer;
     transition: all 0.3s ease;
@@ -844,7 +848,8 @@ function cleanupMetal(){
 // ═══════════════════════════════════
 // WOOD — Tree of life
 // ═══════════════════════════════════
-let woodLoop=null,woodSynth=null,woodSynthLfo=null,woodSynthLfoGain=null,woodPadActive=false,woodLeafInterval=null,woodBreathPhase=0,woodBreathFrame=null,woodHoldStart=0;
+let woodLoop=null,woodSynth=null,woodSynthLfo=null,woodSynthLfoGain=null,woodPadActive=false,woodLeafInterval=null,woodBreathPhase=0,woodBreathFrame=null,woodHoldStart=0,woodGlowInterval=null,woodGlowDeck=[],woodGlowStopped=false;
+let leafTargetDeck=[],leafTargetIdx=0;
 
 // Round robin config
 const WOOD_NOTES=[
@@ -862,9 +867,31 @@ const TREE_NODES=[
   {x:22,y:62},{x:72,y:57},{x:12,y:38},{x:82,y:34},{x:32,y:14},{x:68,y:18}
 ];
 const TREE_ROOT={x:50,y:94};
+const TREE_TRUNK_TOP={x:50,y:52};
+
+// Branch control points (stored after drawing for leaf paths)
+let branchPaths=[];
+
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function nextGlowIndex(){
+  if(woodGlowDeck.length===0)woodGlowDeck=shuffleArray([0,1,2,3,4,5]);
+  return woodGlowDeck.shift();
+}
+
+function nextLeafTarget(){
+  if(leafTargetIdx>=leafTargetDeck.length){leafTargetDeck=shuffleArray([0,1,2,3,4,5]);leafTargetIdx=0;}
+  return leafTargetDeck[leafTargetIdx++];
+}
 
 function initWood(){
   woodTapCounts=[0,0,0,0,0,0];
+  woodGlowStopped=false;
+  leafTargetDeck=shuffleArray([0,1,2,3,4,5]);leafTargetIdx=0;
   showCue('woodCue');
   drawBranches();
 
@@ -893,28 +920,57 @@ function initWood(){
   nodes.forEach((n,i)=>{
     n.addEventListener('touchstart',e=>{
       e.preventDefault();
+      // Stop glow permanently on first tap
+      if(!woodGlowStopped){
+        woodGlowStopped=true;
+        if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;}
+        nodes.forEach(nn=>nn.classList.remove('invite-glow'));
+      }
       triggerWoodSample(i);
     });
   });
+
+  // Start shuffled glow cycling
+  woodGlowDeck=[];
+  let currentGlow=-1;
+  woodGlowInterval=setInterval(()=>{
+    if(woodGlowStopped)return;
+    nodes.forEach(nn=>nn.classList.remove('invite-glow'));
+    currentGlow=nextGlowIndex();
+    nodes[currentGlow].classList.add('invite-glow');
+  },600);
 }
 
 function drawBranches(){
   const svg=document.getElementById('treeBranches');
   const vw=300,vh=500;
   const rx=TREE_ROOT.x/100*vw,ry=TREE_ROOT.y/100*vh;
+  const ttx=TREE_TRUNK_TOP.x/100*vw,tty=TREE_TRUNK_TOP.y/100*vh;
   let paths='';
-  // Trunk: root up to center split point
-  const trunkTop={x:vw/2,y:vh*0.52};
-  paths+=`<path d="M${rx} ${ry} Q${rx} ${ry-40} ${trunkTop.x} ${trunkTop.y}" stroke="rgba(76,153,76,0.15)" stroke-width="1.2" fill="none"/>`;
+  branchPaths=[];
+
+  // Trunk
+  paths+=`<path d="M${rx} ${ry} Q${rx} ${ry-40} ${ttx} ${tty}" stroke="rgba(76,153,76,0.15)" stroke-width="1.2" fill="none"/>`;
+
   // Branches to each node
-  TREE_NODES.forEach(n=>{
+  TREE_NODES.forEach((n,i)=>{
     const nx=n.x/100*vw,ny=n.y/100*vh;
-    // Control point: between trunk top and node, biased toward center
-    const cpx=(trunkTop.x+nx)/2+(Math.random()-0.5)*20;
-    const cpy=Math.min(trunkTop.y,ny)+(Math.abs(trunkTop.y-ny)*0.3);
-    paths+=`<path d="M${trunkTop.x} ${trunkTop.y} Q${cpx} ${cpy} ${nx} ${ny}" stroke="rgba(76,153,76,0.12)" stroke-width="0.8" fill="none"/>`;
+    const cpx=(ttx+nx)/2+(((i%3)-1)*15);
+    const cpy=Math.min(tty,ny)+(Math.abs(tty-ny)*0.3);
+    paths+=`<path d="M${ttx} ${tty} Q${cpx} ${cpy} ${nx} ${ny}" stroke="rgba(76,153,76,0.12)" stroke-width="0.8" fill="none"/>`;
+    // Store control points for leaf path sampling
+    branchPaths.push({sx:ttx,sy:tty,cpx,cpy,ex:nx,ey:ny});
   });
   svg.innerHTML=paths;
+}
+
+// Quadratic bezier point at parameter t
+function bezierPt(sx,sy,cpx,cpy,ex,ey,t){
+  const u=1-t;
+  return{
+    x:u*u*sx+2*u*t*cpx+t*t*ex,
+    y:u*u*sy+2*u*t*cpy+t*t*ey
+  };
 }
 
 function woodTS(e){
@@ -933,7 +989,7 @@ function woodTS(e){
     woodSynth.gain.gain.linearRampToValueAtTime(0.06,audioCtx.currentTime+1.5);
   }
 
-  // Start leaves — initial interval 300ms
+  leafTargetDeck=shuffleArray([0,1,2,3,4,5]);leafTargetIdx=0;
   woodLeafTick();
   woodBreathPhase=0;
   woodBreathLoop();
@@ -941,10 +997,12 @@ function woodTS(e){
 
 function woodLeafTick(){
   if(!woodPadActive)return;
-  // Density increases: 300ms → 80ms over 10 seconds
   const elapsed=Date.now()-woodHoldStart;
   const progress=Math.min(elapsed/10000,1);
-  const interval=300-progress*220;
+  // Base interval 300→80ms + random jitter ±40ms
+  const baseInterval=300-progress*220;
+  const jitter=(Math.random()-0.5)*80;
+  const interval=Math.max(60,baseInterval+jitter);
   spawnTreeLeaf();
   woodLeafInterval=setTimeout(woodLeafTick,interval);
 }
@@ -972,47 +1030,82 @@ function woodBreathLoop(){
 function spawnTreeLeaf(){
   const layer=document.getElementById('treeLeafLayer');
   const container=document.getElementById('treeContainer');
-  if(!container||!layer)return;
+  if(!container||!layer||branchPaths.length===0)return;
   const cw=container.clientWidth,ch=container.clientHeight;
+  const scX=cw/300,scY=ch/500;
 
-  // Spawn from root rim (randomize around the edge of the root circle)
-  const rootCx=cw*0.5,rootCy=ch*0.94;
+  // Balanced target via shuffled deck
+  const targetIdx=nextLeafTarget();
+  const branch=branchPaths[targetIdx];
+
+  // Trunk path: root to trunk top (quadratic bezier)
+  const trunkSx=TREE_ROOT.x/100*cw,trunkSy=TREE_ROOT.y/100*ch;
+  const trunkCpx=trunkSx,trunkCpy=trunkSy-40*scY;
+  const trunkEx=TREE_TRUNK_TOP.x/100*cw,trunkEy=TREE_TRUNK_TOP.y/100*ch;
+
+  // Branch path (scaled to container)
+  const bsx=branch.sx*scX,bsy=branch.sy*scY;
+  const bcpx=branch.cpx*scX,bcpy=branch.cpy*scY;
+  const bex=branch.ex*scX,bey=branch.ey*scY;
+
+  // Spawn from root rim
   const angle=Math.random()*Math.PI*2;
-  const rootR=40;
-  const sx=rootCx+Math.cos(angle)*rootR;
-  const sy=rootCy+Math.sin(angle)*rootR;
+  const rootR=35;
+  const spawnX=trunkSx+Math.cos(angle)*rootR;
+  const spawnY=trunkSy+Math.sin(angle)*rootR;
 
-  // Target: pick a random node or just above center
-  const target=TREE_NODES[Math.floor(Math.random()*TREE_NODES.length)];
-  const tx=(target.x/100)*cw,ty=(target.y/100)*ch;
-  const dx=tx-sx,dy=ty-sy;
-  // Add randomness to path
-  const sway=(Math.random()-0.5)*60;
-  const dur=2.5+Math.random()*1.5;
+  // Randomized parameters
+  const dur=2.5+Math.random()*1.8;
+  const rot=Math.random()*360;
+  const rotSpeed=100+Math.random()*200;
+  const swayAmp=8+Math.random()*16;
+  const swayFreq=1.5+Math.random()*2;
+  const fillOp=0.25+Math.random()*0.35;
 
   const leaf=document.createElement('div');
   leaf.className='tree-leaf';
-  leaf.style.left=sx+'px';leaf.style.top=sy+'px';
-  leaf.innerHTML=`<svg viewBox="0 0 20 20" fill="rgba(76,153,76,${0.3+Math.random()*0.35})" stroke="rgba(76,153,76,0.3)" stroke-width="0.5">
+  leaf.style.left=spawnX+'px';leaf.style.top=spawnY+'px';
+  leaf.innerHTML=`<svg viewBox="0 0 20 20" fill="rgba(76,153,76,${fillOp})" stroke="rgba(76,153,76,0.3)" stroke-width="0.5">
     <path d="M10 2 C6 6 3 10 4 14 C5 18 9 19 10 19 C11 19 15 18 16 14 C17 10 14 6 10 2Z"/>
     <path d="M10 5 L10 17" fill="none" stroke="rgba(76,153,76,0.25)" stroke-width="0.4"/>
   </svg>`;
 
-  // Animate with JS for full path control
   const startTime=performance.now();
-  const rot=Math.random()*360;
-  const rotSpeed=120+Math.random()*180;
+  // Trunk takes first 40% of journey, branch takes 60%
+  const trunkFrac=0.4;
 
   function animLeaf(now){
     const t=Math.min((now-startTime)/(dur*1000),1);
-    const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-    const cx=sx+dx*ease+sway*Math.sin(t*Math.PI*2);
-    const cy=sy+dy*ease;
+    let px,py;
+
+    if(t<0.05){
+      // Quick move from spawn to trunk start
+      const st=t/0.05;
+      px=spawnX+(trunkSx-spawnX)*st;
+      py=spawnY+(trunkSy-spawnY)*st;
+    }else if(t<trunkFrac){
+      // Follow trunk
+      const tt=(t-0.05)/(trunkFrac-0.05);
+      const ease=tt*tt*(3-2*tt); // smoothstep
+      const pt=bezierPt(trunkSx,trunkSy,trunkCpx,trunkCpy,trunkEx,trunkEy,ease);
+      px=pt.x;py=pt.y;
+    }else{
+      // Follow branch
+      const bt=(t-trunkFrac)/(1-trunkFrac);
+      const ease=bt*bt*(3-2*bt);
+      const pt=bezierPt(bsx,bsy,bcpx,bcpy,bex,bey,ease);
+      px=pt.x;py=pt.y;
+    }
+
+    // Add sway perpendicular to path
+    px+=swayAmp*Math.sin(t*Math.PI*swayFreq);
+
     const r=rot+rotSpeed*t;
-    const op=t<0.15?t/0.15:(t>0.7?Math.max(0,(1-t)/0.3):1);
-    const sc=0.6+0.4*(1-t);
+    const op=t<0.1?t/0.1:(t>0.75?Math.max(0,(1-t)/0.25):1);
+    const sc=0.5+0.5*(1-t*0.4);
+
     leaf.style.transform=`translate(-50%,-50%) rotate(${r}deg) scale(${sc})`;
-    leaf.style.left=cx+'px';leaf.style.top=cy+'px';
+    leaf.style.left=px+'px';leaf.style.top=py+'px';
     leaf.style.opacity=op*0.7;
     if(t<1)requestAnimationFrame(animLeaf);
     else leaf.remove();
@@ -1047,12 +1140,14 @@ function cleanupWood(){
   }else{woodSynth=null;woodSynthLfo=null;woodSynthLfoGain=null;}
   if(woodLeafInterval){clearTimeout(woodLeafInterval);woodLeafInterval=null;}
   if(woodBreathFrame){cancelAnimationFrame(woodBreathFrame);woodBreathFrame=null;}
+  if(woodGlowInterval){clearInterval(woodGlowInterval);woodGlowInterval=null;}
+  const nodes=document.querySelectorAll('#wood-page .tree-node');
+  nodes.forEach(n=>n.classList.remove('invite-glow'));
   const root=document.getElementById('woodRoot');
   root.classList.remove('active');
   root.removeEventListener('touchstart',woodTS);
   root.removeEventListener('touchend',woodTE);
   root.removeEventListener('touchcancel',woodTE);
-  // Clear leaves
   const layer=document.getElementById('treeLeafLayer');
   if(layer)layer.innerHTML='';
 }
