@@ -6,6 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>五行 Five Elements</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&display=swap');
 
@@ -463,12 +465,52 @@
   }
 
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Status screens */
+  .status-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #0a0a0a;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 2000; text-align: center; padding: 40px;
+    animation: fadeIn 1s ease;
+  }
+  .status-screen.hidden { display: none; }
+  .status-screen h1 {
+    font-family: 'Noto Serif SC', serif; font-weight: 300;
+    font-size: clamp(2rem, 8vw, 3rem); margin-bottom: 16px;
+    opacity: 0.9;
+  }
+  .status-screen .sub {
+    font-family: 'Cormorant Garamond', serif; font-weight: 300;
+    font-style: italic; font-size: clamp(0.85rem, 3.5vw, 1.1rem);
+    opacity: 0.5; line-height: 1.8;
+  }
+  .status-screen .reminder {
+    margin-top: 40px; font-weight: 300; font-style: italic;
+    font-size: clamp(0.75rem, 3vw, 0.95rem); opacity: 0.4;
+    line-height: 1.7;
+  }
 </style>
 </head>
 <body>
 
+<!-- Locked screen -->
+<div class="status-screen" id="lockedScreen">
+  <h1>五行</h1>
+  <p class="sub">Performance has not yet begun.</p>
+</div>
+
+<!-- End screen -->
+<div class="status-screen hidden" id="endScreen">
+  <h1>五行</h1>
+  <div class="reminder">
+    please return your phone to silent mode<br>
+    thank you
+  </div>
+</div>
+
 <!-- Permission -->
-<div class="permission-overlay" id="permissionOverlay">
+<div class="permission-overlay hidden" id="permissionOverlay">
   <h2>五行</h2>
   <p>This experience uses your device's<br>motion sensors, audio, and haptics.</p>
   <div class="setup-hint">unmute · volume up · brightness up</div>
@@ -637,6 +679,120 @@
 </div>
 
 <script>
+// ═══════════════════════════════════
+// FIREBASE STATUS CONTROL
+// ═══════════════════════════════════
+// *** REPLACE with your Firebase config ***
+const FIREBASE_CONFIG = {
+  databaseURL: 'https://wuxing-fa488-default-rtdb.firebaseio.com'
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.database();
+let appMode = 'beta'; // beta | performance
+let appStatus = 'locked'; // locked | live | ended
+
+function onModeChange(mode) {
+  appMode = mode;
+  if (mode === 'beta') {
+    // Beta: skip all status logic, go straight to entry
+    document.getElementById('lockedScreen').classList.add('hidden');
+    document.getElementById('endScreen').classList.add('hidden');
+    if (!audioCtx) document.getElementById('permissionOverlay').classList.remove('hidden');
+  } else {
+    // Performance: apply current status
+    onStatusChange(appStatus);
+  }
+}
+
+function onStatusChange(status) {
+  appStatus = status;
+  // In beta mode, ignore status entirely
+  if (appMode === 'beta') return;
+
+  if (status === 'locked') {
+    document.getElementById('lockedScreen').classList.remove('hidden');
+    document.getElementById('endScreen').classList.add('hidden');
+    document.getElementById('permissionOverlay').classList.add('hidden');
+  } else if (status === 'live') {
+    document.getElementById('lockedScreen').classList.add('hidden');
+    document.getElementById('endScreen').classList.add('hidden');
+    if (!audioCtx) document.getElementById('permissionOverlay').classList.remove('hidden');
+  } else if (status === 'ended') {
+    triggerSoftEnd();
+  }
+}
+
+// Real-time listeners
+db.ref('mode').on('value', snap => {
+  const val = snap.val();
+  if (val) onModeChange(val);
+});
+db.ref('status').on('value', snap => {
+  const val = snap.val();
+  if (val) onStatusChange(val);
+});
+
+// Fallback check every 30s
+setInterval(() => {
+  db.ref('mode').once('value', snap => { if (snap.val()) onModeChange(snap.val()); });
+  db.ref('status').once('value', snap => { if (snap.val()) onStatusChange(snap.val()); });
+}, 30000);
+
+function triggerSoftEnd() {
+  // Random fade 3-6 seconds per device
+  const fadeDur = 3 + Math.random() * 3;
+  const t = audioCtx ? audioCtx.currentTime : 0;
+
+  // Fade all active audio
+  if (audioCtx && currentElement) {
+    const fadeNodes = [];
+    if (woodLoop) fadeNodes.push(woodLoop.gain);
+    if (woodSynth) fadeNodes.push(woodSynth.gain);
+    if (waterLoop) fadeNodes.push(waterLoop.gain);
+    if (waterSynth) fadeNodes.push(waterSynth.gain);
+    if (fireLoop) fadeNodes.push(fireLoop.gain);
+    if (fireSynth) fadeNodes.push(fireSynth.gain);
+    if (earthDrone) fadeNodes.push(earthDrone.gain);
+    if (earthBed) fadeNodes.push(earthBed.gain);
+    fadeNodes.forEach(g => {
+      g.gain.setValueAtTime(g.gain.value, t);
+      g.gain.linearRampToValueAtTime(0, t + fadeDur);
+    });
+  }
+
+  // Show end screen after fade completes
+  setTimeout(() => {
+    if (currentElement) cleanupCurrent();
+    document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('bottomNav').style.display = 'none';
+    document.getElementById('permissionOverlay').classList.add('hidden');
+    document.getElementById('lockedScreen').classList.add('hidden');
+    document.getElementById('endScreen').classList.remove('hidden');
+    currentElement = null;
+  }, fadeDur * 1000 + 200);
+}
+
+// ═══════════════════════════════════
+// WAKE FROM SLEEP
+// ═══════════════════════════════════
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    // Resume audio context
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    // Re-check Firebase
+    db.ref('mode').once('value', snap => { if (snap.val()) onModeChange(snap.val()); });
+    db.ref('status').once('value', snap => { if (snap.val()) onStatusChange(snap.val()); });
+    // Re-initialize current element if still live
+    if ((appMode === 'beta' || appStatus === 'live') && currentElement) {
+      const el = currentElement;
+      cleanupCurrent();
+      currentElement = null;
+      switchElement(el);
+    }
+  }
+});
+
 // ═══════════════════════════════════
 // AUDIO LOADING
 // ═══════════════════════════════════
