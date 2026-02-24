@@ -38,7 +38,7 @@
      ═══════════════════════════════════ */
   .permission-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.94); display: flex; flex-direction: column;
+    background: rgba(0,0,0,1); display: flex; flex-direction: column;
     align-items: center; justify-content: center; z-index: 1000;
     padding: 40px; padding-top: calc(40px + var(--safe-top)); text-align: center;
   }
@@ -717,7 +717,7 @@ function onStatusChange(status) {
     document.getElementById('lockedScreen').classList.add('hidden');
     document.getElementById('endScreen').classList.add('hidden');
     if (!audioCtx) document.getElementById('permissionOverlay').classList.remove('hidden');
-  } else if (status === 'ended') {
+  } else if (status === 'end') {
     triggerSoftEnd();
   }
 }
