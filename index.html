@@ -398,13 +398,21 @@
      FIRE
      ═══════════════════════════════════ */
   #fire-page { background: radial-gradient(ellipse at 50% 60%, #1a0a08 0%, #0d0604 100%); }
+  #fire-page .bg-char { color: var(--fire); }
   .fire-layout { justify-content: flex-start; padding-top: clamp(20px, 5vh, 40px); }
   .fire-stroke-area {
-    width: min(80vw, 300px); height: min(80vw, 300px);
-    position: relative; touch-action: none; margin-top: clamp(8px, 2vh, 20px);
+    width: min(75vw, 280px); height: min(75vw, 280px);
+    position: relative; touch-action: none; margin-top: clamp(12px, 3vh, 24px);
   }
-  .fire-char-svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-  .fire-flame-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+  .fire-char-svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+  .fire-stroke { transition: stroke 0.2s ease, stroke-width 0.2s ease; }
+  .fire-flame-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 2; }
+  .fire-trace-ghost {
+    position: absolute; width: 14px; height: 14px; border-radius: 50%;
+    background: rgba(220,60,40,0.35); pointer-events: none; z-index: 3;
+    transform: translate(-50%,-50%); transition: opacity 0.5s ease;
+    box-shadow: 0 0 8px rgba(220,60,40,0.3);
+  }
   .flame-particle { position: absolute; border-radius: 50%; pointer-events: none; animation: flameRise 0.8s ease-out forwards; }
   @keyframes flameRise { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(0.2) translateY(-80px); } }
   .fire-xy-container { margin-bottom: 0; }
@@ -614,6 +622,7 @@
 <!-- Fire -->
 <div class="element-page" id="fire-page">
   <button class="home-btn" onclick="goHome()">⌂</button>
+  <div class="bg-char">火</div>
   <div class="interaction-area fire-layout">
     <div class="fire-xy-container">
       <div class="xy-pad" id="firePad" style="border-color:rgba(220,60,40,0.15);max-width:180px;max-height:180px;">
@@ -623,14 +632,15 @@
     </div>
     <div class="fire-stroke-area" id="fireStrokeArea">
       <svg class="fire-char-svg" id="fireCharSvg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
-        <!-- 火 strokes - visible guide -->
-        <path d="M100 35 L100 130" stroke="rgba(220,60,40,0.1)" stroke-width="6" fill="none" stroke-linecap="round"/>
-        <path d="M100 90 Q60 120 35 170" stroke="rgba(220,60,40,0.1)" stroke-width="6" fill="none" stroke-linecap="round"/>
-        <path d="M100 90 Q140 120 165 170" stroke="rgba(220,60,40,0.1)" stroke-width="6" fill="none" stroke-linecap="round"/>
-        <path d="M55 75 Q65 95 75 105" stroke="rgba(220,60,40,0.1)" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <path d="M145 75 Q135 95 125 105" stroke="rgba(220,60,40,0.1)" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- 火 strokes as dashed outlines for tracing -->
+        <path class="fire-stroke" id="fs0" d="M100 35 L100 130" stroke="rgba(220,60,40,0.18)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="4 6"/>
+        <path class="fire-stroke" id="fs1" d="M55 75 Q65 95 75 105" stroke="rgba(220,60,40,0.18)" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="4 6"/>
+        <path class="fire-stroke" id="fs2" d="M145 75 Q135 95 125 105" stroke="rgba(220,60,40,0.18)" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="4 6"/>
+        <path class="fire-stroke" id="fs3" d="M100 90 Q60 120 35 170" stroke="rgba(220,60,40,0.18)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="4 6"/>
+        <path class="fire-stroke" id="fs4" d="M100 90 Q140 120 165 170" stroke="rgba(220,60,40,0.18)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="4 6"/>
       </svg>
       <div class="fire-flame-layer" id="fireFlameLayer"></div>
+      <div class="fire-trace-ghost" id="fireTraceGhost"></div>
     </div>
   </div>
 </div>
@@ -1408,17 +1418,17 @@ function cleanupWater(){
 // ═══════════════════════════════════
 // FIRE — MP3 XY pad + synth swipe + sine pulse
 // ═══════════════════════════════════
-let fireLoop=null,fireSynth=null,fireSynthLfo=null,fireSynthLfoGain=null,firePadActive=false,fireLastSwipe=0,fireIdleTimer=null;
+let fireLoop=null,fireSynth=null,fireSynthLfo=null,fireSynthLfoGain=null,firePadActive=false,fireLastSwipe=0,fireIdleTimer=null,fireGhostAnim=null,fireGhostStopped=false;
 
-// 火 stroke paths as polylines (in 0-200 SVG space)
+// 火 stroke paths in SVG space (0-200), matching fs0-fs4 order
 const FIRE_STROKES=[
-  [{x:100,y:35},{x:100,y:130}], // center vertical
-  [{x:100,y:90},{x:80,y:110},{x:60,y:140},{x:35,y:170}], // left falling
-  [{x:100,y:90},{x:120,y:110},{x:140,y:140},{x:165,y:170}], // right falling
-  [{x:55,y:75},{x:65,y:95},{x:75,y:105}], // left dot
-  [{x:145,y:75},{x:135,y:95},{x:125,y:105}] // right dot
+  [{x:100,y:35},{x:100,y:130}],           // fs0: center vertical
+  [{x:55,y:75},{x:65,y:95},{x:75,y:105}], // fs1: left dot
+  [{x:145,y:75},{x:135,y:95},{x:125,y:105}], // fs2: right dot
+  [{x:100,y:90},{x:80,y:110},{x:60,y:140},{x:35,y:170}], // fs3: left falling
+  [{x:100,y:90},{x:120,y:110},{x:140,y:140},{x:165,y:170}] // fs4: right falling
 ];
-const FIRE_HIT_RADIUS=28; // px tolerance in SVG space
+const FIRE_HIT_RADIUS=28;
 
 function distToSegment(px,py,ax,ay,bx,by){
   const dx=bx-ax,dy=by-ay,len2=dx*dx+dy*dy;
@@ -1432,18 +1442,74 @@ function distToSegment(px,py,ax,ay,bx,by){
 function nearFireStroke(svgX,svgY){
   for(const stroke of FIRE_STROKES){
     for(let i=0;i<stroke.length-1;i++){
-      const d=distToSegment(svgX,svgY,stroke[i].x,stroke[i].y,stroke[i+1].x,stroke[i+1].y);
-      if(d<FIRE_HIT_RADIUS)return true;
+      if(distToSegment(svgX,svgY,stroke[i].x,stroke[i].y,stroke[i+1].x,stroke[i+1].y)<FIRE_HIT_RADIUS)return true;
     }
   }
   return false;
+}
+
+// Sample a point along a polyline stroke at parameter t (0-1)
+function strokePointAt(stroke,t){
+  let totalLen=0;const segLens=[];
+  for(let i=0;i<stroke.length-1;i++){
+    const dx=stroke[i+1].x-stroke[i].x,dy=stroke[i+1].y-stroke[i].y;
+    segLens.push(Math.sqrt(dx*dx+dy*dy));totalLen+=segLens[i];
+  }
+  let target=t*totalLen,accum=0;
+  for(let i=0;i<segLens.length;i++){
+    if(accum+segLens[i]>=target||i===segLens.length-1){
+      const segT=segLens[i]>0?(target-accum)/segLens[i]:0;
+      return{x:stroke[i].x+(stroke[i+1].x-stroke[i].x)*segT,y:stroke[i].y+(stroke[i+1].y-stroke[i].y)*segT};
+    }
+    accum+=segLens[i];
+  }
+  return{x:stroke[0].x,y:stroke[0].y};
+}
+
+function startFireGhost(){
+  const gh=document.getElementById('fireTraceGhost');
+  if(!gh)return;
+  gh.style.opacity='1';fireGhostStopped=false;
+  let strokeIdx=0;
+  const speeds=[2500,800,2500,800,2500]; // alternating slow/fast
+
+  function traceStroke(){
+    if(fireGhostStopped)return;
+    const stroke=FIRE_STROKES[strokeIdx];
+    const dur=speeds[strokeIdx%speeds.length];
+    const sa=document.getElementById('fireStrokeArea');
+    if(!sa)return;
+    const start=Date.now();
+    const isFast=dur<1500;
+    gh.style.width=isFast?'18px':'12px';gh.style.height=isFast?'18px':'12px';
+    gh.style.background=isFast?'rgba(220,60,40,0.55)':'rgba(220,60,40,0.25)';
+    gh.style.boxShadow=isFast?'0 0 14px rgba(220,60,40,0.5)':'0 0 6px rgba(220,60,40,0.2)';
+
+    function step(){
+      if(fireGhostStopped)return;
+      const t=Math.min((Date.now()-start)/dur,1);
+      const pt=strokePointAt(stroke,t);
+      gh.style.left=(pt.x/200*sa.clientWidth)+'px';
+      gh.style.top=(pt.y/200*sa.clientHeight)+'px';
+      if(t<1)fireGhostAnim=requestAnimationFrame(step);
+      else setTimeout(()=>{if(fireGhostStopped)return;strokeIdx=(strokeIdx+1)%FIRE_STROKES.length;traceStroke();},600);
+    }
+    fireGhostAnim=requestAnimationFrame(step);
+  }
+  traceStroke();
+}
+
+function stopFireGhost(){
+  fireGhostStopped=true;
+  if(fireGhostAnim){cancelAnimationFrame(fireGhostAnim);fireGhostAnim=null;}
+  const gh=document.getElementById('fireTraceGhost');
+  if(gh)gh.style.opacity='0';
 }
 
 function initFire(){
   fireLoop=playBufferWithChain('fire_long',true);
   if(fireLoop){fireLoop.filter.frequency.value=400;fireLoop.filter.Q.value=1;fireLoop.gain.gain.value=0;}
 
-  // Sine pulse: 130Hz, fast LFO 0.5Hz
   fireSynth=createDrone(130,'sine',4);
   fireSynth.filter.frequency.value=500;fireSynth.gain.gain.value=0;
   fireSynthLfo=audioCtx.createOscillator();
@@ -1459,6 +1525,10 @@ function initFire(){
   const pad=document.getElementById('firePad'),cross=document.getElementById('fireCrosshair');
   const ghost=document.getElementById('fireGhost');
   ghost.style.opacity='1';
+
+  // Start trace ghost
+  fireGhostStopped=false;
+  startFireGhost();
 
   const fireTouch=()=>{
     if(fireSynth)fireSynth.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+1.0);
@@ -1501,7 +1571,9 @@ function initFire(){
   let ss=null,sTime=0;
 
   sa.addEventListener('touchstart',e=>{
-    e.preventDefault();fireTouch();
+    e.preventDefault();
+    stopFireGhost();
+    fireTouch();
     ss={x:e.touches[0].clientX,y:e.touches[0].clientY};sTime=Date.now();
   });
   sa.addEventListener('touchmove',e=>{
@@ -1510,24 +1582,30 @@ function initFire(){
     const tx=e.touches[0].clientX,ty=e.touches[0].clientY;
     const dx=tx-ss.x,dy=ty-ss.y,dist=Math.sqrt(dx*dx+dy*dy);
     if(dist>12){
-      // Convert touch to SVG coordinates
       const r=sa.getBoundingClientRect();
       const localX=tx-r.left,localY=ty-r.top;
       const svgX=(localX/r.width)*200,svgY=(localY/r.height)*200;
 
       if(nearFireStroke(svgX,svgY)){
         fireLastSwipe=now;
-        // Speed: pixels per millisecond
         const dt=now-sTime;
         const speed=dt>0?dist/dt:1;
         spawnFlame(localX,localY,fl);
         triggerFlameSound(speed);
-        // Glow the nearest stroke briefly
-        const paths=svg.querySelectorAll('path');
-        paths.forEach(p=>{
-          p.setAttribute('stroke',`rgba(220,60,40,${0.15+speed*0.3})`);
+        // Glow only the nearest stroke
+        svg.querySelectorAll('.fire-stroke').forEach((p,i)=>{
+          const stroke=FIRE_STROKES[i];
+          let near=false;
+          for(let j=0;j<stroke.length-1;j++){
+            if(distToSegment(svgX,svgY,stroke[j].x,stroke[j].y,stroke[j+1].x,stroke[j+1].y)<FIRE_HIT_RADIUS){near=true;break;}
+          }
+          if(near){
+            const glow=Math.min(0.6,0.25+speed*0.3);
+            p.setAttribute('stroke',`rgba(220,60,40,${glow})`);
+            p.setAttribute('stroke-dasharray','none');
+            setTimeout(()=>{p.setAttribute('stroke','rgba(220,60,40,0.18)');p.setAttribute('stroke-dasharray','4 6');},250);
+          }
         });
-        setTimeout(()=>{paths.forEach(p=>p.setAttribute('stroke','rgba(220,60,40,0.1)'));},200);
       }
       ss={x:tx,y:ty};sTime=now;
     }
@@ -1557,6 +1635,7 @@ function triggerFlameSound(speed){
   s.connect(bp);bp.connect(e);e.connect(audioCtx.destination);s.start(t);
 }
 function cleanupFire(){
+  stopFireGhost();
   if(fireLoop){
     fireLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.25);
     setTimeout(()=>{try{fireLoop.source.stop();}catch(e){}fireLoop=null;},300);
@@ -1575,7 +1654,7 @@ function cleanupFire(){
   const fl=document.getElementById('fireFlameLayer');
   if(fl)fl.innerHTML='';
   const svg=document.getElementById('fireCharSvg');
-  if(svg)svg.querySelectorAll('path').forEach(p=>p.setAttribute('stroke','rgba(220,60,40,0.1)'));
+  if(svg)svg.querySelectorAll('.fire-stroke').forEach(p=>{p.setAttribute('stroke','rgba(220,60,40,0.18)');p.setAttribute('stroke-dasharray','4 6');});
 }
 
 // ═══════════════════════════════════
