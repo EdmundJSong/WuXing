@@ -694,10 +694,15 @@ let appStatus = 'locked'; // locked | live | ended
 function onModeChange(mode) {
   appMode = mode;
   if (mode === 'beta') {
-    // Beta: skip all status logic, go straight to entry
+    // Beta: full reset to fresh state
+    if (currentElement) { cleanupCurrent(); currentElement = null; }
+    document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('bottomNav').style.display = 'none';
     document.getElementById('lockedScreen').classList.add('hidden');
     document.getElementById('endScreen').classList.add('hidden');
-    if (!audioCtx) document.getElementById('permissionOverlay').classList.remove('hidden');
+    // Show entry screen so user can tap Enter fresh
+    document.getElementById('permissionOverlay').classList.remove('hidden');
   } else {
     // Performance: apply current status
     onStatusChange(appStatus);
@@ -717,7 +722,7 @@ function onStatusChange(status) {
     document.getElementById('lockedScreen').classList.add('hidden');
     document.getElementById('endScreen').classList.add('hidden');
     if (!audioCtx) document.getElementById('permissionOverlay').classList.remove('hidden');
-  } else if (status === 'end') {
+  } else if (status === 'ended') {
     triggerSoftEnd();
   }
 }
