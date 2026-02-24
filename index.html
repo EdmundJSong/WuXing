@@ -324,7 +324,7 @@
   #water-page { background: radial-gradient(ellipse at 50% 40%, #0a1220 0%, #060a10 100%); }
   #water-page .bg-char { color: var(--water); }
   .water-tilt-hint {
-    margin-bottom: clamp(12px, 2vh, 20px);
+    margin-bottom: clamp(8px, 1.5vh, 16px);
     opacity: 0.35; animation: tiltCueAnim 3s ease-in-out infinite;
   }
   .water-tilt-hint svg { width: 56px; height: 56px; }
@@ -333,44 +333,26 @@
     40% { transform: rotate(-3deg); } 60% { transform: rotate(-18deg); }
     80% { transform: rotate(3deg); }
   }
-  .spirit-level {
-    width: clamp(200px, 55vw, 260px); height: clamp(200px, 55vw, 260px);
-    border-radius: 50%; border: 1px solid rgba(70,130,200,0.15);
-    position: relative; overflow: hidden; background: transparent;
+  .water-stroke-area {
+    width: min(75vw, 280px); height: min(75vw, 280px);
+    position: relative; touch-action: none;
   }
-  .spirit-level::before {
-    content: ''; position: absolute; top: 50%; left: 10%; right: 10%; height: 1px;
-    background: rgba(70,130,200,0.12);
+  .water-char-svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+  .water-stroke { transition: stroke 0.3s ease; }
+  .water-bubble {
+    position: absolute; width: 28px; height: 28px; border-radius: 50%;
+    transform: translate(-50%, -50%); pointer-events: none; z-index: 5;
+    transition: left 0.15s ease-out, top 0.15s ease-out;
   }
-  .spirit-level::after {
-    content: ''; position: absolute; left: 50%; top: 10%; bottom: 10%; width: 1px;
-    background: rgba(70,130,200,0.12);
-  }
-  .spirit-target {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 40px; height: 40px; border: 1px solid rgba(70,130,200,0.15);
-    border-radius: 50%; pointer-events: none;
-  }
-  .spirit-target-outer {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 80px; height: 80px; border: 1px solid rgba(70,130,200,0.08);
-    border-radius: 50%; pointer-events: none;
-  }
-  .spirit-bubble {
-    position: absolute; width: 36px; height: 36px; border-radius: 50%;
-    top: 50%; left: 50%; transform: translate(-50%, -50%);
-    transition: left 0.12s ease-out, top 0.12s ease-out;
-    pointer-events: none; z-index: 5;
-  }
-  .spirit-bubble-inner {
+  .water-bubble-inner {
     width: 100%; height: 100%; border-radius: 50%;
     background: radial-gradient(circle at 35% 35%,
-      rgba(130,185,240,0.5) 0%, rgba(70,130,200,0.3) 40%,
+      rgba(130,185,240,0.55) 0%, rgba(70,130,200,0.35) 40%,
       rgba(50,100,180,0.15) 70%, rgba(40,80,160,0.05) 100%);
-    box-shadow: 0 0 15px rgba(70,130,200,0.25), inset 0 0 8px rgba(130,185,240,0.2);
+    box-shadow: 0 0 12px rgba(70,130,200,0.3), inset 0 0 6px rgba(130,185,240,0.2);
     position: relative;
   }
-  .spirit-bubble-inner::before {
+  .water-bubble-inner::before {
     content: ''; position: absolute; top: 20%; left: 25%;
     width: 35%; height: 25%; border-radius: 50%;
     background: rgba(200,225,255,0.3); filter: blur(2px);
@@ -593,7 +575,7 @@
   <button class="home-btn" onclick="goHome()">⌂</button>
   <div class="bg-char">水</div>
   <div class="interaction-area">
-    <div class="water-tilt-hint">
+    <div class="water-tilt-hint" id="waterTiltHint">
       <svg viewBox="0 0 48 48" fill="none" stroke-linecap="round">
         <rect x="16" y="10" width="16" height="26" rx="3" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
         <path d="M8 23 L3 23" stroke="rgba(255,255,255,0.45)" stroke-width="1.2"/>
@@ -606,10 +588,15 @@
         <path d="M20.5 44.5 L24 47.5 L27.5 44.5" stroke="rgba(255,255,255,0.45)" stroke-width="1.2" fill="none"/>
       </svg>
     </div>
-    <div class="spirit-level" id="spiritLevel">
-      <div class="spirit-target-outer"></div>
-      <div class="spirit-target"></div>
-      <div class="spirit-bubble" id="spiritBubble"><div class="spirit-bubble-inner"></div></div>
+    <div class="water-stroke-area" id="waterStrokeArea">
+      <svg class="water-char-svg" id="waterCharSvg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+        <path class="water-stroke" id="ws0" d="M100 15 L100 185" stroke="rgba(70,130,200,0.15)" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <path class="water-stroke" id="ws1" d="M100 75 L60 55" stroke="rgba(70,130,200,0.15)" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <path class="water-stroke" id="ws2" d="M100 75 L140 55" stroke="rgba(70,130,200,0.15)" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <path class="water-stroke" id="ws3" d="M100 95 Q65 135 30 180" stroke="rgba(70,130,200,0.15)" stroke-width="11" fill="none" stroke-linecap="round"/>
+        <path class="water-stroke" id="ws4" d="M100 95 Q135 135 170 180" stroke="rgba(70,130,200,0.15)" stroke-width="11" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="water-bubble" id="waterBubble"><div class="water-bubble-inner"></div></div>
     </div>
     <div class="water-tilt-readout" id="waterReadout" style="opacity:0;">
       <div class="tilt-axis"><span class="tilt-label">Tilt</span><span class="tilt-value" id="tiltBeta">0°</span></div>
@@ -1304,18 +1291,49 @@ function cleanupWood(){
 let waterLoop=null,waterSynth=null,waterLfo=null,waterLfoGain=null,waterOrientHandler=null,waterReady=false,waterDelayTimer=null,waterBaseAlpha=null;
 const BETA_NEUTRAL=60,TILT_CLAMP=50,ROLL_CLAMP=50,SPIN_CLAMP=60;
 
+// 水 stroke paths in SVG space (0-200)
+const WATER_STROKES=[
+  [{x:100,y:15},{x:100,y:185}],          // ws0: center vertical
+  [{x:100,y:75},{x:60,y:55}],            // ws1: left tick
+  [{x:100,y:75},{x:140,y:55}],           // ws2: right tick
+  [{x:100,y:95},{x:82,y:115},{x:65,y:140},{x:30,y:180}], // ws3: left falling
+  [{x:100,y:95},{x:118,y:115},{x:135,y:140},{x:170,y:180}] // ws4: right falling
+];
+
+// Find closest point on any stroke to a target XY in SVG space
+function closestWaterPoint(tx,ty){
+  let bestDist=Infinity,bestX=100,bestY=100,bestStroke=0;
+  for(let si=0;si<WATER_STROKES.length;si++){
+    const stroke=WATER_STROKES[si];
+    for(let i=0;i<stroke.length-1;i++){
+      const ax=stroke[i].x,ay=stroke[i].y,bx=stroke[i+1].x,by=stroke[i+1].y;
+      const dx=bx-ax,dy=by-ay,len2=dx*dx+dy*dy;
+      let t=len2>0?((tx-ax)*dx+(ty-ay)*dy)/len2:0;
+      t=Math.max(0,Math.min(1,t));
+      const cx=ax+t*dx,cy=ay+t*dy;
+      const dist=Math.sqrt((tx-cx)*(tx-cx)+(ty-cy)*(ty-cy));
+      if(dist<bestDist){bestDist=dist;bestX=cx;bestY=cy;bestStroke=si;}
+    }
+  }
+  return{x:bestX,y:bestY,stroke:bestStroke};
+}
+
 function initWater(){
   waterReady=false;waterBaseAlpha=null;
   document.getElementById('waterReadout').style.opacity='0';
-  const bubble=document.getElementById('spiritBubble');
-  bubble.style.left='50%';bubble.style.top='50%';
+  const bubble=document.getElementById('waterBubble');
+  const sa=document.getElementById('waterStrokeArea');
+  // Start at center junction
+  bubble.style.left='50%';bubble.style.top='47.5%';
 
-  // MP3 loop through filter
+  // Show tilt hint, hide after first movement
+  const hint=document.getElementById('waterTiltHint');
+  if(hint)hint.style.opacity='0.35';
+
   waterLoop=playBufferWithChain('water_long',true);
   if(waterLoop){
     waterLoop.gain.gain.value=0;
     waterLoop.filter.frequency.value=800;
-    // LFO on filter
     waterLfo=audioCtx.createOscillator();
     waterLfoGain=audioCtx.createGain();
     waterLfo.type='sine';waterLfo.frequency.value=0.3;
@@ -1325,13 +1343,11 @@ function initWater(){
     waterLfo.start();
   }
 
-  // Triangle wave synth bed (very quiet)
   waterSynth=createDrone(80,'triangle',3);
   waterSynth.filter.frequency.value=800;waterSynth.gain.gain.value=0;
 
   const readout=document.getElementById('waterReadout');
   const vB=document.getElementById('tiltBeta'),vG=document.getElementById('tiltGamma'),vA=document.getElementById('tiltAlpha');
-  const level=document.getElementById('spiritLevel');
 
   waterDelayTimer=setTimeout(()=>{
     waterReady=true;
@@ -1346,9 +1362,39 @@ function initWater(){
     readout.style.opacity='1';
   },1000);
 
+  const updateBubble=(normX,normY)=>{
+    // normX: 0=left, 1=right. normY: 0=top, 1=bottom
+    // Map to SVG space target position
+    const targetSvgX=normX*200;
+    const targetSvgY=normY*200;
+    const pt=closestWaterPoint(targetSvgX,targetSvgY);
+
+    // Convert SVG coords to % of container
+    const pctX=(pt.x/200)*100;
+    const pctY=(pt.y/200)*100;
+    bubble.style.left=pctX+'%';
+    bubble.style.top=pctY+'%';
+
+    // Glow the active stroke
+    const paths=document.querySelectorAll('.water-stroke');
+    paths.forEach((p,i)=>{
+      p.setAttribute('stroke',i===pt.stroke?'rgba(70,130,200,0.35)':'rgba(70,130,200,0.15)');
+    });
+
+    // Audio: use normalized SVG position
+    const audioNx=pt.x/200;
+    const audioNy=pt.y/200;
+    return{nx:audioNx,ny:audioNy};
+  };
+
   waterOrientHandler=e=>{
     const beta=e.beta||0,gamma=e.gamma||0,alpha=e.alpha||0;
     if(waterBaseAlpha===null)waterBaseAlpha=alpha;
+
+    // Hide tilt hint on first movement
+    if(hint&&(Math.abs(beta-BETA_NEUTRAL)>5||Math.abs(gamma)>5)){
+      hint.style.opacity='0';hint.style.transition='opacity 0.5s ease';
+    }
 
     const relBeta=beta-BETA_NEUTRAL,relGamma=gamma;
     let relAlpha=alpha-waterBaseAlpha;
@@ -1367,32 +1413,29 @@ function initWater(){
     vG.textContent=Math.round(cG)+'°';
     vA.textContent=Math.round(cA)+'°';
 
-    const bx=50+(cG/ROLL_CLAMP)*38,by=50+(cB/TILT_CLAMP)*38;
-    bubble.style.left=bx+'%';bubble.style.top=by+'%';
+    const audio=updateBubble(nx,ny);
 
     if(!waterReady||!waterLoop)return;
-    // Roll → playback rate (0.5 to 2.0)
-    waterLoop.source.playbackRate.setTargetAtTime(0.5+nx*1.5,audioCtx.currentTime,0.1);
-    // Tilt → filter cutoff
-    waterLoop.filter.frequency.setTargetAtTime(200+ny*4000,audioCtx.currentTime,0.1);
-    // Spin → LFO speed
+    waterLoop.source.playbackRate.setTargetAtTime(0.5+audio.nx*1.5,audioCtx.currentTime,0.1);
+    waterLoop.filter.frequency.setTargetAtTime(200+audio.ny*4000,audioCtx.currentTime,0.1);
     if(waterLfo)waterLfo.frequency.setTargetAtTime(0.1+nz*6,audioCtx.currentTime,0.1);
-    // Synth bed follows filter
-    if(waterSynth)waterSynth.filter.frequency.setTargetAtTime(200+ny*4000,audioCtx.currentTime,0.1);
+    if(waterSynth)waterSynth.filter.frequency.setTargetAtTime(200+audio.ny*4000,audioCtx.currentTime,0.1);
   };
   window.addEventListener('deviceorientation',waterOrientHandler);
 
   // Touch fallback
-  level.addEventListener('touchmove',e=>{
+  sa.addEventListener('touchmove',e=>{
     e.preventDefault();
-    const r=level.getBoundingClientRect(),t=e.touches[0];
-    const nx=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),ny=Math.max(0,Math.min(1,(t.clientY-r.top)/r.height));
-    bubble.style.left=(nx*100)+'%';bubble.style.top=(ny*100)+'%';
+    const r=sa.getBoundingClientRect(),t=e.touches[0];
+    const nx=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width));
+    const ny=Math.max(0,Math.min(1,(t.clientY-r.top)/r.height));
+    if(hint){hint.style.opacity='0';hint.style.transition='opacity 0.5s ease';}
     vB.textContent=Math.round((ny-0.5)*TILT_CLAMP*2)+'°';
     vG.textContent=Math.round((nx-0.5)*ROLL_CLAMP*2)+'°';
+    const audio=updateBubble(nx,ny);
     if(!waterReady||!waterLoop)return;
-    waterLoop.source.playbackRate.setTargetAtTime(0.5+nx*1.5,audioCtx.currentTime,0.1);
-    waterLoop.filter.frequency.setTargetAtTime(200+ny*4000,audioCtx.currentTime,0.1);
+    waterLoop.source.playbackRate.setTargetAtTime(0.5+audio.nx*1.5,audioCtx.currentTime,0.1);
+    waterLoop.filter.frequency.setTargetAtTime(200+audio.ny*4000,audioCtx.currentTime,0.1);
   });
 }
 
@@ -1401,6 +1444,9 @@ function cleanupWater(){
   waterOrientHandler=null;waterReady=false;waterBaseAlpha=null;
   clearTimeout(waterDelayTimer);
   document.getElementById('waterReadout').style.opacity='0';
+  const bubble=document.getElementById('waterBubble');
+  if(bubble){bubble.style.left='50%';bubble.style.top='47.5%';}
+  document.querySelectorAll('.water-stroke').forEach(p=>p.setAttribute('stroke','rgba(70,130,200,0.15)'));
   if(waterLoop){
     waterLoop.gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.25);
     setTimeout(()=>{
