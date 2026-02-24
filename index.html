@@ -681,31 +681,11 @@ const FIREBASE_CONFIG = {
 };
 firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.database();
-let appMode = 'beta'; // beta | performance
 let appStatus = 'locked'; // locked | live | ended
 
-function onModeChange(mode) {
-  appMode = mode;
-  if (mode === 'beta') {
-    // Beta: full reset to fresh state
-    if (currentElement) { cleanupCurrent(); currentElement = null; }
-    document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
-    document.getElementById('landing').style.display = 'none';
-    document.getElementById('bottomNav').style.display = 'none';
-    document.getElementById('lockedScreen').classList.add('hidden');
-    document.getElementById('endScreen').classList.add('hidden');
-    // Show entry screen so user can tap Enter fresh
-    document.getElementById('permissionOverlay').classList.remove('hidden');
-  } else {
-    // Performance: apply current status
-    onStatusChange(appStatus);
-  }
-}
-
 function onStatusChange(status) {
+  if (status === appStatus) return;
   appStatus = status;
-  // In beta mode, ignore status entirely
-  if (appMode === 'beta') return;
 
   if (status === 'locked') {
     document.getElementById('lockedScreen').classList.remove('hidden');
@@ -720,11 +700,7 @@ function onStatusChange(status) {
   }
 }
 
-// Real-time listeners
-db.ref('mode').on('value', snap => {
-  const val = snap.val();
-  if (val) onModeChange(val);
-});
+// Real-time listener
 db.ref('status').on('value', snap => {
   const val = snap.val();
   if (val) onStatusChange(val);
@@ -732,7 +708,6 @@ db.ref('status').on('value', snap => {
 
 // Fallback check every 30s
 setInterval(() => {
-  db.ref('mode').once('value', snap => { if (snap.val()) onModeChange(snap.val()); });
   db.ref('status').once('value', snap => { if (snap.val()) onStatusChange(snap.val()); });
 }, 30000);
 
@@ -778,11 +753,10 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     // Resume audio context
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    // Re-check Firebase
-    db.ref('mode').once('value', snap => { if (snap.val()) onModeChange(snap.val()); });
+    // Re-check Firebase status
     db.ref('status').once('value', snap => { if (snap.val()) onStatusChange(snap.val()); });
     // Re-initialize current element if still live
-    if ((appMode === 'beta' || appStatus === 'live') && currentElement) {
+    if (appStatus === 'live' && currentElement) {
       const el = currentElement;
       cleanupCurrent();
       currentElement = null;
