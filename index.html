@@ -1638,6 +1638,20 @@
       m.connect(mg); mg.connect(c.frequency); c.connect(e); e.connect(audioCtx.destination);
       e.gain.setValueAtTime(v * 0.25, t); e.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
       m.start(t); c.start(t); m.stop(t + 1.6); c.stop(t + 1.6);
+
+      // E4 resonance: fades in during bell decay, very soft
+      const eTone = audioCtx.createOscillator();
+      const eGain = audioCtx.createGain();
+      eTone.type = 'sine';
+      eTone.frequency.value = 329.6; // E4
+      eTone.connect(eGain);
+      eGain.connect(audioCtx.destination);
+      eGain.gain.setValueAtTime(0, t);
+      eGain.gain.setValueAtTime(0, t + 0.4); // silent during attack
+      eGain.gain.linearRampToValueAtTime(v * 0.025, t + 1.0); // bloom in decay
+      eGain.gain.linearRampToValueAtTime(0, t + 3.0); // fade out
+      eTone.start(t);
+      eTone.stop(t + 3.1);
     }
     function cleanupMetal() {
       if (metalHandler) window.removeEventListener('devicemotion', metalHandler);
@@ -1700,7 +1714,7 @@
       if (woodLoop) { woodLoop.filter.frequency.value = 600; woodLoop.gain.gain.value = 0; }
 
       // Sine synth bed with slow LFO (pulsing ember)
-      woodSynth = createDrone(88, 'sine', 2);
+      woodSynth = createDrone(65.4, 'sine', 2);
       woodSynth.filter.frequency.value = 600; woodSynth.gain.gain.value = 0;
       woodSynthLfo = audioCtx.createOscillator();
       woodSynthLfoGain = audioCtx.createGain();
@@ -1814,8 +1828,14 @@
       const root = document.getElementById('woodRoot');
       root.classList.remove('active');
       showCue('woodCue');
-      if (woodLoop) woodLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
-      if (woodSynth) woodSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+      if (woodLoop) {
+        woodLoop.gain.gain.setValueAtTime(woodLoop.gain.gain.value, audioCtx.currentTime);
+        woodLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+      }
+      if (woodSynth) {
+        woodSynth.gain.gain.setValueAtTime(woodSynth.gain.gain.value, audioCtx.currentTime);
+        woodSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+      }
       // Slow LFO back down
       if (woodSynthLfo) woodSynthLfo.frequency.linearRampToValueAtTime(0.15, audioCtx.currentTime + 1.0);
       if (woodLeafInterval) { clearTimeout(woodLeafInterval); woodLeafInterval = null; }
@@ -1934,16 +1954,18 @@
     function cleanupWood() {
       woodPadActive = false;
       if (woodLoop) {
-        woodLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
-        setTimeout(() => { try { woodLoop.source.stop(); } catch (e) { } woodLoop = null; }, 300);
+        woodLoop.gain.gain.setValueAtTime(woodLoop.gain.gain.value, audioCtx.currentTime);
+        woodLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        setTimeout(() => { try { woodLoop.source.stop(); } catch (e) { } woodLoop = null; }, 600);
       } else { woodLoop = null; }
       if (woodSynth) {
-        woodSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
+        woodSynth.gain.gain.setValueAtTime(woodSynth.gain.gain.value, audioCtx.currentTime);
+        woodSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
         setTimeout(() => {
           if (woodSynthLfo) try { woodSynthLfo.stop(); } catch (e) { }
           try { woodSynth.osc1.stop(); woodSynth.osc2.stop(); } catch (e) { }
           woodSynth = null; woodSynthLfo = null; woodSynthLfoGain = null;
-        }, 300);
+        }, 600);
       } else { woodSynth = null; woodSynthLfo = null; woodSynthLfoGain = null; }
       if (woodLeafInterval) { clearTimeout(woodLeafInterval); woodLeafInterval = null; }
       if (woodBreathFrame) { cancelAnimationFrame(woodBreathFrame); woodBreathFrame = null; }
@@ -2017,7 +2039,7 @@
         waterLfo.start();
       }
 
-      waterSynth = createDrone(80, 'triangle', 3);
+      waterSynth = createDrone(103.8, 'triangle', 3);
       waterSynth.filter.frequency.value = 800; waterSynth.gain.gain.value = 0;
 
       const readout = document.getElementById('waterReadout');
@@ -2139,16 +2161,18 @@
       if (bubble) { bubble.style.left = '50%'; bubble.style.top = '47.5%'; }
       document.querySelectorAll('.water-stroke').forEach(p => p.setAttribute('stroke', 'rgba(70,130,200,0.15)'));
       if (waterLoop) {
-        waterLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
+        waterLoop.gain.gain.setValueAtTime(waterLoop.gain.gain.value, audioCtx.currentTime);
+        waterLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
         setTimeout(() => {
           if (waterLfo) try { waterLfo.stop(); } catch (e) { }
           try { waterLoop.source.stop(); } catch (e) { }
           waterLoop = null; waterLfo = null; waterLfoGain = null;
-        }, 300);
+        }, 600);
       } else { waterLoop = null; waterLfo = null; waterLfoGain = null; }
       if (waterSynth) {
-        waterSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
-        setTimeout(() => { try { waterSynth.osc1.stop(); waterSynth.osc2.stop(); } catch (e) { } waterSynth = null; }, 300);
+        waterSynth.gain.gain.setValueAtTime(waterSynth.gain.gain.value, audioCtx.currentTime);
+        waterSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        setTimeout(() => { try { waterSynth.osc1.stop(); waterSynth.osc2.stop(); } catch (e) { } waterSynth = null; }, 600);
       } else { waterSynth = null; }
     }
 
@@ -2246,7 +2270,7 @@
       fireLoop = playBufferWithChain('fire_long', true);
       if (fireLoop) { fireLoop.filter.frequency.value = 400; fireLoop.filter.Q.value = 1; fireLoop.gain.gain.value = 0; }
 
-      fireSynth = createDrone(130, 'sine', 4);
+      fireSynth = createDrone(174.6, 'sine', 4);
       fireSynth.filter.frequency.value = 500; fireSynth.gain.gain.value = 0;
       fireSynthLfo = audioCtx.createOscillator();
       fireSynthLfoGain = audioCtx.createGain();
@@ -2373,16 +2397,18 @@
     function cleanupFire() {
       stopFireGhost();
       if (fireLoop) {
-        fireLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
-        setTimeout(() => { try { fireLoop.source.stop(); } catch (e) { } fireLoop = null; }, 300);
+        fireLoop.gain.gain.setValueAtTime(fireLoop.gain.gain.value, audioCtx.currentTime);
+        fireLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        setTimeout(() => { try { fireLoop.source.stop(); } catch (e) { } fireLoop = null; }, 600);
       } else { fireLoop = null; }
       if (fireSynth) {
-        fireSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
+        fireSynth.gain.gain.setValueAtTime(fireSynth.gain.gain.value, audioCtx.currentTime);
+        fireSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
         setTimeout(() => {
           if (fireSynthLfo) try { fireSynthLfo.stop(); } catch (e) { }
           try { fireSynth.osc1.stop(); fireSynth.osc2.stop(); } catch (e) { }
           fireSynth = null; fireSynthLfo = null; fireSynthLfoGain = null;
-        }, 300);
+        }, 600);
       } else { fireSynth = null; fireSynthLfo = null; fireSynthLfoGain = null; }
       if (fireIdleTimer) { clearTimeout(fireIdleTimer); fireIdleTimer = null; }
       const pad = document.getElementById('firePad');
@@ -2521,12 +2547,14 @@
       earthStartTime = null; earthQuaking = false; earthFirstQuake = true;
       if (earthAnimFrame) { cancelAnimationFrame(earthAnimFrame); earthAnimFrame = null; }
       if (earthDrone) {
-        earthDrone.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
-        setTimeout(() => { try { earthDrone.osc1.stop(); earthDrone.osc2.stop(); } catch (e) { } earthDrone = null; }, 300);
+        earthDrone.gain.gain.setValueAtTime(earthDrone.gain.gain.value, audioCtx.currentTime);
+        earthDrone.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        setTimeout(() => { try { earthDrone.osc1.stop(); earthDrone.osc2.stop(); } catch (e) { } earthDrone = null; }, 600);
       } else { earthDrone = null; }
       if (earthBed) {
-        earthBed.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
-        setTimeout(() => { try { earthBed.source.stop(); } catch (e) { } earthBed = null; }, 300);
+        earthBed.gain.gain.setValueAtTime(earthBed.gain.gain.value, audioCtx.currentTime);
+        earthBed.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        setTimeout(() => { try { earthBed.source.stop(); } catch (e) { } earthBed = null; }, 600);
       } else { earthBed = null; }
       if (navigator.vibrate) navigator.vibrate(0);
       const ta = document.getElementById('earthTouch');
