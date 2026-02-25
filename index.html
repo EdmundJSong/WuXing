@@ -1250,7 +1250,9 @@
             fill="none" stroke-linecap="round" />
           <path class="water-stroke" id="ws2" d="M60 110 Q40 145 20 180" stroke="rgba(70,130,200,0.15)"
             stroke-width="11" fill="none" stroke-linecap="round" />
-          <path class="water-stroke" id="ws3" d="M140 60 Q125 100 170 180" stroke="rgba(70,130,200,0.15)"
+          <path class="water-stroke" id="ws3" d="M140 60 Q135 75 125 90" stroke="rgba(70,130,200,0.15)"
+            stroke-width="11" fill="none" stroke-linecap="round" />
+          <path class="water-stroke" id="ws4" d="M125 110 Q145 145 170 180" stroke="rgba(70,130,200,0.15)"
             stroke-width="11" fill="none" stroke-linecap="round" />
         </svg>
         <div class="water-bubble" id="waterBubble">
@@ -1965,11 +1967,11 @@
 
     // 水 stroke paths in SVG space (0-200)
     const WATER_STROKES = [
-      [{ x: 100, y: 15 }, { x: 100, y: 185 }],          // ws0: center vertical
-      [{ x: 100, y: 75 }, { x: 60, y: 55 }],            // ws1: left tick
-      [{ x: 100, y: 75 }, { x: 140, y: 55 }],           // ws2: right tick
-      [{ x: 100, y: 95 }, { x: 82, y: 115 }, { x: 65, y: 140 }, { x: 30, y: 180 }], // ws3: left falling
-      [{ x: 100, y: 95 }, { x: 118, y: 115 }, { x: 135, y: 140 }, { x: 170, y: 180 }] // ws4: right falling
+      [{ x: 100, y: 15 }, { x: 100, y: 70 }, { x: 100, y: 130 }, { x: 95, y: 185 }], // ws0: center vertical hook
+      [{ x: 30, y: 60 }, { x: 45, y: 55 }, { x: 60, y: 50 }, { x: 75, y: 75 }], // ws1: top left hook
+      [{ x: 60, y: 110 }, { x: 50, y: 125 }, { x: 40, y: 145 }, { x: 20, y: 180 }], // ws2: bottom left sweep
+      [{ x: 140, y: 60 }, { x: 135, y: 75 }, { x: 125, y: 90 }], // ws3: right dot/short sweep
+      [{ x: 125, y: 110 }, { x: 145, y: 145 }, { x: 170, y: 180 }] // ws4: bottom right sweep
     ];
 
     // Find closest point on any stroke to a target XY in SVG space
