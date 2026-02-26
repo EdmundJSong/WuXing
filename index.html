@@ -1669,7 +1669,7 @@
     </div>
     <div class="ruin-char" style="top: 60%; left: 70%; transform: rotate(25deg); filter: blur(4px);">木</div>
     <div class="ruin-char"
-      style="top: 40%; left: 40%; transform: rotate(5deg); font-size: 10rem; opacity: 0.03; clip-path: polygon(10% 0, 90% 0, 100% 80%, 0 100%);">
+      style="top: 40%; left: 40%; transform: rotate(5deg); font-size: 10rem; clip-path: polygon(10% 0, 90% 0, 100% 80%, 0 100%);">
       水</div>
     <div class="ruin-char" style="top: 75%; left: 20%; transform: rotate(-45deg); filter: blur(1px);">火</div>
     <div class="ruin-char"
@@ -1896,9 +1896,11 @@
       // Random fade 3-6 seconds per device
       const fadeDur = 3 + Math.random() * 3;
       const t = audioCtx ? audioCtx.currentTime : 0;
+      let actualWaitTime = 0;
 
       // Fade all active audio
       if (audioCtx && currentElement) {
+        actualWaitTime = fadeDur * 1000 + 200;
         const fadeNodes = [];
         if (woodLoop) fadeNodes.push(woodLoop.gain);
         if (woodSynth) fadeNodes.push(woodSynth.gain);
@@ -1914,7 +1916,7 @@
         });
       }
 
-      // Show end screen after fade completes
+      // Show end screen after fade completes (or instantly if no audio)
       setTimeout(() => {
         if (currentElement) cleanupCurrent();
         document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
@@ -1932,7 +1934,7 @@
         document.getElementById('lockedScreen').classList.add('hidden');
         document.getElementById('endScreen').classList.remove('hidden');
         currentElement = null;
-      }, fadeDur * 1000 + 200);
+      }, actualWaitTime);
     }
 
     // ═══════════════════════════════════
