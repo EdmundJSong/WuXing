@@ -2141,7 +2141,13 @@
       }
 
       db.ref(`energy/${element}`).transaction(currentValue => {
-        return Math.min(maxCap, (currentValue || 0) + baseAdd);
+        let val = currentValue || 0;
+        let curveMult = 1;
+        // Fast start, slow end curve
+        if (val < 20) curveMult = 3.0;
+        else if (val > 80) curveMult = 0.5;
+
+        return Math.min(maxCap, val + (baseAdd * curveMult));
       });
     }
 
@@ -2152,7 +2158,7 @@
       });
     });
 
-    function updateHiveUI() {
+    function updateHiveUI(forceSnap = false) {
       const container = document.getElementById('hiveProgressContainer');
       const line = document.getElementById('hiveProgressLine');
 
@@ -2165,9 +2171,19 @@
       let targetPct = Math.min(100, Math.max(0, currentHiveEnergy[currentElement] || 0));
       const yOffset = 100 - targetPct;
 
-      line.style.borderColor = HIVE_COLORS[currentElement];
-      line.style.boxShadow = `0 0 15px ${HIVE_COLORS[currentElement]}`;
-      line.style.transform = `translateY(${yOffset}%)`;
+      if (forceSnap) {
+        line.style.transition = 'none';
+        line.style.transform = `translateY(${yOffset}%)`;
+        line.style.borderColor = HIVE_COLORS[currentElement];
+        line.style.boxShadow = `0 0 15px ${HIVE_COLORS[currentElement]}`;
+        // Force reflow
+        void line.offsetWidth;
+        line.style.transition = 'transform 0.2s linear, border-color 0.5s ease';
+      } else {
+        line.style.borderColor = HIVE_COLORS[currentElement];
+        line.style.boxShadow = `0 0 15px ${HIVE_COLORS[currentElement]}`;
+        line.style.transform = `translateY(${yOffset}%)`;
+      }
     }
 
     // ═══════════════════════════════════
@@ -2175,14 +2191,17 @@
     function switchElement(n) {
       if (appStatus === 'live_harmony' || appStatus === 'live_aftermath') return;
       if (currentElement === n) return;
-      if (currentElement) cleanupCurrent();
+      if (currentElement) {
+        document.getElementById(currentElement + '-page').classList.remove('active');
+        cleanupCurrent();
+      }
       document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
       document.querySelector(`.nav-item.${n}`).classList.add('active');
       document.getElementById(n + '-page').classList.add('active');
       currentElement = n; initAudio();
       ({ metal: initMetal, wood: initWood, water: initWater, fire: initFire, earth: initEarth })[n]();
-      updateHiveUI();
+      updateHiveUI(true); // pass true to snap to the new height without CSS animation
     }
     function goHome() {
       cleanupCurrent();
@@ -2231,26 +2250,30 @@
         setTimeout(() => spark.remove(), 500);
       }
 
-      const t = audioCtx.currentTime, f = 800 + Math.random() * 600;
-      const m = audioCtx.createOscillator(), mg = audioCtx.createGain(), c = audioCtx.createOscillator(), e = audioCtx.createGain();
-      m.frequency.value = f * 1.4; mg.gain.value = f * 2; c.frequency.value = f;
-      m.connect(mg); mg.connect(c.frequency); c.connect(e); e.connect(audioCtx.destination);
-      e.gain.setValueAtTime(v * 0.25, t); e.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
-      m.start(t); c.start(t); m.stop(t + 1.6); c.stop(t + 1.6);
+      addHiveEnergy('metal', 0.5);
 
-      // E4 resonance: fades in during bell decay, very soft
-      const eTone = audioCtx.createOscillator();
-      const eGain = audioCtx.createGain();
-      eTone.type = 'sine';
-      eTone.frequency.value = 329.6; // E4
-      eTone.connect(eGain);
-      eGain.connect(audioCtx.destination);
-      eGain.gain.setValueAtTime(0, t);
-      eGain.gain.setValueAtTime(0, t + 0.4); // silent during attack
-      eGain.gain.linearRampToValueAtTime(v * 0.025, t + 1.0); // bloom in decay
-      eGain.gain.linearRampToValueAtTime(0, t + 3.0); // fade out
-      eTone.start(t);
-      eTone.stop(t + 3.1);
+      if (!appStatus.startsWith('destroy_')) {
+        const t = audioCtx.currentTime, f = 800 + Math.random() * 600;
+        const m = audioCtx.createOscillator(), mg = audioCtx.createGain(), c = audioCtx.createOscillator(), e = audioCtx.createGain();
+        m.frequency.value = f * 1.4; mg.gain.value = f * 2; c.frequency.value = f;
+        m.connect(mg); mg.connect(c.frequency); c.connect(e); e.connect(audioCtx.destination);
+        e.gain.setValueAtTime(v * 0.25, t); e.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+        m.start(t); c.start(t); m.stop(t + 1.6); c.stop(t + 1.6);
+
+        // E4 resonance: fades in during bell decay, very soft
+        const eTone = audioCtx.createOscillator();
+        const eGain = audioCtx.createGain();
+        eTone.type = 'sine';
+        eTone.frequency.value = 329.6; // E4
+        eTone.connect(eGain);
+        eGain.connect(audioCtx.destination);
+        eGain.gain.setValueAtTime(0, t);
+        eGain.gain.setValueAtTime(0, t + 0.4); // silent during attack
+        eGain.gain.linearRampToValueAtTime(v * 0.025, t + 1.0); // bloom in decay
+        eGain.gain.linearRampToValueAtTime(0, t + 3.0); // fade out
+        eTone.start(t);
+        eTone.stop(t + 3.1);
+      }
     }
     function cleanupMetal() {
       if (metalHandler) window.removeEventListener('devicemotion', metalHandler);
@@ -2546,16 +2569,19 @@
       requestAnimationFrame(animLeaf);
     }
 
-    function triggerWoodSample(idx) {
-      const note = WOOD_NOTES[idx];
-      const count = woodTapCounts[idx];
+    function triggerWoodSample(nId) {
+      if (!audioCtx) return;
+      addHiveEnergy('wood', 1.0); // Give energy on tap
+
+      const conf = WOOD_NODES.find(n => n.id === nId);
+      const count = woodTapCounts[nId];
       let key;
-      if (count < note.defCount) {
-        key = note.def;
+      if (count < conf.defCount) {
+        key = conf.def;
       } else {
-        key = note.keys[Math.floor(Math.random() * note.keys.length)];
+        key = conf.keys[Math.floor(Math.random() * conf.keys.length)];
       }
-      woodTapCounts[idx]++;
+      woodTapCounts[nId]++;
       playBuffer(key, false, 0.5);
     }
 
@@ -2924,8 +2950,21 @@
         const intensity = (nx + (1 - ny)) / 2;
         pad.style.background = `rgba(220,60,40,${intensity * 0.4})`;
       };
-      pad.addEventListener('touchstart', e => { e.preventDefault(); firePadActive = true; ghost.style.opacity = '0'; fireTouch(); mv(e.touches[0].clientX, e.touches[0].clientY); addHiveEnergy('fire', 0.2); });
-      pad.addEventListener('touchmove', e => { e.preventDefault(); if (firePadActive) { mv(e.touches[0].clientX, e.touches[0].clientY); addHiveEnergy('fire', 0.2); } });
+      // Energy throttle variables
+      let fireLastEnergyTime = 0;
+
+      pad.addEventListener('touchstart', e => { e.preventDefault(); firePadActive = true; ghost.style.opacity = '0'; fireTouch(); mv(e.touches[0].clientX, e.touches[0].clientY); addHiveEnergy('fire', 0.5); fireLastEnergyTime = Date.now(); });
+      pad.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if (firePadActive) {
+          mv(e.touches[0].clientX, e.touches[0].clientY);
+          let now = Date.now();
+          if (now - fireLastEnergyTime > 100) { // Max 10 updates a second
+            addHiveEnergy('fire', 0.2);
+            fireLastEnergyTime = now;
+          }
+        }
+      });
       pad.addEventListener('touchend', () => {
         firePadActive = false; cross.style.left = '50%'; cross.style.top = '50%';
         pad.style.background = 'transparent';
