@@ -1249,45 +1249,9 @@
       line-height: 1.7;
     }
 
-    /* ═══════════════════════════════════ */
-    /* HIVE PROGRESS & DESTRUCTION FX      */
-    /* ═══════════════════════════════════ */
-    .hive-progress-container {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 8000;
-      /* Ensure it is above all element layers but below the overlays */
-      display: none;
-    }
-
-    .hive-progress-line {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      transform: translateY(100%);
-      border-top: 3px solid transparent;
-      /* Thicker line */
-      box-shadow: 0 -10px 30px rgba(255, 255, 255, 0.2);
-      /* Base ambient glow */
-      transition: transform 0.2s linear, border-color 0.5s ease;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
-      /* Darkens screen below horizon */
-    }
-
     /* Destruction Glitch Modes */
     body.destruction-mode {
       animation: destructShake 0.5s infinite;
-    }
-
-    body.destruction-mode .hive-progress-line {
-      /* Progress bar drains while shaking */
-      transition: transform 0.05s linear !important;
     }
 
     /* Lighter element-specific destruction overrides */
@@ -1647,11 +1611,6 @@
     </div>
   </div>
 
-  <!-- HIVE PROGRESS -->
-  <div class="hive-progress-container" id="hiveProgressContainer">
-    <div class="hive-progress-line" id="hiveProgressLine"></div>
-  </div>
-
   <!-- HARMONY / MANDALA -->
   <div id="harmonyScreen">
     <div class="harmony-mandala" id="harmonyMandala">
@@ -1857,7 +1816,6 @@
       document.getElementById('bottomNav').style.display = 'none';
       document.getElementById('lockedScreen').classList.add('hidden');
       document.getElementById('endScreen').classList.add('hidden');
-      document.getElementById('hiveProgressContainer').style.display = 'none';
 
       const harm = document.getElementById('harmonyScreen');
       harm.style.display = 'flex';
@@ -1873,7 +1831,6 @@
       document.getElementById('bottomNav').style.display = 'none';
       document.getElementById('lockedScreen').classList.add('hidden');
       document.getElementById('endScreen').classList.add('hidden');
-      document.getElementById('hiveProgressContainer').style.display = 'none';
 
       const harm = document.getElementById('harmonyScreen');
       if (harm) harm.style.display = 'none';
@@ -1925,7 +1882,6 @@
         document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
         document.getElementById('landing').style.display = 'none';
         document.getElementById('bottomNav').style.display = 'none';
-        document.getElementById('hiveProgressContainer').style.display = 'none';
 
         const harm = document.getElementById('harmonyScreen');
         if (harm) harm.style.display = 'none';
@@ -2120,73 +2076,6 @@
     // ═══════════════════════════════════
     // NAV
     // ═══════════════════════════════════
-    // HIVE PROGRESS SYSTEM
-    // ═══════════════════════════════════
-    const ENERGY_TARGET = 100;
-    const INTERACTIONS_TO_FILL = 200;
-    const ENERGY_PER_INTERACTION = ENERGY_TARGET / INTERACTIONS_TO_FILL;
-    const HIVE_COLORS = { wood: 'rgba(76,153,76,0.8)', fire: 'rgba(220,60,40,0.8)', earth: 'rgba(139,94,60,0.8)', metal: 'rgba(212,175,55,0.8)', water: 'rgba(70,130,200,0.8)' };
-    let currentHiveEnergy = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
-
-    function addHiveEnergy(element, amountMultiplier = 1) {
-      if (window.location.search.includes('admin=true')) return;
-      if (!appStatus.startsWith('live_') && !appStatus.startsWith('destroy_') && appStatus !== 'live_all') return;
-
-      let maxCap = 100;
-      let activeUsers = globalActiveUsers || 1;
-      let baseAdd = (ENERGY_PER_INTERACTION * amountMultiplier) / activeUsers;
-
-      if (appStatus.startsWith('destroy_')) {
-        baseAdd = baseAdd * 5;
-      }
-
-      db.ref(`energy/${element}`).transaction(currentValue => {
-        let val = currentValue || 0;
-        let curveMult = 1;
-        // Fast start, slow end curve
-        if (val < 20) curveMult = 3.0;
-        else if (val > 80) curveMult = 0.5;
-
-        return Math.min(maxCap, val + (baseAdd * curveMult));
-      });
-    }
-
-    ['wood', 'fire', 'earth', 'metal', 'water'].forEach(el => {
-      db.ref(`energy/${el}`).on('value', snap => {
-        currentHiveEnergy[el] = snap.val() || 0;
-        updateHiveUI();
-      });
-    });
-
-    function updateHiveUI(forceSnap = false) {
-      const container = document.getElementById('hiveProgressContainer');
-      const line = document.getElementById('hiveProgressLine');
-
-      if (!currentElement || appStatus === 'live_harmony' || appStatus === 'live_aftermath') {
-        container.style.display = 'none';
-        return;
-      }
-
-      container.style.display = 'block';
-      let targetPct = Math.min(100, Math.max(0, currentHiveEnergy[currentElement] || 0));
-      const yOffset = 100 - targetPct;
-
-      if (forceSnap) {
-        line.style.transition = 'none';
-        line.style.transform = `translateY(${yOffset}%)`;
-        line.style.borderColor = HIVE_COLORS[currentElement];
-        line.style.boxShadow = `0 0 15px ${HIVE_COLORS[currentElement]}`;
-        // Force reflow
-        void line.offsetWidth;
-        line.style.transition = 'transform 0.2s linear, border-color 0.5s ease';
-      } else {
-        line.style.borderColor = HIVE_COLORS[currentElement];
-        line.style.boxShadow = `0 0 15px ${HIVE_COLORS[currentElement]}`;
-        line.style.transform = `translateY(${yOffset}%)`;
-      }
-    }
-
-    // ═══════════════════════════════════
     function openElement(n) { initAudio(); stopEnergyFlow(); document.getElementById('landing').style.display = 'none'; document.getElementById('bottomNav').style.display = 'flex'; switchElement(n); }
     function switchElement(n) {
       if (appStatus === 'live_harmony' || appStatus === 'live_aftermath') return;
@@ -2201,7 +2090,6 @@
       document.getElementById(n + '-page').classList.add('active');
       currentElement = n; initAudio();
       ({ metal: initMetal, wood: initWood, water: initWater, fire: initFire, earth: initEarth })[n]();
-      updateHiveUI(true); // pass true to snap to the new height without CSS animation
     }
     function goHome() {
       cleanupCurrent();
@@ -2250,8 +2138,6 @@
         setTimeout(() => spark.remove(), 500);
       }
 
-      addHiveEnergy('metal', 0.5);
-
       if (!appStatus.startsWith('destroy_')) {
         const t = audioCtx.currentTime, f = 800 + Math.random() * 600;
         const m = audioCtx.createOscillator(), mg = audioCtx.createGain(), c = audioCtx.createOscillator(), e = audioCtx.createGain();
@@ -2288,7 +2174,7 @@
     let leafTargetDeck = [], leafTargetIdx = 0;
 
     // Round robin config
-    const WOOD_NOTES = [
+    const WOOD_NODES = [
       { keys: ['C2', 'C3', 'C4', 'C5', 'C6'], def: 'C3', defCount: 2 },
       { keys: ['Db2', 'Db3', 'Db4', 'Db5'], def: 'Db3', defCount: 2 },
       { keys: ['F2', 'F3', 'F4', 'F5'], def: 'F3', defCount: 2 },
@@ -2414,7 +2300,7 @@
       const u = 1 - t;
       return {
         x: u * u * sx + 2 * u * t * cpx + t * t * ex,
-        y: u * u * sy + 2 * u * t * cpy + t * t * ey
+        y: u * u * sy + 2 * u * t * cpx + t * t * ey,
       };
     }
 
@@ -2571,7 +2457,6 @@
 
     function triggerWoodSample(nId) {
       if (!audioCtx) return;
-      addHiveEnergy('wood', 1.0); // Give energy on tap
 
       const conf = WOOD_NODES.find(n => n.id === nId);
       const count = woodTapCounts[nId];
@@ -2718,7 +2603,6 @@
       };
 
       waterOrientHandler = e => {
-        addHiveEnergy('water', 0.1); // ~6 per sec at 60Hz
         const beta = e.beta || 0, gamma = e.gamma || 0, alpha = e.alpha || 0;
         if (waterBaseAlpha === null) { waterBaseAlpha = alpha; waterSmoothedAlpha = 0; }
 
@@ -2953,14 +2837,13 @@
       // Energy throttle variables
       let fireLastEnergyTime = 0;
 
-      pad.addEventListener('touchstart', e => { e.preventDefault(); firePadActive = true; ghost.style.opacity = '0'; fireTouch(); mv(e.touches[0].clientX, e.touches[0].clientY); addHiveEnergy('fire', 0.5); fireLastEnergyTime = Date.now(); });
+      pad.addEventListener('touchstart', e => { e.preventDefault(); firePadActive = true; ghost.style.opacity = '0'; fireTouch(); mv(e.touches[0].clientX, e.touches[0].clientY); fireLastEnergyTime = Date.now(); });
       pad.addEventListener('touchmove', e => {
         e.preventDefault();
         if (firePadActive) {
           mv(e.touches[0].clientX, e.touches[0].clientY);
           let now = Date.now();
           if (now - fireLastEnergyTime > 100) { // Max 10 updates a second
-            addHiveEnergy('fire', 0.2);
             fireLastEnergyTime = now;
           }
         }
@@ -3108,7 +2991,6 @@
 
     function earthChargeLoop() {
       if (!earthStartTime) return;
-      addHiveEnergy('earth', 0.1); // ~6 per sec at 60fps
       const elapsed = Date.now() - earthStartTime;
       const ta = document.getElementById('earthTouch');
 
