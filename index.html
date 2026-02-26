@@ -1249,125 +1249,142 @@
       line-height: 1.7;
     }
 
-    /* Destruction Glitch Modes */
-    body.destruction-mode {
-      /* Keep body static to avoid full-screen re-rasterisation on mobile GPUs. */
-      /* Individual elements below still get shake / highlight effects. */
+    /* ═══════════════════════════════════
+       DESTRUCTION SYSTEM
+       ═══════════════════════════════════ */
+
+    /* Global destruction wrapper shake */
+    body.destruction-mode .element-page.active {
+      animation: destructGlobalShake 0.15s infinite;
     }
 
-    /* Lighter element-specific destruction overrides */
-    body.destruction-mode #water-page svg {
-      animation: destructShake 0.2s infinite alternate-reverse;
-      opacity: 0.5;
+    @keyframes destructGlobalShake {
+      0% { transform: translate(0, 0) rotate(0deg) skew(0deg); }
+      20% { transform: translate(var(--d-tx1, -3px), var(--d-ty1, 2px)) rotate(var(--d-rot, 0.3deg)) skew(var(--d-skew, 0.5deg)); }
+      40% { transform: translate(var(--d-tx2, 4px), var(--d-ty2, -3px)) rotate(calc(var(--d-rot, 0.3deg) * -1)) skew(calc(var(--d-skew, 0.5deg) * -1)); }
+      60% { transform: translate(var(--d-tx3, -2px), var(--d-ty3, 4px)) rotate(var(--d-rot, 0.3deg)) skew(var(--d-skew, 0.5deg)); }
+      80% { transform: translate(var(--d-tx4, 3px), var(--d-ty4, -1px)) rotate(calc(var(--d-rot, 0.3deg) * -0.5)) skew(0deg); }
+      100% { transform: translate(0, 0) rotate(0deg) skew(0deg); }
     }
 
-    body.destruction-mode #metal-page .metal-ring {
-      border-color: #f55;
-      transform: scale(0.9) skew(5deg);
+    /* Bg-char flicker in destruction */
+    body.destruction-mode .bg-char {
+      animation: destructCharFlicker 0.3s infinite steps(2);
     }
 
-    body.destruction-mode #fire-page #fireCanvas {
-      opacity: 0.6;
-      mix-blend-mode: color-dodge;
+    @keyframes destructCharFlicker {
+      0%, 100% { opacity: var(--d-char-op, 0.06); }
+      50% { opacity: calc(var(--d-char-op, 0.06) * 0.3); }
     }
 
-    body.destruction-mode #earth-page #earthTouch {
-      background: rgba(255, 50, 50, 0.2) !important;
-      border-color: #f55 !important;
+    /* Invert flash overlay */
+    #destructInvertFlash {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #fff; mix-blend-mode: difference;
+      opacity: 0; pointer-events: none; z-index: 8000;
+      transition: opacity 0.05s;
     }
+    #destructInvertFlash.flash { opacity: 1; }
 
+    /* ── Wood destruction ── */
     body.destruction-mode #wood-page .tree-node {
-      border-color: #f55;
-      background: rgba(255, 0, 0, 0.3);
+      border-color: var(--d-wood-border, rgba(76,153,76,0.3));
+      background: var(--d-wood-node-bg, transparent);
+      box-shadow: none;
+    }
+    body.destruction-mode #wood-page .bg-char {
+      color: var(--d-wood-char-color, rgba(76,153,76,0.06));
+    }
+    body.destruction-mode #wood-page svg path {
+      stroke: var(--d-wood-branch, rgba(76,153,76,0.12));
     }
 
-    @keyframes destructShake {
-      0% {
-        transform: translate(0, 0) rotate(0deg);
-      }
-
-      25% {
-        transform: translate(1px, 1px) rotate(0.1deg);
-      }
-
-      50% {
-        transform: translate(-1px, -2px) rotate(-0.1deg);
-      }
-
-      75% {
-        transform: translate(-3px, 0) rotate(0.2deg);
-      }
-
-      100% {
-        transform: translate(2px, 2px) rotate(-0.1deg);
-      }
+    /* ── Fire destruction ── */
+    body.destruction-mode #fire-page .fire-stroke {
+      stroke: var(--d-fire-stroke, rgba(220,60,40,0.18)) !important;
+      stroke-dasharray: none !important;
+      opacity: var(--d-fire-stroke-op, 0.18);
+    }
+    body.destruction-mode #fire-page {
+      filter: brightness(var(--d-fire-bright, 1)) contrast(var(--d-fire-contrast, 1));
     }
 
-    /* Aftermath */
+    /* ── Earth destruction ── */
+    body.destruction-mode #earth-page {
+      animation: destructGlobalShake 0.08s infinite, destructEarthExtra 0.1s infinite;
+    }
+    @keyframes destructEarthExtra {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(var(--d-earth-shake, 2px), calc(var(--d-earth-shake, 2px) * -1)); }
+      75% { transform: translate(calc(var(--d-earth-shake, 2px) * -1), var(--d-earth-shake, 2px)); }
+    }
+
+    /* ── Metal destruction ── */
+    body.destruction-mode #metal-page .metal-ring {
+      border-color: var(--d-metal-color, rgba(212,175,55,0.3));
+    }
+    body.destruction-mode #metal-page .metal-char {
+      color: var(--d-metal-color, rgba(212,175,55,0.45));
+    }
+    body.destruction-mode #metal-page .bg-char {
+      color: var(--d-metal-color, rgba(212,175,55,0.06));
+    }
+
+    /* ── Water destruction ── */
+    body.destruction-mode #water-page .water-stroke {
+      stroke: var(--d-water-stroke, rgba(70,130,200,0.15));
+    }
+    body.destruction-mode #water-page .water-bubble {
+      width: var(--d-water-bubble-size, 28px);
+      height: var(--d-water-bubble-size, 28px);
+    }
+
+    /* ═══════════════════════════════════
+       AFTERMATH
+       ═══════════════════════════════════ */
     #aftermathScreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #050505;
-      z-index: 9000;
-      display: none;
-      pointer-events: none;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #050505; z-index: 9000;
+      display: none; pointer-events: none;
     }
-
     #aftermathScreen .ruin-char {
       position: absolute;
       font-size: clamp(4rem, 15vw, 8rem);
       color: rgba(200, 200, 200, 0.15);
-      /* Bumped visibility for dark rooms */
       font-family: "Noto Serif SC", serif;
       filter: blur(1px);
-      /* Slight tightening so they look like ghosts, not smudges */
     }
 
-    /* Harmony */
+    /* ═══════════════════════════════════
+       HARMONY
+       ═══════════════════════════════════ */
     #harmonyScreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #000;
-      z-index: 9000;
-      display: none;
-      pointer-events: none;
-      justify-content: center;
-      align-items: center;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #000; z-index: 9000;
+      display: none; pointer-events: none;
+      justify-content: center; align-items: center;
     }
-
     .harmony-mandala {
-      position: relative;
-      width: 60vw;
-      height: 60vw;
+      position: relative; width: 60vw; height: 60vw;
       animation: rotateMandala 60s linear infinite;
     }
-
     .harmony-char {
       position: absolute;
       font-size: clamp(2rem, 8vw, 4rem);
       font-family: "Noto Serif SC", serif;
       transform-origin: 50% 50%;
     }
-
     @keyframes rotateMandala {
-      from {
-        transform: rotate(0deg);
-      }
-
-      to {
-        transform: rotate(360deg);
-      }
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 
 <body>
+  <!-- Destruction invert flash overlay -->
+  <div id="destructInvertFlash"></div>
+
   <div id="adminPanel"
     style="display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: rgba(0,0,0,0.85); color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #0f0;">
     <strong>ADMIN</strong> | Users: <span id="adminUserCount">0</span> |
@@ -1682,33 +1699,7 @@
 
     window.setAdminStatus = function (status) {
       db.ref('status').set(status);
-      if (status.startsWith('destroy_')) {
-        const el = status.replace('destroy_', '');
-        db.ref(`energy/${el}`).set(100);
-      }
-      if (status.startsWith('live_') && status !== 'live_all' && status !== 'live_harmony' && status !== 'live_aftermath') {
-        const el = status.replace('live_', '');
-        db.ref(`energy/${el}`).set(0);
-      }
     };
-
-    let destructionStartTimeAdmin = 0;
-    if (window.location.search.includes('admin=true')) {
-      setInterval(() => {
-        if (appStatus.startsWith('destroy_')) {
-          const el = appStatus.replace('destroy_', '');
-          if (destructionStartTimeAdmin === 0) destructionStartTimeAdmin = Date.now();
-          const elapsed = (Date.now() - destructionStartTimeAdmin) / 1000;
-          let drainTick = (4 + elapsed * 1.5) / 10; // Aggressive drain accelerating over 30s
-
-          db.ref(`energy/${el}`).transaction(val => {
-            return Math.max(0, (val || 0) - drainTick);
-          });
-        } else {
-          destructionStartTimeAdmin = 0;
-        }
-      }, 100);
-    }
 
     let isPresenceInitialized = false;
     function initPresence() {
@@ -1728,6 +1719,252 @@
       });
     }
 
+    // ═══════════════════════════════════
+    // DESTRUCTION ENGINE
+    // ═══════════════════════════════════
+    let destructionStartTime = 0, destructionFrame = null, destructionElement = null;
+    let destructInvertTimer = null, destructLeafTimer = null, destructCrackleTimer = null, destructPulseTimer = null;
+    const DESTRUCT_DURATION = 30000; // 30s baseline
+
+    function startDestruction(el) {
+      destructionElement = el;
+      destructionStartTime = Date.now();
+      document.body.classList.add('destruction-mode');
+      destructionTick();
+      startInvertFlashes();
+
+      // Element-specific auto-triggers
+      if (el === 'wood') startDestructWoodLeaves();
+      if (el === 'fire') startDestructFireCrackles();
+      if (el === 'earth') startDestructEarthPulses();
+    }
+
+    function stopDestruction() {
+      document.body.classList.remove('destruction-mode');
+      if (destructionFrame) { cancelAnimationFrame(destructionFrame); destructionFrame = null; }
+      if (destructInvertTimer) { clearInterval(destructInvertTimer); destructInvertTimer = null; }
+      if (destructLeafTimer) { clearInterval(destructLeafTimer); destructLeafTimer = null; }
+      if (destructCrackleTimer) { clearInterval(destructCrackleTimer); destructCrackleTimer = null; }
+      if (destructPulseTimer) { clearInterval(destructPulseTimer); destructPulseTimer = null; }
+      const flash = document.getElementById('destructInvertFlash');
+      if (flash) flash.classList.remove('flash');
+      destructionElement = null;
+      destructionStartTime = 0;
+      waterDestructSnap = 1.0;
+      // Reset CSS custom properties
+      document.documentElement.style.cssText = '';
+    }
+
+    function destructionTick() {
+      if (!destructionElement) return;
+      const elapsed = Date.now() - destructionStartTime;
+      const p = Math.min(1, elapsed / DESTRUCT_DURATION); // 0→1 over 30s
+      const el = destructionElement;
+      const root = document.documentElement;
+
+      // ── Global shake intensity ──
+      const shakeAmt = 2 + p * 8;
+      const rotAmt = 0.2 + p * 1.2;
+      const skewAmt = 0.3 + p * 2;
+      root.style.setProperty('--d-tx1', (-shakeAmt) + 'px');
+      root.style.setProperty('--d-ty1', (shakeAmt * 0.7) + 'px');
+      root.style.setProperty('--d-tx2', (shakeAmt * 1.2) + 'px');
+      root.style.setProperty('--d-ty2', (-shakeAmt) + 'px');
+      root.style.setProperty('--d-tx3', (-shakeAmt * 0.8) + 'px');
+      root.style.setProperty('--d-ty3', (shakeAmt * 1.1) + 'px');
+      root.style.setProperty('--d-tx4', (shakeAmt * 0.9) + 'px');
+      root.style.setProperty('--d-ty4', (-shakeAmt * 0.6) + 'px');
+      root.style.setProperty('--d-rot', rotAmt + 'deg');
+      root.style.setProperty('--d-skew', skewAmt + 'deg');
+
+      // ── Global bg-char flicker intensity ──
+      root.style.setProperty('--d-char-op', (0.06 - p * 0.04).toFixed(3));
+
+      // ── Per-element degradation ──
+      if (el === 'wood') destructTickWood(p);
+      else if (el === 'fire') destructTickFire(p);
+      else if (el === 'earth') destructTickEarth(p);
+      else if (el === 'metal') destructTickMetal(p);
+      else if (el === 'water') destructTickWater(p);
+
+      destructionFrame = requestAnimationFrame(destructionTick);
+    }
+
+    // ── INVERT FLASHES ──
+    function startInvertFlashes() {
+      const flash = document.getElementById('destructInvertFlash');
+      const doFlash = () => {
+        flash.classList.add('flash');
+        setTimeout(() => flash.classList.remove('flash'), 80 + Math.random() * 60);
+      };
+      destructInvertTimer = setInterval(() => {
+        const p = Math.min(1, (Date.now() - destructionStartTime) / DESTRUCT_DURATION);
+        // More frequent as destruction progresses: every 4s early, every 1.5s late
+        const interval = 4000 - p * 2500;
+        if (Math.random() < 100 / interval) doFlash();
+      }, 100);
+    }
+
+    // ── WOOD DESTRUCTION ──
+    function destructTickWood(p) {
+      const root = document.documentElement;
+      // Green → grey/brown
+      const r = Math.round(76 + p * 100);
+      const g = Math.round(153 - p * 100);
+      const b = Math.round(76 - p * 40);
+      root.style.setProperty('--d-wood-border', `rgba(${r},${g},${b},${0.3 - p * 0.2})`);
+      root.style.setProperty('--d-wood-node-bg', `rgba(${r},${g},${b},${p * 0.15})`);
+      root.style.setProperty('--d-wood-char-color', `rgba(${r},${g},${b},${0.06 - p * 0.04})`);
+      root.style.setProperty('--d-wood-branch', `rgba(${r},${g},${b},${0.12 - p * 0.08})`);
+
+      // Audio degradation
+      if (woodSynth) {
+        // Detune flat ~50 cents
+        woodSynth.osc1.detune.setTargetAtTime(2 - p * 50, audioCtx.currentTime, 0.3);
+        woodSynth.osc2.detune.setTargetAtTime(-2 - p * 50, audioCtx.currentTime, 0.3);
+      }
+      if (woodLoop) {
+        // Filter closing down
+        woodLoop.filter.frequency.setTargetAtTime(600 - p * 500, audioCtx.currentTime, 0.3);
+      }
+      if (woodSynthLfo) {
+        // LFO slows to near zero
+        woodSynthLfo.frequency.setTargetAtTime(Math.max(0.01, 0.15 - p * 0.14), audioCtx.currentTime, 0.3);
+      }
+    }
+
+    function startDestructWoodLeaves() {
+      // Spawn falling leaves without touch
+      destructLeafTimer = setInterval(() => {
+        if (!destructionElement || destructionElement !== 'wood') return;
+        if (typeof spawnTreeLeaf === 'function') spawnTreeLeaf();
+      }, 400);
+    }
+
+    // ── FIRE DESTRUCTION ──
+    function destructTickFire(p) {
+      const root = document.documentElement;
+      // All strokes glow brighter
+      const strokeOp = 0.18 + p * 0.7;
+      root.style.setProperty('--d-fire-stroke', `rgba(255,${Math.round(120 - p * 80)},${Math.round(40 - p * 30)},${strokeOp})`);
+      root.style.setProperty('--d-fire-stroke-op', strokeOp.toFixed(2));
+      // Brightness and contrast push
+      root.style.setProperty('--d-fire-bright', (1 + p * 0.6).toFixed(2));
+      root.style.setProperty('--d-fire-contrast', (1 + p * 0.5).toFixed(2));
+
+      // Audio: filter opens wide, playback rate up, detuning spreads
+      if (fireLoop) {
+        fireLoop.filter.frequency.setTargetAtTime(400 + p * 5600, audioCtx.currentTime, 0.3);
+        fireLoop.source.playbackRate.setTargetAtTime(1 + p * 0.8, audioCtx.currentTime, 0.3);
+      }
+      if (fireSynth) {
+        fireSynth.osc1.detune.setTargetAtTime(4 + p * 40, audioCtx.currentTime, 0.3);
+        fireSynth.osc2.detune.setTargetAtTime(-4 - p * 40, audioCtx.currentTime, 0.3);
+      }
+    }
+
+    function startDestructFireCrackles() {
+      destructCrackleTimer = setInterval(() => {
+        if (!destructionElement || destructionElement !== 'fire') return;
+        if (!audioCtx) return;
+        const p = Math.min(1, (Date.now() - destructionStartTime) / DESTRUCT_DURATION);
+        // Random crackles: more frequent as p increases
+        if (Math.random() < 0.3 + p * 0.5) {
+          const t = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.value = 1500 + Math.random() * 3000;
+          g.gain.setValueAtTime(0.05 + p * 0.1, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.08 + Math.random() * 0.12);
+          osc.connect(g); g.connect(audioCtx.destination);
+          osc.start(t); osc.stop(t + 0.25);
+        }
+      }, 200);
+    }
+
+    // ── EARTH DESTRUCTION ──
+    function destructTickEarth(p) {
+      const root = document.documentElement;
+      // Extra shake intensity
+      root.style.setProperty('--d-earth-shake', (3 + p * 12) + 'px');
+
+      // Audio: drone drops lower, filter opens
+      if (earthDrone) {
+        earthDrone.osc1.frequency.setTargetAtTime(55 - p * 15, audioCtx.currentTime, 0.3);
+        earthDrone.osc2.frequency.setTargetAtTime((55 - p * 15) * 1.002, audioCtx.currentTime, 0.3);
+        earthDrone.filter.frequency.setTargetAtTime(400 + p * 2000, audioCtx.currentTime, 0.3);
+        // Volume pushes up
+        earthDrone.gain.gain.setTargetAtTime(0.12 + p * 0.15, audioCtx.currentTime, 0.3);
+      }
+      // Continuous vibration
+      if (navigator.vibrate && p > 0.1) {
+        navigator.vibrate([30, 20]);
+      }
+    }
+
+    function startDestructEarthPulses() {
+      // Auto-trigger visual pulses without touch
+      destructPulseTimer = setInterval(() => {
+        if (!destructionElement || destructionElement !== 'earth') return;
+        const ta = document.getElementById('earthTouch');
+        if (ta) {
+          ta.style.boxShadow = '0 0 40px rgba(139,94,60,0.6), inset 0 0 25px rgba(139,94,60,0.3)';
+          setTimeout(() => { if (ta) ta.style.boxShadow = 'none'; }, 300);
+        }
+      }, 800);
+    }
+
+    // ── METAL DESTRUCTION ──
+    function destructTickMetal(p) {
+      const root = document.documentElement;
+      // Gold → rust: interpolate color
+      const r = Math.round(212 - p * 73);  // 212→139
+      const g = Math.round(175 - p * 81);  // 175→94
+      const b = Math.round(55 - p * 25);   // 55→30
+      root.style.setProperty('--d-metal-color', `rgba(${r},${g},${b},0.45)`);
+    }
+
+    // Metal bell audio degradation applied per-strike via progress check
+    function getMetalDestructionProgress() {
+      if (!destructionElement || destructionElement !== 'metal') return 0;
+      return Math.min(1, (Date.now() - destructionStartTime) / DESTRUCT_DURATION);
+    }
+
+    // ── WATER DESTRUCTION ──
+    let waterDestructSnap = 1.0; // 1 = full snap to strokes, 0 = free movement
+
+    function destructTickWater(p) {
+      const root = document.documentElement;
+      // Bubble grows
+      const bubbleSize = 28 + p * 30;
+      root.style.setProperty('--d-water-bubble-size', bubbleSize + 'px');
+      // Stroke colors shift red
+      const sr = Math.round(70 + p * 150);
+      const sg = Math.round(130 - p * 80);
+      const sb = Math.round(200 - p * 100);
+      root.style.setProperty('--d-water-stroke', `rgba(${sr},${sg},${sb},${0.15 + p * 0.15})`);
+
+      // Loosen stroke constraint
+      waterDestructSnap = 1 - p * 0.85; // goes from 1.0 → 0.15
+
+      // Audio chaos
+      if (waterLoop) {
+        waterLoop.source.playbackRate.setTargetAtTime(
+          0.5 + Math.random() * p * 2, audioCtx.currentTime, 0.1);
+        waterLoop.filter.frequency.setTargetAtTime(
+          200 + Math.random() * p * 5000, audioCtx.currentTime, 0.1);
+      }
+      if (waterLfo) {
+        waterLfo.frequency.setTargetAtTime(0.3 + p * 8, audioCtx.currentTime, 0.3);
+      }
+      if (waterSynth) {
+        // Ab2 detunes sharp
+        waterSynth.osc1.detune.setTargetAtTime(3 + p * 60, audioCtx.currentTime, 0.3);
+        waterSynth.osc2.detune.setTargetAtTime(-3 + p * 60, audioCtx.currentTime, 0.3);
+      }
+    }
+
     function onStatusChange(status) {
       if (status === appStatus) return;
 
@@ -1738,17 +1975,26 @@
         }
       }
 
+      // Clean up previous destruction if switching away
+      if (appStatus && appStatus.startsWith('destroy_') && !status.startsWith('destroy_')) {
+        stopDestruction();
+      }
+
       appStatus = status;
 
       if (status === 'locked') {
+        stopDestruction();
         document.getElementById('lockedScreen').classList.remove('hidden');
         document.getElementById('endScreen').classList.add('hidden');
         document.getElementById('permissionOverlay').classList.add('hidden');
       } else if (status === 'ended') {
+        stopDestruction();
         triggerSoftEnd();
       } else if (status === 'live_aftermath') {
+        stopDestruction();
         triggerAftermath();
       } else if (status === 'live_harmony') {
+        stopDestruction();
         triggerHarmony();
       } else {
         // Active Narrative States
@@ -1756,13 +2002,12 @@
         document.getElementById('endScreen').classList.add('hidden');
 
         if (!audioCtx) {
-          // Force permission
           document.getElementById('permissionOverlay').classList.remove('hidden');
         } else {
           document.getElementById('permissionOverlay').classList.add('hidden');
 
-          // Clean up any Harmony/Aftermath overlays if they exist (though reload handles mostly)
           const harm = document.getElementById('harmonyScreen'); if (harm) harm.style.display = 'none';
+          const aft = document.getElementById('aftermathScreen'); if (aft) aft.style.display = 'none';
 
           if (status === 'live') {
             document.getElementById('landing').style.display = 'flex';
@@ -1789,12 +2034,10 @@
             let el = status.replace('destroy_', '');
             document.getElementById('landing').style.display = 'none';
             document.getElementById('bottomNav').style.display = 'none';
-            document.body.classList.add('destruction-mode');
-            switchElement(el);
-          }
-
-          if (!status.startsWith('destroy_')) {
-            document.body.classList.remove('destruction-mode');
+            // Switch to the element if not already there
+            if (currentElement !== el) switchElement(el);
+            // Start destruction engine
+            startDestruction(el);
           }
         }
       }
@@ -2129,7 +2372,7 @@
         const spark = document.createElement('div');
         spark.className = 'metal-spark';
         const angle = Math.random() * Math.PI * 2;
-        const startRad = 70; // rough radius of the ring
+        const startRad = 70;
         const endRad = startRad + 30 + Math.random() * 40;
         spark.style.setProperty('--sx', `${Math.cos(angle) * startRad}px`);
         spark.style.setProperty('--sy', `${Math.sin(angle) * startRad}px`);
@@ -2140,28 +2383,43 @@
         setTimeout(() => spark.remove(), 500);
       }
 
-      if (!appStatus.startsWith('destroy_')) {
-        const t = audioCtx.currentTime, f = 800 + Math.random() * 600;
-        const m = audioCtx.createOscillator(), mg = audioCtx.createGain(), c = audioCtx.createOscillator(), e = audioCtx.createGain();
-        m.frequency.value = f * 1.4; mg.gain.value = f * 2; c.frequency.value = f;
-        m.connect(mg); mg.connect(c.frequency); c.connect(e); e.connect(audioCtx.destination);
-        e.gain.setValueAtTime(v * 0.25, t); e.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
-        m.start(t); c.start(t); m.stop(t + 1.6); c.stop(t + 1.6);
+      const dp = getMetalDestructionProgress();
+      const t = audioCtx.currentTime;
+      const f = 800 + Math.random() * 600;
 
-        // E4 resonance: fades in during bell decay, very soft
-        const eTone = audioCtx.createOscillator();
-        const eGain = audioCtx.createGain();
-        eTone.type = 'sine';
-        eTone.frequency.value = 329.6; // E4
-        eTone.connect(eGain);
-        eGain.connect(audioCtx.destination);
-        eGain.gain.setValueAtTime(0, t);
-        eGain.gain.setValueAtTime(0, t + 0.4); // silent during attack
-        eGain.gain.linearRampToValueAtTime(v * 0.025, t + 1.0); // bloom in decay
-        eGain.gain.linearRampToValueAtTime(0, t + 3.0); // fade out
-        eTone.start(t);
-        eTone.stop(t + 3.1);
-      }
+      // Bell strike — degrades with destruction progress
+      const bellVol = v * 0.25 * (1 - dp * 0.7); // gets quieter
+      const bellDecay = 1.5 + dp * 3; // decay stretches
+      const bellFilterFreq = f * (1 - dp * 0.5); // duller
+
+      const m = audioCtx.createOscillator(), mg = audioCtx.createGain();
+      const c = audioCtx.createOscillator(), e = audioCtx.createGain();
+      const bf = audioCtx.createBiquadFilter();
+      bf.type = 'lowpass'; bf.frequency.value = 6000 - dp * 4000; bf.Q.value = 1;
+
+      m.frequency.value = bellFilterFreq * 1.4;
+      mg.gain.value = f * 2 * (1 - dp * 0.6); // less FM depth = duller
+      c.frequency.value = bellFilterFreq;
+      m.connect(mg); mg.connect(c.frequency);
+      c.connect(bf); bf.connect(e); e.connect(audioCtx.destination);
+      e.gain.setValueAtTime(bellVol, t);
+      e.gain.exponentialRampToValueAtTime(0.001, t + bellDecay);
+      m.start(t); c.start(t); m.stop(t + bellDecay + 0.1); c.stop(t + bellDecay + 0.1);
+
+      // E4 resonance — sours during destruction
+      const eTone = audioCtx.createOscillator();
+      const eGain = audioCtx.createGain();
+      eTone.type = 'sine';
+      // E4 (329.6) drifts down toward D4 (293) during destruction
+      eTone.frequency.value = 329.6 - dp * 36.6;
+      eTone.connect(eGain);
+      eGain.connect(audioCtx.destination);
+      eGain.gain.setValueAtTime(0, t);
+      eGain.gain.setValueAtTime(0, t + 0.4);
+      eGain.gain.linearRampToValueAtTime(v * 0.025, t + 1.0);
+      eGain.gain.linearRampToValueAtTime(0, t + 3.0);
+      eTone.start(t);
+      eTone.stop(t + 3.1);
     }
     function cleanupMetal() {
       if (metalHandler) window.removeEventListener('devicemotion', metalHandler);
@@ -2469,7 +2727,17 @@
         key = conf.keys[Math.floor(Math.random() * conf.keys.length)];
       }
       woodTapCounts[nId]++;
-      playBuffer(key, false, 0.5);
+
+      // Destruction: slower, quieter, muffled
+      if (destructionElement === 'wood' && destructionStartTime) {
+        const dp = Math.min(1, (Date.now() - destructionStartTime) / DESTRUCT_DURATION);
+        const result = playBuffer(key, false, 0.5 * (1 - dp * 0.6));
+        if (result) {
+          result.source.playbackRate.value = 1 - dp * 0.3; // slows down
+        }
+      } else {
+        playBuffer(key, false, 0.5);
+      }
     }
 
     function cleanupWood() {
@@ -2586,21 +2854,28 @@
         const targetSvgY = normY * 200;
         const pt = closestWaterPoint(targetSvgX, targetSvgY);
 
+        // Interpolate between snapped and free based on destruction
+        const snap = typeof waterDestructSnap !== 'undefined' ? waterDestructSnap : 1;
+        const finalX = pt.x * snap + targetSvgX * (1 - snap);
+        const finalY = pt.y * snap + targetSvgY * (1 - snap);
+
         // Convert SVG coords to % of container
-        const pctX = (pt.x / 200) * 100;
-        const pctY = (pt.y / 200) * 100;
-        bubble.style.left = pctX + '%';
-        bubble.style.top = pctY + '%';
+        const pctX = (finalX / 200) * 100;
+        const pctY = (finalY / 200) * 100;
+        bubble.style.left = Math.max(0, Math.min(100, pctX)) + '%';
+        bubble.style.top = Math.max(0, Math.min(100, pctY)) + '%';
 
-        // Glow the active stroke
-        const paths = document.querySelectorAll('.water-stroke');
-        paths.forEach((p, i) => {
-          p.setAttribute('stroke', i === pt.stroke ? 'rgba(70,130,200,0.45)' : 'rgba(70,130,200,0.25)');
-        });
+        // Glow the active stroke (skip during destruction — CSS handles it)
+        if (snap > 0.5) {
+          const paths = document.querySelectorAll('.water-stroke');
+          paths.forEach((p, i) => {
+            p.setAttribute('stroke', i === pt.stroke ? 'rgba(70,130,200,0.45)' : 'rgba(70,130,200,0.25)');
+          });
+        }
 
-        // Audio: use normalized SVG position
-        const audioNx = pt.x / 200;
-        const audioNy = pt.y / 200;
+        // Audio: use final position
+        const audioNx = finalX / 200;
+        const audioNy = finalY / 200;
         return { nx: audioNx, ny: audioNy };
       };
 
