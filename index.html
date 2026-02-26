@@ -1251,7 +1251,8 @@
 
     /* Destruction Glitch Modes */
     body.destruction-mode {
-      animation: destructShake 0.5s infinite;
+      /* Keep body static to avoid full-screen re-rasterisation on mobile GPUs. */
+      /* Individual elements below still get shake / highlight effects. */
     }
 
     /* Lighter element-specific destruction overrides */
@@ -1657,6 +1658,7 @@
     // ═══════════════════════════════════
     // FIREBASE STATUS CONTROL
     // ═══════════════════════════════════
+
     // *** REPLACE with your Firebase config ***
     const FIREBASE_CONFIG = {
       databaseURL: 'https://wuxing-fa488-default-rtdb.firebaseio.com'
