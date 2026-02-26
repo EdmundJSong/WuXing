@@ -534,7 +534,7 @@
     .metal-ring-visual {
       width: clamp(140px, 40vw, 180px);
       height: clamp(140px, 40vw, 180px);
-      border: 2px solid rgba(212, 175, 55, 0.3);
+      border: 2.5px solid rgba(212, 175, 55, 0.45);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -550,7 +550,7 @@
     }
 
     .metal-shake-icon {
-      opacity: 0.45;
+      opacity: 0.7;
       animation: shakeCueAnim 1.2s ease-in-out infinite;
       transition: opacity 0.5s ease;
     }
@@ -698,10 +698,10 @@
       position: absolute;
       width: clamp(42px, 12vw, 52px);
       height: clamp(42px, 12vw, 52px);
-      border: 1px solid rgba(76, 153, 76, 0.1);
+      border: 1px solid rgba(76, 153, 76, 0.25);
       border-radius: 4px;
-      background: rgba(76, 153, 76, 0.02);
-      color: rgba(255, 255, 255, 0.4);
+      background: rgba(76, 153, 76, 0.06);
+      color: rgba(255, 255, 255, 0.6);
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(0.6rem, 2.5vw, 0.72rem);
       cursor: pointer;
@@ -794,7 +794,7 @@
 
     .water-tilt-hint {
       margin-bottom: clamp(8px, 1.5vh, 16px);
-      opacity: 0.35;
+      opacity: 0.6;
       animation: tiltCueAnim 3s ease-in-out infinite;
     }
 
@@ -1093,7 +1093,7 @@
     .earth-touch-area {
       width: clamp(160px, 42vw, 210px);
       height: clamp(160px, 42vw, 210px);
-      border: 2px solid rgba(139, 94, 60, 0.25);
+      border: 2.5px solid rgba(139, 94, 60, 0.35);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -1103,7 +1103,7 @@
     }
 
     .earth-thumbprint {
-      opacity: 0.35;
+      opacity: 0.55;
       transition: opacity 0.4s ease;
       animation: thumbPulse 2.5s ease-in-out infinite;
     }
@@ -1118,12 +1118,12 @@
       0%,
       100% {
         transform: scale(1);
-        opacity: 0.35;
+        opacity: 0.55;
       }
 
       50% {
         transform: scale(1.06);
-        opacity: 0.5;
+        opacity: 0.8;
       }
     }
 
@@ -1391,16 +1391,16 @@
       </div>
       <div class="water-stroke-area" id="waterStrokeArea">
         <svg class="water-char-svg" id="waterCharSvg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
-          <path class="water-stroke" id="ws0" d="M100 15 Q100 130 95 185" stroke="rgba(70,130,200,0.15)"
-            stroke-width="12" fill="none" stroke-linecap="round" />
-          <path class="water-stroke" id="ws1" d="M30 60 Q60 50 75 75" stroke="rgba(70,130,200,0.15)" stroke-width="10"
+          <path class="water-stroke" id="ws0" d="M100 15 Q100 130 95 185" stroke="rgba(70,130,200,0.25)"
+            stroke-width="14" fill="none" stroke-linecap="round" />
+          <path class="water-stroke" id="ws1" d="M30 60 Q60 50 75 75" stroke="rgba(70,130,200,0.25)" stroke-width="12"
             fill="none" stroke-linecap="round" />
-          <path class="water-stroke" id="ws2" d="M60 110 Q40 145 20 180" stroke="rgba(70,130,200,0.15)"
-            stroke-width="11" fill="none" stroke-linecap="round" />
-          <path class="water-stroke" id="ws3" d="M140 60 Q135 75 125 90" stroke="rgba(70,130,200,0.15)"
-            stroke-width="11" fill="none" stroke-linecap="round" />
-          <path class="water-stroke" id="ws4" d="M125 110 Q145 145 170 180" stroke="rgba(70,130,200,0.15)"
-            stroke-width="11" fill="none" stroke-linecap="round" />
+          <path class="water-stroke" id="ws2" d="M60 110 Q40 145 20 180" stroke="rgba(70,130,200,0.25)"
+            stroke-width="13" fill="none" stroke-linecap="round" />
+          <path class="water-stroke" id="ws3" d="M140 60 Q135 75 125 90" stroke="rgba(70,130,200,0.25)"
+            stroke-width="13" fill="none" stroke-linecap="round" />
+          <path class="water-stroke" id="ws4" d="M125 110 Q145 145 170 180" stroke="rgba(70,130,200,0.25)"
+            stroke-width="13" fill="none" stroke-linecap="round" />
         </svg>
         <div class="water-bubble" id="waterBubble">
           <div class="water-bubble-inner"></div>
@@ -1423,7 +1423,7 @@
     <div class="bg-char">火</div>
     <div class="interaction-area fire-layout">
       <div class="fire-xy-container">
-        <div class="xy-pad" id="firePad" style="border-color:rgba(220,60,40,0.15);max-width:180px;max-height:180px;">
+        <div class="xy-pad" id="firePad" style="border-color:rgba(220,60,40,0.25);max-width:180px;max-height:180px;">
           <div class="crosshair" id="fireCrosshair"></div>
           <div class="ghost-cursor fire-ghost" id="fireGhost"></div>
         </div>
@@ -1431,14 +1431,14 @@
       <div class="fire-stroke-area" id="fireStrokeArea">
         <svg class="fire-char-svg" id="fireCharSvg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
           <!-- 火 strokes as dashed outlines for tracing -->
-          <path class="fire-stroke" id="fs0" d="M70 80 Q60 95 55 105" stroke="rgba(220,60,40,0.18)" stroke-width="7"
+          <path class="fire-stroke" id="fs0" d="M70 80 Q60 95 55 105" stroke="rgba(220,60,40,0.28)" stroke-width="9"
             fill="none" stroke-linecap="round" stroke-dasharray="4 6" />
-          <path class="fire-stroke" id="fs1" d="M140 70 Q130 85 120 95" stroke="rgba(220,60,40,0.18)" stroke-width="7"
+          <path class="fire-stroke" id="fs1" d="M140 70 Q130 85 120 95" stroke="rgba(220,60,40,0.28)" stroke-width="9"
             fill="none" stroke-linecap="round" stroke-dasharray="4 6" />
-          <path class="fire-stroke" id="fs2" d="M100 35 Q100 100 40 170" stroke="rgba(220,60,40,0.18)" stroke-width="8"
+          <path class="fire-stroke" id="fs2" d="M100 35 Q100 100 40 170" stroke="rgba(220,60,40,0.28)" stroke-width="10"
             fill="none" stroke-linecap="round" stroke-dasharray="4 6" />
-          <path class="fire-stroke" id="fs3" d="M100 90 Q140 135 165 170" stroke="rgba(220,60,40,0.18)" stroke-width="8"
-            fill="none" stroke-linecap="round" stroke-dasharray="4 6" />
+          <path class="fire-stroke" id="fs3" d="M100 90 Q140 135 165 170" stroke="rgba(220,60,40,0.28)"
+            stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="4 6" />
         </svg>
         <div class="fire-flame-layer" id="fireFlameLayer"></div>
         <div class="fire-trace-ghost" id="fireTraceGhost"></div>
@@ -1961,14 +1961,14 @@
       branchPaths = [];
 
       // Trunk
-      paths += `<path d="M${rx} ${ry} Q${rx} ${ry - 40} ${ttx} ${tty}" stroke="rgba(76,153,76,0.15)" stroke-width="1.2" fill="none"/>`;
+      paths += `<path d="M${rx} ${ry} Q${rx} ${ry - 40} ${ttx} ${tty}" stroke="rgba(76,153,76,0.25)" stroke-width="1.5" fill="none"/>`;
 
       // Branches to each node
       TREE_NODES.forEach((n, i) => {
         const nx = n.x / 100 * vw, ny = n.y / 100 * vh;
         const cpx = (ttx + nx) / 2 + (((i % 3) - 1) * 15);
         const cpy = Math.min(tty, ny) + (Math.abs(tty - ny) * 0.3);
-        paths += `<path d="M${ttx} ${tty} Q${cpx} ${cpy} ${nx} ${ny}" stroke="rgba(76,153,76,0.12)" stroke-width="0.8" fill="none"/>`;
+        paths += `<path d="M${ttx} ${tty} Q${cpx} ${cpy} ${nx} ${ny}" stroke="rgba(76,153,76,0.25)" stroke-width="1.2" fill="none"/>`;
         // Store control points for leaf path sampling
         branchPaths.push({ sx: ttx, sy: tty, cpx, cpy, ex: nx, ey: ny });
       });
@@ -2081,14 +2081,14 @@
       const rotSpeed = 100 + Math.random() * 200;
       const swayAmp = 8 + Math.random() * 16;
       const swayFreq = 1.5 + Math.random() * 2;
-      const fillOp = 0.25 + Math.random() * 0.35;
+      const fillOp = 0.4 + Math.random() * 0.4;
 
       const leaf = document.createElement('div');
       leaf.className = 'tree-leaf';
       leaf.style.left = spawnX + 'px'; leaf.style.top = spawnY + 'px';
-      leaf.innerHTML = `<svg viewBox="0 0 20 20" fill="rgba(76,153,76,${fillOp})" stroke="rgba(76,153,76,0.3)" stroke-width="0.5">
+      leaf.innerHTML = `<svg viewBox="0 0 20 20" fill="rgba(76,153,76,${fillOp})" stroke="rgba(76,153,76,0.4)" stroke-width="0.5">
     <path d="M10 2 C6 6 3 10 4 14 C5 18 9 19 10 19 C11 19 15 18 16 14 C17 10 14 6 10 2Z"/>
-    <path d="M10 5 L10 17" fill="none" stroke="rgba(76,153,76,0.25)" stroke-width="0.4"/>
+    <path d="M10 5 L10 17" fill="none" stroke="rgba(76,153,76,0.4)" stroke-width="0.6"/>
   </svg>`;
 
       const startTime = performance.now();
@@ -2271,7 +2271,7 @@
         // Glow the active stroke
         const paths = document.querySelectorAll('.water-stroke');
         paths.forEach((p, i) => {
-          p.setAttribute('stroke', i === pt.stroke ? 'rgba(70,130,200,0.35)' : 'rgba(70,130,200,0.15)');
+          p.setAttribute('stroke', i === pt.stroke ? 'rgba(70,130,200,0.45)' : 'rgba(70,130,200,0.25)');
         });
 
         // Audio: use normalized SVG position
@@ -2356,7 +2356,7 @@
       if (hint) { hint.style.opacity = ''; hint.style.transition = ''; }
       const bubble = document.getElementById('waterBubble');
       if (bubble) { bubble.style.left = '50%'; bubble.style.top = '47.5%'; }
-      document.querySelectorAll('.water-stroke').forEach(p => p.setAttribute('stroke', 'rgba(70,130,200,0.15)'));
+      document.querySelectorAll('.water-stroke').forEach(p => p.setAttribute('stroke', 'rgba(70,130,200,0.25)'));
       if (waterLoop) {
         waterLoop.gain.gain.setValueAtTime(waterLoop.gain.gain.value, audioCtx.currentTime);
         waterLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
@@ -2557,10 +2557,10 @@
                 if (distToSegment(svgX, svgY, stroke[j].x, stroke[j].y, stroke[j + 1].x, stroke[j + 1].y) < FIRE_HIT_RADIUS) { near = true; break; }
               }
               if (near) {
-                const glow = Math.min(0.6, 0.25 + speed * 0.3);
+                const glow = Math.min(0.6, 0.35 + speed * 0.3);
                 p.setAttribute('stroke', `rgba(220,60,40,${glow})`);
                 p.setAttribute('stroke-dasharray', 'none');
-                setTimeout(() => { p.setAttribute('stroke', 'rgba(220,60,40,0.18)'); p.setAttribute('stroke-dasharray', '4 6'); }, 250);
+                setTimeout(() => { p.setAttribute('stroke', 'rgba(220,60,40,0.28)'); p.setAttribute('stroke-dasharray', '4 6'); }, 250);
               }
             });
           }
@@ -2613,7 +2613,7 @@
       const fl = document.getElementById('fireFlameLayer');
       if (fl) fl.innerHTML = '';
       const svg = document.getElementById('fireCharSvg');
-      if (svg) svg.querySelectorAll('.fire-stroke').forEach(p => { p.setAttribute('stroke', 'rgba(220,60,40,0.18)'); p.setAttribute('stroke-dasharray', '4 6'); });
+      if (svg) svg.querySelectorAll('.fire-stroke').forEach(p => { p.setAttribute('stroke', 'rgba(220,60,40,0.28)'); p.setAttribute('stroke-dasharray', '4 6'); });
     }
 
     // ═══════════════════════════════════
@@ -2665,7 +2665,7 @@
         earthQuakeTime = QUAKE_TIMES[Math.floor(Math.random() * QUAKE_TIMES.length)];
         earthDrone.gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
         if (earthBed) earthBed.gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-        ta.style.boxShadow = 'none'; ta.style.borderColor = 'rgba(139,94,60,0.25)'; ta.style.background = 'transparent';
+        ta.style.boxShadow = 'none'; ta.style.borderColor = 'rgba(139,94,60,0.35)'; ta.style.background = 'transparent';
         earthAnimFrame = requestAnimationFrame(earthChargeLoop);
         return;
       }
@@ -2722,7 +2722,7 @@
       if (earthAnimFrame) { cancelAnimationFrame(earthAnimFrame); earthAnimFrame = null; }
       if (navigator.vibrate) navigator.vibrate(0);
       const ta = document.getElementById('earthTouch');
-      ta.style.boxShadow = 'none'; ta.style.borderColor = 'rgba(139,94,60,0.25)'; ta.style.background = 'transparent';
+      ta.style.boxShadow = 'none'; ta.style.borderColor = 'rgba(139,94,60,0.35)'; ta.style.background = 'transparent';
       if (earthDrone) earthDrone.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
       if (earthBed) {
         earthBed.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
@@ -2756,7 +2756,7 @@
       } else { earthBed = null; }
       if (navigator.vibrate) navigator.vibrate(0);
       const ta = document.getElementById('earthTouch');
-      ta.style.boxShadow = 'none'; ta.style.borderColor = 'rgba(139,94,60,0.25)'; ta.style.background = 'transparent';
+      ta.style.boxShadow = 'none'; ta.style.borderColor = 'rgba(139,94,60,0.35)'; ta.style.background = 'transparent';
       ta.removeEventListener('touchstart', earthTS); ta.removeEventListener('touchend', earthTE); ta.removeEventListener('touchcancel', earthTE);
     }
 
