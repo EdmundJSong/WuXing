@@ -1248,10 +1248,162 @@
       opacity: 0.4;
       line-height: 1.7;
     }
+
+    /* ═══════════════════════════════════ */
+    /* HIVE PROGRESS & DESTRUCTION FX      */
+    /* ═══════════════════════════════════ */
+    .hive-progress-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 100;
+      display: none;
+      /* Only visible during live narrative phases */
+    }
+
+    .hive-progress-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /* Total potential height */
+      transform: translateY(100%);
+      /* Start fully hidden below screen */
+      border-top: 1px solid transparent;
+      transition: transform 0.2s linear, border-color 0.5s ease;
+    }
+
+    /* Destruction Glitch Modes */
+    body.destruction-mode {
+      animation: destructShake 0.5s infinite;
+    }
+
+    body.destruction-mode .hive-progress-line {
+      /* Progress bar drains while shaking */
+      transition: transform 0.05s linear !important;
+    }
+
+    body.destruction-mode .element-page {
+      filter: grayscale(0.6) contrast(1.8) hue-rotate(-15deg);
+    }
+
+    body.destruction-mode canvas,
+    body.destruction-mode svg {
+      filter: url(#goo) invert(0.1) sepia(0.8) hue-rotate(120deg) saturate(3) !important;
+    }
+
+    @keyframes destructShake {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      25% {
+        transform: translate(1px, 1px) rotate(0.1deg);
+        filter: contrast(1.2);
+      }
+
+      50% {
+        transform: translate(-1px, -2px) rotate(-0.1deg);
+      }
+
+      75% {
+        transform: translate(-3px, 0) rotate(0.2deg);
+        filter: contrast(0.8);
+      }
+
+      100% {
+        transform: translate(2px, 2px) rotate(-0.1deg);
+      }
+    }
+
+    /* Aftermath */
+    #aftermathScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #050505;
+      z-index: 9000;
+      display: none;
+      pointer-events: none;
+    }
+
+    #aftermathScreen .ruin-char {
+      position: absolute;
+      font-size: clamp(4rem, 15vw, 8rem);
+      color: rgba(200, 200, 200, 0.06);
+      font-family: "Noto Serif SC", serif;
+      filter: blur(2px);
+    }
+
+    /* Harmony */
+    #harmonyScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #000;
+      z-index: 9000;
+      display: none;
+      pointer-events: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .harmony-mandala {
+      position: relative;
+      width: 60vw;
+      height: 60vw;
+      animation: rotateMandala 60s linear infinite;
+    }
+
+    .harmony-char {
+      position: absolute;
+      font-size: clamp(2rem, 8vw, 4rem);
+      font-family: "Noto Serif SC", serif;
+      transform-origin: 50% 50%;
+    }
+
+    @keyframes rotateMandala {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
 <body>
+  <div id="adminPanel"
+    style="display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: rgba(0,0,0,0.85); color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #0f0;">
+    <strong>ADMIN</strong> | Users: <span id="adminUserCount">0</span> |
+    Status: <strong id="adminCurrentStatus" style="color: white;">loading...</strong> |
+    <button onclick="setAdminStatus('locked')">Locked</button>
+    <button onclick="setAdminStatus('live')">Live (Base)</button>
+    <button onclick="setAdminStatus('live_wood')">Wood</button>
+    <button onclick="setAdminStatus('live_fire')">Fire</button>
+    <button onclick="setAdminStatus('live_earth')">Earth</button>
+    <button onclick="setAdminStatus('live_metal')">Metal</button>
+    <button onclick="setAdminStatus('live_water')">Water</button>
+    <button onclick="setAdminStatus('live_all')">All</button>
+    <button onclick="setAdminStatus('live_harmony')">Harmony</button>
+    <button onclick="setAdminStatus('destroy_water')" style="color:#f55;">D:Water</button>
+    <button onclick="setAdminStatus('destroy_fire')" style="color:#f55;">D:Fire</button>
+    <button onclick="setAdminStatus('destroy_metal')" style="color:#f55;">D:Metal</button>
+    <button onclick="setAdminStatus('destroy_earth')" style="color:#f55;">D:Earth</button>
+    <button onclick="setAdminStatus('destroy_wood')" style="color:#f55;">D:Wood</button>
+    <button onclick="setAdminStatus('live_aftermath')">Aftermath</button>
+    <button onclick="setAdminStatus('ended')">Ended</button>
+  </div>
 
   <!-- SVG Filters -->
   <svg width="0" height="0" style="position:absolute; pointer-events:none;">
@@ -1475,6 +1627,39 @@
     </div>
   </div>
 
+  <!-- HIVE PROGRESS -->
+  <div class="hive-progress-container" id="hiveProgressContainer">
+    <div class="hive-progress-line" id="hiveProgressLine"></div>
+  </div>
+
+  <!-- HARMONY / MANDALA -->
+  <div id="harmonyScreen">
+    <div class="harmony-mandala" id="harmonyMandala">
+      <!-- Characters will be positioned by JS -->
+      <div class="harmony-char" style="top: 10%; left: 45%; color: rgba(212,175,55,0.7);">金</div>
+      <div class="harmony-char" style="top: 40%; left: 80%; color: rgba(76,153,76,0.7);">木</div>
+      <div class="harmony-char" style="top: 80%; left: 60%; color: rgba(70,130,200,0.7);">水</div>
+      <div class="harmony-char" style="top: 80%; left: 30%; color: rgba(220,60,40,0.7);">火</div>
+      <div class="harmony-char" style="top: 40%; left: 10%; color: rgba(139,94,60,0.7);">土</div>
+    </div>
+  </div>
+
+  <!-- AFTERMATH / RUINS -->
+  <div id="aftermathScreen">
+    <!-- Scattered Broken Characters -->
+    <div class="ruin-char"
+      style="top: 20%; left: 15%; transform: rotate(-15deg); clip-path: polygon(0 0, 100% 10%, 90% 100%, 10% 90%);">金
+    </div>
+    <div class="ruin-char" style="top: 60%; left: 70%; transform: rotate(25deg); filter: blur(4px);">木</div>
+    <div class="ruin-char"
+      style="top: 40%; left: 40%; transform: rotate(5deg); font-size: 10rem; opacity: 0.03; clip-path: polygon(10% 0, 90% 0, 100% 80%, 0 100%);">
+      水</div>
+    <div class="ruin-char" style="top: 75%; left: 20%; transform: rotate(-45deg); filter: blur(1px);">火</div>
+    <div class="ruin-char"
+      style="top: 15%; left: 60%; transform: rotate(12deg); clip-path: polygon(0 20%, 80% 0, 100% 100%, 20% 80%);">土
+    </div>
+  </div>
+
   <!-- Nav -->
   <div class="bottom-nav" id="bottomNav" style="display:none;">
     <button class="nav-item metal" onclick="switchElement('metal')"><span>金</span><span
@@ -1499,15 +1684,77 @@
     };
     firebase.initializeApp(FIREBASE_CONFIG);
     const db = firebase.database();
-    let appStatus = 'locked'; // locked | live | ended
+    let appStatus = 'locked'; // locked | live | ended | live_wood | destroy_water | etc.
+    let globalActiveUsers = 1; // Default to 1 to avoid division by zero
+
+    // Setup Admin Panel & Presence
+    if (window.location.search.includes('admin=true')) {
+      document.getElementById('adminPanel').style.display = 'block';
+      db.ref('users').on('value', snap => {
+        globalActiveUsers = Math.max(1, snap.numChildren());
+        document.getElementById('adminUserCount').textContent = snap.numChildren();
+      });
+      db.ref('status').on('value', snap => {
+        document.getElementById('adminCurrentStatus').textContent = snap.val() || 'unknown';
+      });
+    }
+
+    window.setAdminStatus = function (status) {
+      db.ref('status').set(status);
+      if (status.startsWith('destroy_')) {
+        const el = status.replace('destroy_', '');
+        db.ref(`energy/${el}`).set(100);
+      }
+      if (status.startsWith('live_') && status !== 'live_all' && status !== 'live_harmony' && status !== 'live_aftermath') {
+        const el = status.replace('live_', '');
+        db.ref(`energy/${el}`).set(0);
+      }
+    };
+
+    let destructionStartTimeAdmin = 0;
+    if (window.location.search.includes('admin=true')) {
+      setInterval(() => {
+        if (appStatus.startsWith('destroy_')) {
+          const el = appStatus.replace('destroy_', '');
+          if (destructionStartTimeAdmin === 0) destructionStartTimeAdmin = Date.now();
+          const elapsed = (Date.now() - destructionStartTimeAdmin) / 1000;
+          let drainTick = (4 + elapsed * 1.5) / 10; // Aggressive drain accelerating over 30s
+
+          db.ref(`energy/${el}`).transaction(val => {
+            return Math.max(0, (val || 0) - drainTick);
+          });
+        } else {
+          destructionStartTimeAdmin = 0;
+        }
+      }, 100);
+    }
+
+    let isPresenceInitialized = false;
+    function initPresence() {
+      if (isPresenceInitialized || window.location.search.includes('admin=true')) return;
+      isPresenceInitialized = true;
+      const connectedRef = db.ref('.info/connected');
+      const myConnectionsRef = db.ref('users');
+      connectedRef.on('value', (snap) => {
+        if (snap.val() === true) {
+          const con = myConnectionsRef.push();
+          con.onDisconnect().remove();
+          con.set(true);
+        }
+      });
+      db.ref('users').on('value', snap => {
+        globalActiveUsers = Math.max(1, snap.numChildren());
+      });
+    }
 
     function onStatusChange(status) {
       if (status === appStatus) return;
 
-      // If we are coming back from 'ended', force a clean reset
-      if (appStatus === 'ended' && (status === 'live' || status === 'locked')) {
-        window.location.reload();
-        return;
+      if (appStatus === 'ended' || appStatus === 'live_aftermath') {
+        if (status !== 'ended' && status !== 'live_aftermath') {
+          window.location.reload();
+          return;
+        }
       }
 
       appStatus = status;
@@ -1516,29 +1763,59 @@
         document.getElementById('lockedScreen').classList.remove('hidden');
         document.getElementById('endScreen').classList.add('hidden');
         document.getElementById('permissionOverlay').classList.add('hidden');
-      } else if (status === 'live') {
-        // Hide any status overlays first
+      } else if (status === 'ended') {
+        triggerSoftEnd();
+      } else if (status === 'live_aftermath') {
+        triggerAftermath();
+      } else if (status === 'live_harmony') {
+        triggerHarmony();
+      } else {
+        // Active Narrative States
         document.getElementById('lockedScreen').classList.add('hidden');
         document.getElementById('endScreen').classList.add('hidden');
 
         if (!audioCtx) {
-          // First‑time entry: show the permission overlay so the user can start
+          // Force permission
           document.getElementById('permissionOverlay').classList.remove('hidden');
         } else {
-          // Returning to LIVE after having already started once (e.g. after ENDED)
-          // Resume the normal UI without needing a page refresh.
           document.getElementById('permissionOverlay').classList.add('hidden');
-          document.getElementById('landing').style.display = 'flex';
-          document.getElementById('bottomNav').style.display = 'none';
-          currentElement = null;
-          document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
-          initLanding();
-          if (landingState !== 'wuxing') {
-            setTimeout(() => startEnergyFlow(landingState === 'sheng' ? 1 : -1), 100);
+
+          // Clean up any Harmony/Aftermath overlays if they exist (though reload handles mostly)
+          const harm = document.getElementById('harmonyOverlay'); if (harm) harm.style.display = 'none';
+
+          if (status === 'live') {
+            document.getElementById('landing').style.display = 'flex';
+            document.getElementById('bottomNav').style.display = 'none';
+            if (currentElement) {
+              const old = document.getElementById(currentElement + '-page');
+              if (old) old.classList.remove('active');
+            }
+            currentElement = null;
+            initLanding();
+            if (landingState !== 'wuxing') {
+              setTimeout(() => startEnergyFlow(landingState === 'sheng' ? 1 : -1), 100);
+            }
+          } else if (status === 'live_all') {
+            document.getElementById('landing').style.display = 'none';
+            document.getElementById('bottomNav').style.display = 'flex';
+            if (!currentElement) switchElement('wood');
+          } else if (status.startsWith('live_')) {
+            let el = status.replace('live_', '');
+            document.getElementById('landing').style.display = 'none';
+            document.getElementById('bottomNav').style.display = 'none';
+            switchElement(el);
+          } else if (status.startsWith('destroy_')) {
+            let el = status.replace('destroy_', '');
+            document.getElementById('landing').style.display = 'none';
+            document.getElementById('bottomNav').style.display = 'none';
+            document.body.classList.add('destruction-mode');
+            switchElement(el);
+          }
+
+          if (!status.startsWith('destroy_')) {
+            document.body.classList.remove('destruction-mode');
           }
         }
-      } else if (status === 'ended') {
-        triggerSoftEnd();
       }
     }
 
@@ -1552,6 +1829,51 @@
     setInterval(() => {
       db.ref('status').once('value', snap => { if (snap.val()) onStatusChange(snap.val()); });
     }, 30000);
+
+    function triggerHarmony() {
+      if (currentElement) { cleanupCurrent(); document.getElementById(currentElement + '-page').classList.remove('active'); currentElement = null; }
+      document.getElementById('permissionOverlay').classList.add('hidden');
+      document.getElementById('landing').style.display = 'none';
+      document.getElementById('bottomNav').style.display = 'none';
+      document.getElementById('lockedScreen').classList.add('hidden');
+      document.getElementById('endScreen').classList.add('hidden');
+      document.getElementById('hiveProgressContainer').style.display = 'none';
+
+      const harm = document.getElementById('harmonyScreen');
+      harm.style.display = 'flex';
+
+      const aft = document.getElementById('aftermathScreen');
+      if (aft) aft.style.display = 'none';
+    }
+
+    function triggerAftermath() {
+      if (currentElement) { cleanupCurrent(); document.getElementById(currentElement + '-page').classList.remove('active'); currentElement = null; }
+      document.getElementById('permissionOverlay').classList.add('hidden');
+      document.getElementById('landing').style.display = 'none';
+      document.getElementById('bottomNav').style.display = 'none';
+      document.getElementById('lockedScreen').classList.add('hidden');
+      document.getElementById('endScreen').classList.add('hidden');
+      document.getElementById('hiveProgressContainer').style.display = 'none';
+
+      const harm = document.getElementById('harmonyScreen');
+      if (harm) harm.style.display = 'none';
+      document.body.classList.remove('destruction-mode');
+
+      const aft = document.getElementById('aftermathScreen');
+      if (aft) aft.style.display = 'block';
+
+      // Barely audible noise floor to keep audio context alive
+      if (audioCtx && !window.aftermathOsc) {
+        window.aftermathOsc = audioCtx.createOscillator();
+        window.aftermathGain = audioCtx.createGain();
+        window.aftermathOsc.type = 'sine';
+        window.aftermathOsc.frequency.value = 20;
+        window.aftermathGain.gain.value = 0.001;
+        window.aftermathOsc.connect(window.aftermathGain);
+        window.aftermathGain.connect(audioCtx.destination);
+        window.aftermathOsc.start();
+      }
+    }
 
     function triggerSoftEnd() {
       // Random fade 3-6 seconds per device
@@ -1679,9 +2001,15 @@
       if (navigator.vibrate) navigator.vibrate(1);
       if ('wakeLock' in navigator) { try { await navigator.wakeLock.request('screen'); } catch (e) { } }
       await loadAllAudio();
+
+      initPresence(); // Track user connection for hive scaling
+
       document.getElementById('permissionOverlay').classList.add('hidden');
-      document.getElementById('landing').style.display = 'flex';
-      initLanding();
+
+      // Trigger routing based on whatever the current status is
+      let currentTrigger = appStatus;
+      appStatus = null;
+      onStatusChange(currentTrigger);
     });
 
     function hideCue(id) { const c = document.getElementById(id); if (c) { c.classList.remove('cue-visible'); c.classList.add('cue-hidden'); } }
@@ -1762,8 +2090,60 @@
     // ═══════════════════════════════════
     // NAV
     // ═══════════════════════════════════
+    // HIVE PROGRESS SYSTEM
+    // ═══════════════════════════════════
+    const ENERGY_TARGET = 100;
+    const INTERACTIONS_TO_FILL = 200;
+    const ENERGY_PER_INTERACTION = ENERGY_TARGET / INTERACTIONS_TO_FILL;
+    const HIVE_COLORS = { wood: 'rgba(76,153,76,0.8)', fire: 'rgba(220,60,40,0.8)', earth: 'rgba(139,94,60,0.8)', metal: 'rgba(212,175,55,0.8)', water: 'rgba(70,130,200,0.8)' };
+    let currentHiveEnergy = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+
+    function addHiveEnergy(element, amountMultiplier = 1) {
+      if (window.location.search.includes('admin=true')) return;
+      if (!appStatus.startsWith('live_') && !appStatus.startsWith('destroy_') && appStatus !== 'live_all') return;
+
+      let maxCap = 100;
+      let activeUsers = globalActiveUsers || 1;
+      let baseAdd = (ENERGY_PER_INTERACTION * amountMultiplier) / activeUsers;
+
+      if (appStatus.startsWith('destroy_')) {
+        baseAdd = baseAdd * 5;
+      }
+
+      db.ref(`energy/${element}`).transaction(currentValue => {
+        return Math.min(maxCap, (currentValue || 0) + baseAdd);
+      });
+    }
+
+    ['wood', 'fire', 'earth', 'metal', 'water'].forEach(el => {
+      db.ref(`energy/${el}`).on('value', snap => {
+        currentHiveEnergy[el] = snap.val() || 0;
+        updateHiveUI();
+      });
+    });
+
+    function updateHiveUI() {
+      const container = document.getElementById('hiveProgressContainer');
+      const line = document.getElementById('hiveProgressLine');
+
+      if (!currentElement || appStatus === 'live_harmony' || appStatus === 'live_aftermath') {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'block';
+      let targetPct = Math.min(100, Math.max(0, currentHiveEnergy[currentElement] || 0));
+      const yOffset = 100 - targetPct;
+
+      line.style.borderColor = HIVE_COLORS[currentElement];
+      line.style.boxShadow = `0 0 15px ${HIVE_COLORS[currentElement]}`;
+      line.style.transform = `translateY(${yOffset}%)`;
+    }
+
+    // ═══════════════════════════════════
     function openElement(n) { initAudio(); stopEnergyFlow(); document.getElementById('landing').style.display = 'none'; document.getElementById('bottomNav').style.display = 'flex'; switchElement(n); }
     function switchElement(n) {
+      if (appStatus === 'live_harmony' || appStatus === 'live_aftermath') return;
       if (currentElement === n) return;
       if (currentElement) cleanupCurrent();
       document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
@@ -1772,6 +2152,7 @@
       document.getElementById(n + '-page').classList.add('active');
       currentElement = n; initAudio();
       ({ metal: initMetal, wood: initWood, water: initWater, fire: initFire, earth: initEarth })[n]();
+      updateHiveUI();
     }
     function goHome() {
       cleanupCurrent();
@@ -2281,6 +2662,7 @@
       };
 
       waterOrientHandler = e => {
+        addHiveEnergy('water', 0.1); // ~6 per sec at 60Hz
         const beta = e.beta || 0, gamma = e.gamma || 0, alpha = e.alpha || 0;
         if (waterBaseAlpha === null) { waterBaseAlpha = alpha; waterSmoothedAlpha = 0; }
 
@@ -2512,8 +2894,8 @@
         const intensity = (nx + (1 - ny)) / 2;
         pad.style.background = `rgba(220,60,40,${intensity * 0.4})`;
       };
-      pad.addEventListener('touchstart', e => { e.preventDefault(); firePadActive = true; ghost.style.opacity = '0'; fireTouch(); mv(e.touches[0].clientX, e.touches[0].clientY); });
-      pad.addEventListener('touchmove', e => { e.preventDefault(); if (firePadActive) mv(e.touches[0].clientX, e.touches[0].clientY); });
+      pad.addEventListener('touchstart', e => { e.preventDefault(); firePadActive = true; ghost.style.opacity = '0'; fireTouch(); mv(e.touches[0].clientX, e.touches[0].clientY); addHiveEnergy('fire', 0.2); });
+      pad.addEventListener('touchmove', e => { e.preventDefault(); if (firePadActive) { mv(e.touches[0].clientX, e.touches[0].clientY); addHiveEnergy('fire', 0.2); } });
       pad.addEventListener('touchend', () => {
         firePadActive = false; cross.style.left = '50%'; cross.style.top = '50%';
         pad.style.background = 'transparent';
@@ -2657,6 +3039,7 @@
 
     function earthChargeLoop() {
       if (!earthStartTime) return;
+      addHiveEnergy('earth', 0.1); // ~6 per sec at 60fps
       const elapsed = Date.now() - earthStartTime;
       const ta = document.getElementById('earthTouch');
 
