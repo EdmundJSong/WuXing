@@ -1356,6 +1356,13 @@
 
     function onStatusChange(status) {
       if (status === appStatus) return;
+
+      // If we are coming back from 'ended', force a clean reset
+      if (appStatus === 'ended' && (status === 'live' || status === 'locked')) {
+        window.location.reload();
+        return;
+      }
+
       appStatus = status;
 
       if (status === 'locked') {
@@ -1363,9 +1370,26 @@
         document.getElementById('endScreen').classList.add('hidden');
         document.getElementById('permissionOverlay').classList.add('hidden');
       } else if (status === 'live') {
+        // Hide any status overlays first
         document.getElementById('lockedScreen').classList.add('hidden');
         document.getElementById('endScreen').classList.add('hidden');
-        if (!audioCtx) document.getElementById('permissionOverlay').classList.remove('hidden');
+
+        if (!audioCtx) {
+          // First‑time entry: show the permission overlay so the user can start
+          document.getElementById('permissionOverlay').classList.remove('hidden');
+        } else {
+          // Returning to LIVE after having already started once (e.g. after ENDED)
+          // Resume the normal UI without needing a page refresh.
+          document.getElementById('permissionOverlay').classList.add('hidden');
+          document.getElementById('landing').style.display = 'flex';
+          document.getElementById('bottomNav').style.display = 'none';
+          currentElement = null;
+          document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
+          initLanding();
+          if (landingState !== 'wuxing') {
+            setTimeout(() => startEnergyFlow(landingState === 'sheng' ? 1 : -1), 100);
+          }
+        }
       } else if (status === 'ended') {
         triggerSoftEnd();
       }
