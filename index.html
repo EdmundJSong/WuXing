@@ -1287,13 +1287,30 @@
       transition: transform 0.05s linear !important;
     }
 
-    body.destruction-mode .element-page {
-      filter: grayscale(0.6) contrast(1.8) hue-rotate(-15deg);
+    /* Lighter element-specific destruction overrides */
+    body.destruction-mode #water-page svg {
+      animation: destructShake 0.2s infinite alternate-reverse;
+      opacity: 0.5;
     }
 
-    body.destruction-mode canvas,
-    body.destruction-mode svg {
-      filter: url(#goo) invert(0.1) sepia(0.8) hue-rotate(120deg) saturate(3) !important;
+    body.destruction-mode #metal-page .metal-ring {
+      border-color: #f55;
+      transform: scale(0.9) skew(5deg);
+    }
+
+    body.destruction-mode #fire-page #fireCanvas {
+      opacity: 0.6;
+      mix-blend-mode: color-dodge;
+    }
+
+    body.destruction-mode #earth-page #earthTouch {
+      background: rgba(255, 50, 50, 0.2) !important;
+      border-color: #f55 !important;
+    }
+
+    body.destruction-mode #wood-page .tree-node {
+      border-color: #f55;
+      background: rgba(255, 0, 0, 0.3);
     }
 
     @keyframes destructShake {
@@ -1303,7 +1320,6 @@
 
       25% {
         transform: translate(1px, 1px) rotate(0.1deg);
-        filter: contrast(1.2);
       }
 
       50% {
@@ -1312,7 +1328,6 @@
 
       75% {
         transform: translate(-3px, 0) rotate(0.2deg);
-        filter: contrast(0.8);
       }
 
       100% {
@@ -1781,7 +1796,7 @@
           document.getElementById('permissionOverlay').classList.add('hidden');
 
           // Clean up any Harmony/Aftermath overlays if they exist (though reload handles mostly)
-          const harm = document.getElementById('harmonyOverlay'); if (harm) harm.style.display = 'none';
+          const harm = document.getElementById('harmonyScreen'); if (harm) harm.style.display = 'none';
 
           if (status === 'live') {
             document.getElementById('landing').style.display = 'flex';
