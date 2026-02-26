@@ -1351,9 +1351,11 @@
     #aftermathScreen .ruin-char {
       position: absolute;
       font-size: clamp(4rem, 15vw, 8rem);
-      color: rgba(200, 200, 200, 0.06);
+      color: rgba(200, 200, 200, 0.15);
+      /* Bumped visibility for dark rooms */
       font-family: "Noto Serif SC", serif;
-      filter: blur(2px);
+      filter: blur(1px);
+      /* Slight tightening so they look like ghosts, not smudges */
     }
 
     /* Harmony */
@@ -1918,6 +1920,14 @@
         document.querySelectorAll('.element-page').forEach(p => p.classList.remove('active'));
         document.getElementById('landing').style.display = 'none';
         document.getElementById('bottomNav').style.display = 'none';
+        document.getElementById('hiveProgressContainer').style.display = 'none';
+
+        const harm = document.getElementById('harmonyScreen');
+        if (harm) harm.style.display = 'none';
+        const aft = document.getElementById('aftermathScreen');
+        if (aft) aft.style.display = 'none';
+        document.body.classList.remove('destruction-mode');
+
         document.getElementById('permissionOverlay').classList.add('hidden');
         document.getElementById('lockedScreen').classList.add('hidden');
         document.getElementById('endScreen').classList.remove('hidden');
