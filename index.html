@@ -251,6 +251,17 @@
 
     .circle-el.c-metal {
       border-color: rgba(212, 175, 55, 0.3);
+      animation: fadeIn 0.6s ease forwards, breatheMetal 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes breatheMetal {
+      from {
+        box-shadow: 0 0 4px rgba(212, 175, 55, 0.05);
+      }
+
+      to {
+        box-shadow: 0 0 16px rgba(212, 175, 55, 0.25);
+      }
     }
 
     .circle-el.c-metal .char {
@@ -259,6 +270,17 @@
 
     .circle-el.c-wood {
       border-color: rgba(76, 153, 76, 0.3);
+      animation: fadeIn 0.6s ease forwards, breatheWood 4s ease-in-out infinite alternate 0.5s;
+    }
+
+    @keyframes breatheWood {
+      from {
+        box-shadow: 0 0 4px rgba(76, 153, 76, 0.05);
+      }
+
+      to {
+        box-shadow: 0 0 16px rgba(76, 153, 76, 0.25);
+      }
     }
 
     .circle-el.c-wood .char {
@@ -267,6 +289,17 @@
 
     .circle-el.c-water {
       border-color: rgba(70, 130, 200, 0.3);
+      animation: fadeIn 0.6s ease forwards, breatheWater 4s ease-in-out infinite alternate 1s;
+    }
+
+    @keyframes breatheWater {
+      from {
+        box-shadow: 0 0 4px rgba(70, 130, 200, 0.05);
+      }
+
+      to {
+        box-shadow: 0 0 16px rgba(70, 130, 200, 0.25);
+      }
     }
 
     .circle-el.c-water .char {
@@ -275,6 +308,17 @@
 
     .circle-el.c-fire {
       border-color: rgba(220, 60, 40, 0.3);
+      animation: fadeIn 0.6s ease forwards, breatheFire 4s ease-in-out infinite alternate 1.5s;
+    }
+
+    @keyframes breatheFire {
+      from {
+        box-shadow: 0 0 4px rgba(220, 60, 40, 0.05);
+      }
+
+      to {
+        box-shadow: 0 0 16px rgba(220, 60, 40, 0.25);
+      }
     }
 
     .circle-el.c-fire .char {
@@ -283,6 +327,17 @@
 
     .circle-el.c-earth {
       border-color: rgba(139, 94, 60, 0.3);
+      animation: fadeIn 0.6s ease forwards, breatheEarth 4s ease-in-out infinite alternate 2s;
+    }
+
+    @keyframes breatheEarth {
+      from {
+        box-shadow: 0 0 4px rgba(139, 94, 60, 0.05);
+      }
+
+      to {
+        box-shadow: 0 0 16px rgba(139, 94, 60, 0.25);
+      }
     }
 
     .circle-el.c-earth .char {
@@ -643,10 +698,10 @@
       position: absolute;
       width: clamp(42px, 12vw, 52px);
       height: clamp(42px, 12vw, 52px);
-      border: 1px solid rgba(76, 153, 76, 0.3);
+      border: 1px solid rgba(76, 153, 76, 0.1);
       border-radius: 4px;
-      background: rgba(76, 153, 76, 0.06);
-      color: rgba(255, 255, 255, 0.6);
+      background: rgba(76, 153, 76, 0.02);
+      color: rgba(255, 255, 255, 0.4);
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(0.6rem, 2.5vw, 0.72rem);
       cursor: pointer;
@@ -655,7 +710,17 @@
       justify-content: center;
       transform: translate(-50%, -50%);
       z-index: 10;
-      transition: all 0.2s;
+      transition: all 1.5s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+
+    .tree-node.actively-playing {
+      border-color: rgba(76, 153, 76, 0.9);
+      background: rgba(76, 153, 76, 0.2);
+      box-shadow: 0 0 12px rgba(76, 153, 76, 0.8), inset 0 0 4px rgba(76, 153, 76, 0.4);
+      color: rgba(255, 255, 255, 0.9);
+      transform: translate(-50%, -50%) scale(0.95);
+      transition: all 0.05s ease-out;
+      /* snap fast */
     }
 
     .tree-node:active {
@@ -665,9 +730,10 @@
     }
 
     .tree-node.invite-glow {
-      border-color: rgba(76, 153, 76, 0.6);
-      background: rgba(76, 153, 76, 0.15);
+      border-color: rgba(76, 153, 76, 0.4);
       box-shadow: 0 0 12px rgba(76, 153, 76, 0.15);
+      color: rgba(255, 255, 255, 0.7);
+      transition: all 0.6s ease;
     }
 
     .tree-root {
@@ -1863,6 +1929,15 @@
             nodes.forEach(nn => nn.classList.remove('invite-glow'));
           }
           triggerWoodSample(i);
+
+          // Visual bloom effect on hit
+          n.classList.add('actively-playing');
+          // Reset after frame to let transition handle the long fade
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              n.classList.remove('actively-playing');
+            });
+          });
         });
       });
 
