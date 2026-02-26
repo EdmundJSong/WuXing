@@ -1378,6 +1378,77 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+    /* ═══════════════════════════════════
+       ADMIN PANEL
+       ═══════════════════════════════════ */
+    #adminPanel {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 9999; background: #0a0a0a;
+      font-family: -apple-system, system-ui, sans-serif;
+      padding: 16px; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .admin-header {
+      text-align: center; margin-bottom: 16px;
+      border-bottom: 1px solid #333; padding-bottom: 12px;
+    }
+    .admin-title {
+      font-size: 20px; font-weight: 700; color: #fff;
+      letter-spacing: 2px; margin-bottom: 8px;
+    }
+    .admin-info {
+      display: flex; justify-content: center; gap: 16px;
+      font-size: 13px; color: #aaa;
+    }
+    .admin-info strong { color: #fff; }
+    .admin-section { margin-bottom: 12px; }
+    .admin-label {
+      font-size: 11px; color: #666; letter-spacing: 2px;
+      margin-bottom: 6px; padding-left: 4px;
+    }
+    .admin-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px; margin-bottom: 8px;
+    }
+    .admin-btn {
+      border: none; border-radius: 10px;
+      padding: 16px 8px; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: transform 0.1s, opacity 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .admin-btn:active { transform: scale(0.95); opacity: 0.8; }
+
+    /* System buttons */
+    .admin-btn.sys { background: #222; color: #ccc; border: 1px solid #444; }
+
+    /* Creation buttons */
+    .admin-btn.create.wood { background: #1a3318; color: #6d9; border: 1px solid #4c994c; }
+    .admin-btn.create.fire { background: #331a16; color: #f86; border: 1px solid #c44; }
+    .admin-btn.create.earth { background: #2a2116; color: #c96; border: 1px solid #8b5e3c; }
+    .admin-btn.create.metal { background: #2a2610; color: #da5; border: 1px solid #d4af37; }
+    .admin-btn.create.water { background: #0f1a2a; color: #6ae; border: 1px solid #4682c8; }
+    .admin-btn.create.harmony { background: #1a1028; color: #c8a; border: 1px solid #a6c; }
+
+    /* Destruction buttons */
+    .admin-btn.destroy {
+      background: #2a0a0a; color: #f66; border: 1px solid #c33;
+    }
+    .admin-btn.destroy.aftermath {
+      background: #1a0a1a; color: #a6a; border: 1px solid #636;
+    }
+
+    /* End button */
+    .admin-btn.end {
+      grid-column: 1 / -1;
+      background: #111; color: #888; border: 1px solid #333;
+      padding: 14px;
+    }
+
+    /* Active state highlight */
+    .admin-btn.admin-active {
+      box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(255,255,255,0.3);
+    }
+
   </style>
 </head>
 
@@ -1385,26 +1456,54 @@
   <!-- Destruction invert flash overlay -->
   <div id="destructInvertFlash"></div>
 
-  <div id="adminPanel"
-    style="display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: rgba(0,0,0,0.85); color: #0f0; padding: 10px; font-family: monospace; font-size: 11px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #0f0;">
-    <strong>ADMIN</strong> | Users: <span id="adminUserCount">0</span> |
-    Status: <strong id="adminCurrentStatus" style="color: white;">loading...</strong> |
-    <button onclick="setAdminStatus('locked')">Locked</button>
-    <button onclick="setAdminStatus('live')">Live (Base)</button>
-    <button onclick="setAdminStatus('live_wood')">Wood</button>
-    <button onclick="setAdminStatus('live_fire')">Fire</button>
-    <button onclick="setAdminStatus('live_earth')">Earth</button>
-    <button onclick="setAdminStatus('live_metal')">Metal</button>
-    <button onclick="setAdminStatus('live_water')">Water</button>
-    <button onclick="setAdminStatus('live_all')">All</button>
-    <button onclick="setAdminStatus('live_harmony')">Harmony</button>
-    <button onclick="setAdminStatus('destroy_water')" style="color:#f55;">D:Water</button>
-    <button onclick="setAdminStatus('destroy_fire')" style="color:#f55;">D:Fire</button>
-    <button onclick="setAdminStatus('destroy_metal')" style="color:#f55;">D:Metal</button>
-    <button onclick="setAdminStatus('destroy_earth')" style="color:#f55;">D:Earth</button>
-    <button onclick="setAdminStatus('destroy_wood')" style="color:#f55;">D:Wood</button>
-    <button onclick="setAdminStatus('live_aftermath')">Aftermath</button>
-    <button onclick="setAdminStatus('ended')">Ended</button>
+  <div id="adminPanel" style="display:none;">
+    <div class="admin-header">
+      <div class="admin-title">五行 ADMIN</div>
+      <div class="admin-info">
+        <span>Users: <strong id="adminUserCount">0</strong></span>
+        <span>Status: <strong id="adminCurrentStatus">loading...</strong></span>
+        <span id="adminTimer"></span>
+      </div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-label">SYSTEM</div>
+      <div class="admin-row">
+        <button class="admin-btn sys" onclick="setAdminStatus('locked')">🔒 Locked</button>
+        <button class="admin-btn sys" onclick="setAdminStatus('live')">▶ Live</button>
+        <button class="admin-btn sys" onclick="setAdminStatus('live_all')">⊞ All</button>
+      </div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-label">CREATION</div>
+      <div class="admin-row">
+        <button class="admin-btn create wood" onclick="setAdminStatus('live_wood')">木 Wood</button>
+        <button class="admin-btn create fire" onclick="setAdminStatus('live_fire')">火 Fire</button>
+        <button class="admin-btn create earth" onclick="setAdminStatus('live_earth')">土 Earth</button>
+      </div>
+      <div class="admin-row">
+        <button class="admin-btn create metal" onclick="setAdminStatus('live_metal')">金 Metal</button>
+        <button class="admin-btn create water" onclick="setAdminStatus('live_water')">水 Water</button>
+        <button class="admin-btn create harmony" onclick="setAdminStatus('live_harmony')">✦ Harmony</button>
+      </div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-label">DESTRUCTION</div>
+      <div class="admin-row">
+        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_wood')">木 Ashes</button>
+        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_fire')">火 Inferno</button>
+        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_earth')">土 Quake</button>
+      </div>
+      <div class="admin-row">
+        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_metal')">金 Rust</button>
+        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_water')">水 Tsunami</button>
+        <button class="admin-btn destroy aftermath" onclick="setAdminStatus('live_aftermath')">☠ Aftermath</button>
+      </div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-row">
+        <button class="admin-btn end" onclick="setAdminStatus('ended')">⏹ END SHOW</button>
+      </div>
+    </div>
   </div>
 
   <!-- SVG Filters -->
@@ -1685,16 +1784,47 @@
     let appStatus = 'locked'; // locked | live | ended | live_wood | destroy_water | etc.
     let globalActiveUsers = 1; // Default to 1 to avoid division by zero
 
+    const IS_ADMIN = window.location.search.includes('admin=true');
+    let adminTimerInterval = null, adminStatusTime = 0;
+
     // Setup Admin Panel & Presence
-    if (window.location.search.includes('admin=true')) {
+    if (IS_ADMIN) {
       document.getElementById('adminPanel').style.display = 'block';
+      // Hide everything else
+      document.getElementById('lockedScreen').classList.add('hidden');
+      document.getElementById('permissionOverlay').classList.add('hidden');
       db.ref('users').on('value', snap => {
         globalActiveUsers = Math.max(1, snap.numChildren());
         document.getElementById('adminUserCount').textContent = snap.numChildren();
       });
       db.ref('status').on('value', snap => {
-        document.getElementById('adminCurrentStatus').textContent = snap.val() || 'unknown';
+        const val = snap.val() || 'unknown';
+        document.getElementById('adminCurrentStatus').textContent = val;
+        adminStatusTime = Date.now();
+        // Highlight active button
+        document.querySelectorAll('.admin-btn').forEach(b => b.classList.remove('admin-active'));
+        const statusMap = {
+          'locked': '🔒 Locked', 'live': '▶ Live', 'live_all': '⊞ All',
+          'live_wood': '木 Wood', 'live_fire': '火 Fire', 'live_earth': '土 Earth',
+          'live_metal': '金 Metal', 'live_water': '水 Water', 'live_harmony': '✦ Harmony',
+          'destroy_wood': '木 Ashes', 'destroy_fire': '火 Inferno', 'destroy_earth': '土 Quake',
+          'destroy_metal': '金 Rust', 'destroy_water': '水 Tsunami',
+          'live_aftermath': '☠ Aftermath', 'ended': '⏹ END SHOW'
+        };
+        const label = statusMap[val];
+        if (label) {
+          document.querySelectorAll('.admin-btn').forEach(b => {
+            if (b.textContent.trim() === label.trim()) b.classList.add('admin-active');
+          });
+        }
       });
+      // Elapsed timer
+      adminTimerInterval = setInterval(() => {
+        if (adminStatusTime) {
+          const sec = Math.floor((Date.now() - adminStatusTime) / 1000);
+          document.getElementById('adminTimer').textContent = sec + 's';
+        }
+      }, 500);
     }
 
     window.setAdminStatus = function (status) {
@@ -1703,7 +1833,7 @@
 
     let isPresenceInitialized = false;
     function initPresence() {
-      if (isPresenceInitialized || window.location.search.includes('admin=true')) return;
+      if (isPresenceInitialized || IS_ADMIN) return;
       isPresenceInitialized = true;
       const connectedRef = db.ref('.info/connected');
       const myConnectionsRef = db.ref('users');
@@ -1967,6 +2097,9 @@
 
     function onStatusChange(status) {
       if (status === appStatus) return;
+
+      // Admin is remote control only — no rendering
+      if (IS_ADMIN) { appStatus = status; return; }
 
       if (appStatus === 'ended' || appStatus === 'live_aftermath') {
         if (status !== 'ended' && status !== 'live_aftermath') {
