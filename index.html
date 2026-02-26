@@ -101,10 +101,12 @@
       font-size: 1rem;
       letter-spacing: 0.1em;
       cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
     }
 
     .permission-btn:active {
       background: rgba(255, 255, 255, 0.15);
+      transform: scale(0.95);
     }
 
     .permission-status {
@@ -444,6 +446,12 @@
       align-items: center;
       justify-content: center;
       backdrop-filter: blur(8px);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .home-btn:active {
+      transform: scale(0.9);
+      background: rgba(0, 0, 0, 0.6);
     }
 
     .cue-visible {
@@ -495,6 +503,32 @@
     .metal-shake-icon svg {
       width: 70px;
       height: 70px;
+    }
+
+    .metal-spark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2px;
+      height: 15px;
+      background: #fff;
+      border-radius: 2px;
+      pointer-events: none;
+      box-shadow: 0 0 6px #d4af37, 0 0 12px #d4af37;
+      animation: metalSparkAnim 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      z-index: 5;
+    }
+
+    @keyframes metalSparkAnim {
+      0% {
+        transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) rotate(var(--rot)) scaleY(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(calc(-50% + var(--ex)), calc(-50% + var(--ey))) rotate(var(--rot)) scaleY(0.2);
+        opacity: 0;
+      }
     }
 
     @keyframes shakeCueAnim {
@@ -767,6 +801,25 @@
           rgba(50, 100, 180, 0.15) 70%, rgba(40, 80, 160, 0.05) 100%);
       box-shadow: 0 0 12px rgba(70, 130, 200, 0.3), inset 0 0 6px rgba(130, 185, 240, 0.2);
       position: relative;
+      animation: waterWobble 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes waterWobble {
+      0% {
+        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+      }
+
+      33% {
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      }
+
+      66% {
+        border-radius: 50% 60% 60% 40% / 40% 60% 50% 60%;
+      }
+
+      100% {
+        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+      }
     }
 
     .water-bubble-inner::before {
@@ -865,6 +918,7 @@
       pointer-events: none;
       overflow: hidden;
       z-index: 2;
+      filter: url('#goo');
     }
 
     .fire-trace-ghost {
@@ -945,6 +999,25 @@
      ═══════════════════════════════════ */
     #earth-page {
       background: radial-gradient(ellipse at 50% 50%, #1a1008 0%, #0d0904 100%);
+    }
+
+    #earth-page::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, transparent 40%, rgba(0, 0, 0, 0.8) 100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 100;
+    }
+
+    #earth-page.quaking::after {
+      opacity: 1;
+      transition: opacity 0.1s ease;
     }
 
     #earth-page .bg-char {
@@ -1113,6 +1186,14 @@
 </head>
 
 <body>
+
+  <!-- SVG Filters -->
+  <svg width="0" height="0" style="position:absolute; pointer-events:none;">
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+    </filter>
+  </svg>
 
   <!-- Locked screen -->
   <div class="status-screen" id="lockedScreen">
@@ -1656,6 +1737,23 @@
     function metalTap() { hideCue('metalCue'); triggerMetalRing(0.7); clearTimeout(metalIdleTimer); metalIdleTimer = setTimeout(() => showCue('metalCue'), 1000); }
     function triggerMetalRing(v) {
       const r = document.getElementById('metalRing'); r.classList.add('shaking'); setTimeout(() => r.classList.remove('shaking'), 200);
+
+      // Emit sparks
+      for (let i = 0; i < 6; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'metal-spark';
+        const angle = Math.random() * Math.PI * 2;
+        const startRad = 70; // rough radius of the ring
+        const endRad = startRad + 30 + Math.random() * 40;
+        spark.style.setProperty('--sx', `${Math.cos(angle) * startRad}px`);
+        spark.style.setProperty('--sy', `${Math.sin(angle) * startRad}px`);
+        spark.style.setProperty('--ex', `${Math.cos(angle) * endRad}px`);
+        spark.style.setProperty('--ey', `${Math.sin(angle) * endRad}px`);
+        spark.style.setProperty('--rot', `${angle + Math.PI / 2}rad`);
+        r.appendChild(spark);
+        setTimeout(() => spark.remove(), 500);
+      }
+
       const t = audioCtx.currentTime, f = 800 + Math.random() * 600;
       const m = audioCtx.createOscillator(), mg = audioCtx.createGain(), c = audioCtx.createOscillator(), e = audioCtx.createGain();
       m.frequency.value = f * 1.4; mg.gain.value = f * 2; c.frequency.value = f;
@@ -2530,7 +2628,8 @@
       if (navigator.vibrate) navigator.vibrate([200, 80, 300, 80, 200]);
       const page = document.getElementById('earth-page');
       page.style.animation = 'screenShake 0.6s ease';
-      setTimeout(() => { page.style.animation = ''; }, 700);
+      page.classList.add('quaking');
+      setTimeout(() => { page.style.animation = ''; page.classList.remove('quaking'); }, 700);
       ta.style.boxShadow = '0 0 120px rgba(139,94,60,0.7)';
       ta.style.borderColor = 'rgba(139,94,60,1)';
       ta.style.background = 'rgba(139,94,60,0.35)';
