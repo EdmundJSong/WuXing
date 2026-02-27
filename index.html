@@ -1294,11 +1294,11 @@
 
       0%,
       100% {
-        opacity: var(--d-char-op, 0.06);
+        opacity: 1;
       }
 
       50% {
-        opacity: calc(var(--d-char-op, 0.06) * 0.3);
+        opacity: 0.4;
       }
     }
 
@@ -2125,9 +2125,6 @@
       root.style.setProperty('--d-rot', rotAmt + 'deg');
       root.style.setProperty('--d-skew', skewAmt + 'deg');
 
-      // ── Global bg-char flicker intensity ──
-      root.style.setProperty('--d-char-op', (0.06 - p * 0.04).toFixed(3));
-
       // ── Per-element degradation ──
       if (el === 'wood') destructTickWood(p);
       else if (el === 'fire') destructTickFire(p);
@@ -2141,13 +2138,15 @@
     // ── WOOD DESTRUCTION ──
     function destructTickWood(p) {
       const root = document.documentElement;
-      // Green → grey/brown
+      // Green → grey/brown for nodes and branches
       const r = Math.round(76 + p * 100);
       const g = Math.round(153 - p * 100);
       const b = Math.round(76 - p * 40);
       root.style.setProperty('--d-wood-border', `rgba(${r},${g},${b},${0.3 - p * 0.2})`);
       root.style.setProperty('--d-wood-node-bg', `rgba(${r},${g},${b},${p * 0.15})`);
-      root.style.setProperty('--d-wood-char-color', `rgba(${r},${g},${b},${0.06 - p * 0.04})`);
+      // Bg-char: shift to white/grey with visible alpha
+      const charGrey = Math.round(120 + p * 60);
+      root.style.setProperty('--d-wood-char-color', `rgba(${charGrey},${charGrey},${charGrey},${0.12 - p * 0.05})`);
       root.style.setProperty('--d-wood-branch', `rgba(${r},${g},${b},${0.12 - p * 0.08})`);
 
       // Audio degradation
@@ -2167,11 +2166,64 @@
     }
 
     function startDestructWoodLeaves() {
-      // Spawn falling leaves without touch
+      // Profuse grey ash leaves falling downward
       destructLeafTimer = setInterval(() => {
         if (!destructionElement || destructionElement !== 'wood') return;
-        if (typeof spawnTreeLeaf === 'function') spawnTreeLeaf();
-      }, 400);
+        spawnDestructLeaf();
+      }, 120);
+    }
+
+    function spawnDestructLeaf() {
+      const layer = document.getElementById('treeLeafLayer');
+      if (!layer) return;
+      const container = document.getElementById('treeContainer');
+      if (!container) return;
+      const cw = container.clientWidth, ch = container.clientHeight;
+
+      // Random position across full width, start near top
+      const startX = Math.random() * cw;
+      const startY = -10 - Math.random() * 40;
+      const endY = ch + 20;
+
+      const dur = 2.0 + Math.random() * 1.5;
+      const rot = Math.random() * 360;
+      const rotSpeed = 80 + Math.random() * 200;
+      const driftX = (Math.random() - 0.5) * 80;
+      const swayAmp = 10 + Math.random() * 20;
+      const swayFreq = 1 + Math.random() * 2;
+      const size = 0.3 + Math.random() * 0.5;
+
+      // Grey/ash color with variation
+      const grey = Math.round(100 + Math.random() * 80);
+      const fillOp = 0.3 + Math.random() * 0.4;
+
+      const leaf = document.createElement('div');
+      leaf.className = 'tree-leaf';
+      leaf.style.left = startX + 'px';
+      leaf.style.top = startY + 'px';
+      leaf.innerHTML = `<svg viewBox="0 0 20 20" fill="rgba(${grey},${grey},${grey - 20},${fillOp})" stroke="rgba(${grey},${grey},${grey},0.3)" stroke-width="0.5">
+    <path d="M10 2 C6 6 3 10 4 14 C5 18 9 19 10 19 C11 19 15 18 16 14 C17 10 14 6 10 2Z"/>
+    <path d="M10 5 L10 17" fill="none" stroke="rgba(${grey},${grey},${grey},0.3)" stroke-width="0.6"/>
+  </svg>`;
+
+      const startTime = performance.now();
+
+      function animLeaf(now) {
+        const t = Math.min((now - startTime) / (dur * 1000), 1);
+        const px = startX + driftX * t + swayAmp * Math.sin(t * Math.PI * swayFreq);
+        const py = startY + (endY - startY) * t;
+        const r = rot + rotSpeed * t;
+        const op = t < 0.1 ? t / 0.1 : (t > 0.8 ? Math.max(0, (1 - t) / 0.2) : 1);
+
+        leaf.style.transform = `translate(-50%,-50%) rotate(${r}deg) scale(${size})`;
+        leaf.style.left = px + 'px';
+        leaf.style.top = py + 'px';
+        leaf.style.opacity = op * 0.7;
+        if (t < 1) requestAnimationFrame(animLeaf);
+        else leaf.remove();
+      }
+      layer.appendChild(leaf);
+      requestAnimationFrame(animLeaf);
     }
 
     // ── FIRE DESTRUCTION ──
