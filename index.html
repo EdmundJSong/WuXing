@@ -1289,6 +1289,7 @@
     body.destruction-mode #wood-page .bg-char {
       animation: destructFlickerWood 0.3s infinite steps(2);
     }
+
     body.destruction-mode #fire-page .bg-char,
     body.destruction-mode #earth-page .bg-char,
     body.destruction-mode #metal-page .bg-char,
@@ -1297,12 +1298,27 @@
     }
 
     @keyframes destructFlickerWood {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
     }
+
     @keyframes destructFlickerSubtle {
-      0%, 100% { opacity: 0.08; }
-      50% { opacity: 0.03; }
+
+      0%,
+      100% {
+        opacity: 0.08;
+      }
+
+      50% {
+        opacity: 0.03;
+      }
     }
 
     /* Invert flash removed — epilepsy risk */
@@ -1473,7 +1489,8 @@
 
     #aftermathScreen .ruin-char {
       position: absolute;
-      font-size: clamp(3rem, 12vw, 7rem);
+      font-size: clamp(6rem, 28vw, 15rem);
+      /* Massively increased for phones */
       color: rgba(200, 200, 200, 1);
       font-family: "Noto Serif SC", serif;
       z-index: 5;
@@ -1531,17 +1548,17 @@
     }
 
     .ash-layer-1 {
-      /* Box shadow trick: x y blur color */
+      /* Box shadow trick: x y blur color - Increased Opacity */
       box-shadow:
-        10vw 10vh 2px rgba(255, 255, 255, 0.1),
-        30vw 30vh 1px rgba(220, 60, 40, 0.2),
-        50vw 5vh 3px rgba(200, 200, 200, 0.1),
-        70vw 50vh 2px rgba(255, 255, 255, 0.05),
-        90vw 20vh 1px rgba(220, 60, 40, 0.15),
-        20vw 80vh 2px rgba(255, 255, 255, 0.1),
-        80vw 90vh 1px rgba(200, 200, 200, 0.15),
-        40vw 60vh 3px rgba(220, 60, 40, 0.2),
-        60vw 10vh 1px rgba(255, 255, 255, 0.1);
+        10vw 10vh 2px rgba(255, 255, 255, 0.4),
+        30vw 30vh 1px rgba(220, 60, 40, 0.6),
+        50vw 5vh 3px rgba(200, 200, 200, 0.45),
+        70vw 50vh 2px rgba(255, 255, 255, 0.35),
+        90vw 20vh 1px rgba(220, 60, 40, 0.55),
+        20vw 80vh 2px rgba(255, 255, 255, 0.4),
+        80vw 90vh 1px rgba(200, 200, 200, 0.45),
+        40vw 60vh 3px rgba(220, 60, 40, 0.6),
+        60vw 10vh 1px rgba(255, 255, 255, 0.4);
       width: 2px;
       height: 2px;
       border-radius: 50%;
@@ -1550,15 +1567,15 @@
 
     .ash-layer-2 {
       box-shadow:
-        15vw 5vh 1px rgba(255, 255, 255, 0.1),
-        35vw 45vh 2px rgba(220, 60, 40, 0.15),
-        55vw 25vh 1px rgba(200, 200, 200, 0.1),
-        75vw 65vh 3px rgba(255, 255, 255, 0.05),
-        95vw 85vh 1px rgba(220, 60, 40, 0.2),
-        25vw 35vh 2px rgba(255, 255, 255, 0.1),
-        85vw 15vh 1px rgba(200, 200, 200, 0.15),
-        45vw 75vh 2px rgba(220, 60, 40, 0.1),
-        65vw 95vh 1px rgba(255, 255, 255, 0.1);
+        15vw 5vh 1px rgba(255, 255, 255, 0.4),
+        35vw 45vh 2px rgba(220, 60, 40, 0.6),
+        55vw 25vh 1px rgba(200, 200, 200, 0.35),
+        75vw 65vh 3px rgba(255, 255, 255, 0.35),
+        95vw 85vh 1px rgba(220, 60, 40, 0.65),
+        25vw 35vh 2px rgba(255, 255, 255, 0.4),
+        85vw 15vh 1px rgba(200, 200, 200, 0.45),
+        45vw 75vh 2px rgba(220, 60, 40, 0.5),
+        65vw 95vh 1px rgba(255, 255, 255, 0.4);
       width: 3px;
       height: 3px;
       border-radius: 50%;
@@ -1569,15 +1586,15 @@
 
     .ash-layer-3 {
       box-shadow:
-        5vw 90vh 2px rgba(255, 255, 255, 0.08),
-        25vw 10vh 1px rgba(220, 60, 40, 0.12),
-        45vw 40vh 3px rgba(200, 200, 200, 0.1),
-        65vw 20vh 1px rgba(255, 255, 255, 0.05),
-        85vw 50vh 2px rgba(220, 60, 40, 0.15),
-        15vw 60vh 1px rgba(255, 255, 255, 0.1),
-        75vw 30vh 2px rgba(200, 200, 200, 0.12),
-        35vw 80vh 1px rgba(220, 60, 40, 0.1),
-        95vw 70vh 2px rgba(255, 255, 255, 0.08);
+        5vw 90vh 2px rgba(255, 255, 255, 0.38),
+        25vw 10vh 1px rgba(220, 60, 40, 0.45),
+        45vw 40vh 3px rgba(200, 200, 200, 0.4),
+        65vw 20vh 1px rgba(255, 255, 255, 0.35),
+        85vw 50vh 2px rgba(220, 60, 40, 0.55),
+        15vw 60vh 1px rgba(255, 255, 255, 0.4),
+        75vw 30vh 2px rgba(200, 200, 200, 0.45),
+        35vw 80vh 1px rgba(220, 60, 40, 0.4),
+        95vw 70vh 2px rgba(255, 255, 255, 0.38);
       width: 4px;
       height: 4px;
       border-radius: 50%;
