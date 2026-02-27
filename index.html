@@ -356,6 +356,7 @@
       height: 100%;
       flex-direction: column;
       overflow: hidden;
+      touch-action: none;
     }
 
     .element-page.active {
@@ -1277,14 +1278,7 @@
       50% { opacity: calc(var(--d-char-op, 0.06) * 0.3); }
     }
 
-    /* Invert flash overlay */
-    #destructInvertFlash {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: #fff; mix-blend-mode: difference;
-      opacity: 0; pointer-events: none; z-index: 8000;
-      transition: opacity 0.05s;
-    }
-    #destructInvertFlash.flash { opacity: 1; }
+    /* Invert flash removed — epilepsy risk */
 
     /* ── Wood destruction ── */
     body.destruction-mode #wood-page .tree-node {
@@ -1453,8 +1447,6 @@
 </head>
 
 <body>
-  <!-- Destruction invert flash overlay -->
-  <div id="destructInvertFlash"></div>
 
   <div id="adminPanel" style="display:none;">
     <div class="admin-header">
@@ -1853,7 +1845,7 @@
     // DESTRUCTION ENGINE
     // ═══════════════════════════════════
     let destructionStartTime = 0, destructionFrame = null, destructionElement = null;
-    let destructInvertTimer = null, destructLeafTimer = null, destructCrackleTimer = null, destructPulseTimer = null;
+    let destructLeafTimer = null, destructCrackleTimer = null, destructPulseTimer = null;
     const DESTRUCT_DURATION = 30000; // 30s baseline
 
     function startDestruction(el) {
@@ -1861,7 +1853,6 @@
       destructionStartTime = Date.now();
       document.body.classList.add('destruction-mode');
       destructionTick();
-      startInvertFlashes();
 
       // Element-specific auto-triggers
       if (el === 'wood') startDestructWoodLeaves();
@@ -1872,12 +1863,9 @@
     function stopDestruction() {
       document.body.classList.remove('destruction-mode');
       if (destructionFrame) { cancelAnimationFrame(destructionFrame); destructionFrame = null; }
-      if (destructInvertTimer) { clearInterval(destructInvertTimer); destructInvertTimer = null; }
       if (destructLeafTimer) { clearInterval(destructLeafTimer); destructLeafTimer = null; }
       if (destructCrackleTimer) { clearInterval(destructCrackleTimer); destructCrackleTimer = null; }
       if (destructPulseTimer) { clearInterval(destructPulseTimer); destructPulseTimer = null; }
-      const flash = document.getElementById('destructInvertFlash');
-      if (flash) flash.classList.remove('flash');
       destructionElement = null;
       destructionStartTime = 0;
       waterDestructSnap = 1.0;
@@ -1918,21 +1906,6 @@
       else if (el === 'water') destructTickWater(p);
 
       destructionFrame = requestAnimationFrame(destructionTick);
-    }
-
-    // ── INVERT FLASHES ──
-    function startInvertFlashes() {
-      const flash = document.getElementById('destructInvertFlash');
-      const doFlash = () => {
-        flash.classList.add('flash');
-        setTimeout(() => flash.classList.remove('flash'), 80 + Math.random() * 60);
-      };
-      destructInvertTimer = setInterval(() => {
-        const p = Math.min(1, (Date.now() - destructionStartTime) / DESTRUCT_DURATION);
-        // More frequent as destruction progresses: every 4s early, every 1.5s late
-        const interval = 4000 - p * 2500;
-        if (Math.random() < 100 / interval) doFlash();
-      }, 100);
     }
 
     // ── WOOD DESTRUCTION ──
