@@ -1260,12 +1260,29 @@
     }
 
     @keyframes destructGlobalShake {
-      0% { transform: translate(0, 0) rotate(0deg) skew(0deg); }
-      20% { transform: translate(var(--d-tx1, -3px), var(--d-ty1, 2px)) rotate(var(--d-rot, 0.3deg)) skew(var(--d-skew, 0.5deg)); }
-      40% { transform: translate(var(--d-tx2, 4px), var(--d-ty2, -3px)) rotate(calc(var(--d-rot, 0.3deg) * -1)) skew(calc(var(--d-skew, 0.5deg) * -1)); }
-      60% { transform: translate(var(--d-tx3, -2px), var(--d-ty3, 4px)) rotate(var(--d-rot, 0.3deg)) skew(var(--d-skew, 0.5deg)); }
-      80% { transform: translate(var(--d-tx4, 3px), var(--d-ty4, -1px)) rotate(calc(var(--d-rot, 0.3deg) * -0.5)) skew(0deg); }
-      100% { transform: translate(0, 0) rotate(0deg) skew(0deg); }
+      0% {
+        transform: translate(0, 0) rotate(0deg) skew(0deg);
+      }
+
+      20% {
+        transform: translate(var(--d-tx1, -3px), var(--d-ty1, 2px)) rotate(var(--d-rot, 0.3deg)) skew(var(--d-skew, 0.5deg));
+      }
+
+      40% {
+        transform: translate(var(--d-tx2, 4px), var(--d-ty2, -3px)) rotate(calc(var(--d-rot, 0.3deg) * -1)) skew(calc(var(--d-skew, 0.5deg) * -1));
+      }
+
+      60% {
+        transform: translate(var(--d-tx3, -2px), var(--d-ty3, 4px)) rotate(var(--d-rot, 0.3deg)) skew(var(--d-skew, 0.5deg));
+      }
+
+      80% {
+        transform: translate(var(--d-tx4, 3px), var(--d-ty4, -1px)) rotate(calc(var(--d-rot, 0.3deg) * -0.5)) skew(0deg);
+      }
+
+      100% {
+        transform: translate(0, 0) rotate(0deg) skew(0deg);
+      }
     }
 
     /* Bg-char flicker in destruction */
@@ -1274,31 +1291,41 @@
     }
 
     @keyframes destructCharFlicker {
-      0%, 100% { opacity: var(--d-char-op, 0.06); }
-      50% { opacity: calc(var(--d-char-op, 0.06) * 0.3); }
+
+      0%,
+      100% {
+        opacity: var(--d-char-op, 0.06);
+      }
+
+      50% {
+        opacity: calc(var(--d-char-op, 0.06) * 0.3);
+      }
     }
 
     /* Invert flash removed — epilepsy risk */
 
     /* ── Wood destruction ── */
     body.destruction-mode #wood-page .tree-node {
-      border-color: var(--d-wood-border, rgba(76,153,76,0.3));
+      border-color: var(--d-wood-border, rgba(76, 153, 76, 0.3));
       background: var(--d-wood-node-bg, transparent);
       box-shadow: none;
     }
+
     body.destruction-mode #wood-page .bg-char {
-      color: var(--d-wood-char-color, rgba(76,153,76,0.06));
+      color: var(--d-wood-char-color, rgba(76, 153, 76, 0.06));
     }
+
     body.destruction-mode #wood-page svg path {
-      stroke: var(--d-wood-branch, rgba(76,153,76,0.12));
+      stroke: var(--d-wood-branch, rgba(76, 153, 76, 0.12));
     }
 
     /* ── Fire destruction ── */
     body.destruction-mode #fire-page .fire-stroke {
-      stroke: var(--d-fire-stroke, rgba(220,60,40,0.18)) !important;
+      stroke: var(--d-fire-stroke, rgba(220, 60, 40, 0.18)) !important;
       stroke-dasharray: none !important;
       opacity: var(--d-fire-stroke-op, 0.18);
     }
+
     body.destruction-mode #fire-page {
       filter: brightness(var(--d-fire-bright, 1)) contrast(var(--d-fire-contrast, 1));
     }
@@ -1307,27 +1334,41 @@
     body.destruction-mode #earth-page {
       animation: destructGlobalShake 0.08s infinite, destructEarthExtra 0.1s infinite;
     }
+
     @keyframes destructEarthExtra {
-      0%, 100% { transform: translate(0, 0); }
-      25% { transform: translate(var(--d-earth-shake, 2px), calc(var(--d-earth-shake, 2px) * -1)); }
-      75% { transform: translate(calc(var(--d-earth-shake, 2px) * -1), var(--d-earth-shake, 2px)); }
+
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      25% {
+        transform: translate(var(--d-earth-shake, 2px), calc(var(--d-earth-shake, 2px) * -1));
+      }
+
+      75% {
+        transform: translate(calc(var(--d-earth-shake, 2px) * -1), var(--d-earth-shake, 2px));
+      }
     }
 
     /* ── Metal destruction ── */
     body.destruction-mode #metal-page .metal-ring {
-      border-color: var(--d-metal-color, rgba(212,175,55,0.3));
+      border-color: var(--d-metal-color, rgba(212, 175, 55, 0.3));
     }
+
     body.destruction-mode #metal-page .metal-char {
-      color: var(--d-metal-color, rgba(212,175,55,0.45));
+      color: var(--d-metal-color, rgba(212, 175, 55, 0.45));
     }
+
     body.destruction-mode #metal-page .bg-char {
-      color: var(--d-metal-color, rgba(212,175,55,0.06));
+      color: var(--d-metal-color, rgba(212, 175, 55, 0.06));
     }
 
     /* ── Water destruction ── */
     body.destruction-mode #water-page .water-stroke {
-      stroke: var(--d-water-stroke, rgba(70,130,200,0.15));
+      stroke: var(--d-water-stroke, rgba(70, 130, 200, 0.15));
     }
+
     body.destruction-mode #water-page .water-bubble {
       width: var(--d-water-bubble-size, 28px);
       height: var(--d-water-bubble-size, 28px);
@@ -1337,10 +1378,17 @@
        AFTERMATH
        ═══════════════════════════════════ */
     #aftermathScreen {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: #050505; z-index: 9000;
-      display: none; pointer-events: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #050505;
+      z-index: 9000;
+      display: none;
+      pointer-events: none;
     }
+
     #aftermathScreen .ruin-char {
       position: absolute;
       font-size: clamp(3rem, 12vw, 7rem);
@@ -1352,108 +1400,237 @@
        HARMONY
        ═══════════════════════════════════ */
     #harmonyScreen {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: #0a0a0a; z-index: 9000;
-      display: none; pointer-events: auto;
-      justify-content: center; align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #000;
+      z-index: 9000;
+      /* Reverted to #000 as canvas covers it */
+      display: none;
+      pointer-events: auto;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      /* Ensure nothing spills out */
     }
+
+    /* Low GPU Living Background Canvas */
+    #harmonyBgCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+    }
+
     .harmony-layout {
       pointer-events: auto;
+      z-index: 10;
     }
+
     .harmony-el {
       cursor: pointer;
       pointer-events: auto;
+      /* Ensure base styles are ready for entrance animation */
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+      transition: opacity 1.5s ease-out, transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
+
+    /* Entrance Animation Classes Addded via JS */
+    .harmony-el.entered {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
     /* Harmony tap ripple */
     .harmony-ripple {
-      position: absolute; border-radius: 50%;
-      width: 80px; height: 80px;
+      position: absolute;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
       transform: translate(-50%, -50%) scale(0);
-      opacity: 0.6; pointer-events: none;
+      opacity: 0.6;
+      pointer-events: none;
       animation: harmonyRippleOut 0.7s ease-out forwards;
     }
+
     @keyframes harmonyRippleOut {
-      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.6; }
-      100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.6;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0;
+      }
     }
+
     /* Harmony center glow */
     #harmonyCenter {
       transition: text-shadow 0.3s, box-shadow 0.3s;
     }
+
     #harmonyCenter.glowing {
-      box-shadow: 0 0 30px rgba(255,255,255,0.2), 0 0 60px rgba(255,255,255,0.1);
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.2), 0 0 60px rgba(255, 255, 255, 0.1);
     }
+
     /* ═══════════════════════════════════
        ADMIN PANEL
        ═══════════════════════════════════ */
     #adminPanel {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 9999; background: #0a0a0a;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      background: #0a0a0a;
       font-family: -apple-system, system-ui, sans-serif;
-      padding: 16px; overflow-y: auto;
+      padding: 16px;
+      overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
+
     .admin-header {
-      text-align: center; margin-bottom: 16px;
-      border-bottom: 1px solid #333; padding-bottom: 12px;
+      text-align: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 12px;
     }
+
     .admin-title {
-      font-size: 20px; font-weight: 700; color: #fff;
-      letter-spacing: 2px; margin-bottom: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
     }
+
     .admin-info {
-      display: flex; justify-content: center; gap: 16px;
-      font-size: 13px; color: #aaa;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      font-size: 13px;
+      color: #aaa;
     }
-    .admin-info strong { color: #fff; }
-    .admin-section { margin-bottom: 12px; }
+
+    .admin-info strong {
+      color: #fff;
+    }
+
+    .admin-section {
+      margin-bottom: 12px;
+    }
+
     .admin-label {
-      font-size: 11px; color: #666; letter-spacing: 2px;
-      margin-bottom: 6px; padding-left: 4px;
+      font-size: 11px;
+      color: #666;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      padding-left: 4px;
     }
+
     .admin-row {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px; margin-bottom: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
     }
+
     .admin-btn {
-      border: none; border-radius: 10px;
-      padding: 16px 8px; font-size: 15px; font-weight: 600;
-      cursor: pointer; transition: transform 0.1s, opacity 0.1s;
+      border: none;
+      border-radius: 10px;
+      padding: 16px 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.1s;
       -webkit-tap-highlight-color: transparent;
     }
-    .admin-btn:active { transform: scale(0.95); opacity: 0.8; }
+
+    .admin-btn:active {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
 
     /* System buttons */
-    .admin-btn.sys { background: #222; color: #ccc; border: 1px solid #444; }
+    .admin-btn.sys {
+      background: #222;
+      color: #ccc;
+      border: 1px solid #444;
+    }
 
     /* Creation buttons */
-    .admin-btn.create.wood { background: #1a3318; color: #6d9; border: 1px solid #4c994c; }
-    .admin-btn.create.fire { background: #331a16; color: #f86; border: 1px solid #c44; }
-    .admin-btn.create.earth { background: #2a2116; color: #c96; border: 1px solid #8b5e3c; }
-    .admin-btn.create.metal { background: #2a2610; color: #da5; border: 1px solid #d4af37; }
-    .admin-btn.create.water { background: #0f1a2a; color: #6ae; border: 1px solid #4682c8; }
-    .admin-btn.create.harmony { background: #1a1028; color: #c8a; border: 1px solid #a6c; }
+    .admin-btn.create.wood {
+      background: #1a3318;
+      color: #6d9;
+      border: 1px solid #4c994c;
+    }
+
+    .admin-btn.create.fire {
+      background: #331a16;
+      color: #f86;
+      border: 1px solid #c44;
+    }
+
+    .admin-btn.create.earth {
+      background: #2a2116;
+      color: #c96;
+      border: 1px solid #8b5e3c;
+    }
+
+    .admin-btn.create.metal {
+      background: #2a2610;
+      color: #da5;
+      border: 1px solid #d4af37;
+    }
+
+    .admin-btn.create.water {
+      background: #0f1a2a;
+      color: #6ae;
+      border: 1px solid #4682c8;
+    }
+
+    .admin-btn.create.harmony {
+      background: #1a1028;
+      color: #c8a;
+      border: 1px solid #a6c;
+    }
 
     /* Destruction buttons */
     .admin-btn.destroy {
-      background: #2a0a0a; color: #f66; border: 1px solid #c33;
+      background: #2a0a0a;
+      color: #f66;
+      border: 1px solid #c33;
     }
+
     .admin-btn.destroy.aftermath {
-      background: #1a0a1a; color: #a6a; border: 1px solid #636;
+      background: #1a0a1a;
+      color: #a6a;
+      border: 1px solid #636;
     }
 
     /* End button */
     .admin-btn.end {
       grid-column: 1 / -1;
-      background: #111; color: #888; border: 1px solid #333;
+      background: #111;
+      color: #888;
+      border: 1px solid #333;
       padding: 14px;
     }
 
     /* Active state highlight */
     .admin-btn.admin-active {
-      box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(255,255,255,0.3);
+      box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(255, 255, 255, 0.3);
     }
-
   </style>
 </head>
 
@@ -1733,14 +1910,20 @@
 
   <!-- HARMONY / MANDALA -->
   <div id="harmonyScreen">
+    <canvas id="harmonyBgCanvas"></canvas>
     <div class="circle-layout harmony-layout" id="harmonyLayout">
-      <div class="circle-ring"></div>
+      <div class="circle-ring" style="opacity: 0.2;"></div>
       <canvas class="energy-canvas" id="harmonyCanvas"></canvas>
-      <div class="circle-el c-metal harmony-el" data-el="metal"><span class="char">金</span><span class="elname">Metal</span></div>
-      <div class="circle-el c-wood harmony-el" data-el="wood"><span class="char">木</span><span class="elname">Wood</span></div>
-      <div class="circle-el c-water harmony-el" data-el="water"><span class="char">水</span><span class="elname">Water</span></div>
-      <div class="circle-el c-fire harmony-el" data-el="fire"><span class="char">火</span><span class="elname">Fire</span></div>
-      <div class="circle-el c-earth harmony-el" data-el="earth"><span class="char">土</span><span class="elname">Earth</span></div>
+      <div class="circle-el c-metal harmony-el" data-el="metal"><span class="char">金</span><span
+          class="elname">Metal</span></div>
+      <div class="circle-el c-wood harmony-el" data-el="wood"><span class="char">木</span><span
+          class="elname">Wood</span></div>
+      <div class="circle-el c-water harmony-el" data-el="water"><span class="char">水</span><span
+          class="elname">Water</span></div>
+      <div class="circle-el c-fire harmony-el" data-el="fire"><span class="char">火</span><span
+          class="elname">Fire</span></div>
+      <div class="circle-el c-earth harmony-el" data-el="earth"><span class="char">土</span><span
+          class="elname">Earth</span></div>
       <div class="circle-center" id="harmonyCenter">
         <h1>五行</h1>
         <div class="subtitle">Harmony</div>
@@ -2194,12 +2377,38 @@
       const aft = document.getElementById('aftermathScreen');
       if (aft) aft.style.display = 'none';
 
+      // Reset Element animation states
+      document.querySelectorAll('.harmony-el').forEach((el, index) => {
+        el.classList.remove('entered');
+        // Add a slight stagger to the entrance
+        setTimeout(() => {
+          el.classList.add('entered');
+        }, 100 + (index * 150));
+      });
+
+      // Fade in background canvas
+      const bgCanvas = document.getElementById('harmonyBgCanvas');
+      if (bgCanvas) {
+        bgCanvas.style.opacity = '1';
+      }
+
       initHarmonyFlow();
     }
 
     // ── Harmony energy flow + tap interaction ──
-    let harmonyFlowFrame = null, harmonyParticles = [], harmonyDir = 1, harmonyDirTimer = null;
+    let harmonyFlowFrame = null, harmonyBgFrame = null;
+    let harmonyParticles = [], harmonyDir = 1, harmonyDirTimer = null;
     let harmonyCenterGlow = 0, harmonyCenterDecay = null;
+    let bgTime = 0; // For background gradient animation
+
+    // Low-opacity, deep colors for the background
+    const BG_COLORS = [
+      { r: 30, g: 25, b: 5 },   // Metal
+      { r: 5, g: 20, b: 5 },    // Wood
+      { r: 5, g: 15, b: 30 },   // Water
+      { r: 30, g: 5, b: 5 },    // Fire
+      { r: 20, g: 12, b: 5 }    // Earth
+    ];
 
     const HARMONY_COLORS = {
       metal: 'rgba(212,175,55,0.5)', wood: 'rgba(76,153,76,0.5)',
@@ -2208,26 +2417,34 @@
 
     function initHarmonyFlow() {
       const canvas = document.getElementById('harmonyCanvas');
-      if (!canvas) return;
+      const bgCanvas = document.getElementById('harmonyBgCanvas');
+      if (!canvas || !bgCanvas) return;
+
       canvas.width = canvas.parentElement.clientWidth;
       canvas.height = canvas.parentElement.clientHeight;
+
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+      bgTime = 0;
 
       // Start particles
       harmonyParticles = [];
       for (let i = 0; i < 8; i++) {
         harmonyParticles.push({
           angle: (i / 8) * Math.PI * 2,
-          speed: 0.01 + Math.random() * 0.004,
-          size: 2 + Math.random() * 1.5
+          speed: 0.005 + Math.random() * 0.003, // Slower for elegance
+          size: 1.5 + Math.random() * 1.5
         });
       }
       harmonyDir = 1;
+
+      drawHarmonyBg();
       drawHarmonyFlow();
 
-      // Auto-alternate direction every 5s
+      // Auto-alternate direction every 8s
       harmonyDirTimer = setInterval(() => {
         harmonyDir *= -1;
-      }, 5000);
+      }, 8000);
 
       // Tap ripples on element buttons
       document.querySelectorAll('.harmony-el').forEach(el => {
@@ -2245,28 +2462,92 @@
       }, 50);
     }
 
+    // Low GPU Background Gradient Loop
+    function drawHarmonyBg() {
+      const canvas = document.getElementById('harmonyBgCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d', { alpha: false }); // alpha: false helps performance
+
+      bgTime += 0.002;
+
+      // Calculate 3 shifting points for a simple, soft mesh gradient
+      const w = canvas.width, h = canvas.height;
+
+      // Create a solid black base
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, w, h);
+
+      // Add 3 soft, slow-moving radial gradients (Low GPU cost vs many gradients)
+      for (let i = 0; i < 3; i++) {
+        const color = BG_COLORS[(Math.floor(bgTime * 10) + i) % BG_COLORS.length];
+
+        const x = w / 2 + Math.sin(bgTime + i * 2) * w * 0.3;
+        const y = h / 2 + Math.cos(bgTime * 0.8 + i) * h * 0.3;
+        const r = Math.max(w, h) * 0.6;
+
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.8)`);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+        ctx.fillStyle = grad;
+        // Use lighter blend mode to accumulate colors
+        ctx.globalCompositeOperation = 'screen';
+        ctx.fillRect(0, 0, w, h);
+        ctx.globalCompositeOperation = 'source-over'; // reset
+      }
+
+      harmonyBgFrame = requestAnimationFrame(drawHarmonyBg);
+    }
+
+    // Generative Lines and Particles Loop
     function drawHarmonyFlow() {
       const canvas = document.getElementById('harmonyCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const cx = canvas.width / 2, cy = canvas.height / 2;
       const r = Math.min(cx, cy) * 0.72;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Generative Network Lines (Pentagram shape: Wood->Fire->Earth->Metal->Water)
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) {
+        // The traditional Sheng cycle points (simplified visually to a star/pentagon)
+        const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
+        const nextAngle = (((i + 1) % 5) / 5) * Math.PI * 2 - Math.PI / 2;
+
+        const x1 = cx + r * Math.cos(angle);
+        const y1 = cy + r * Math.sin(angle);
+        const x2 = cx + r * Math.cos(nextAngle);
+        const y2 = cy + r * Math.sin(nextAngle);
+
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+      }
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
 
       for (const p of harmonyParticles) {
         p.angle += p.speed * harmonyDir;
-        const x = cx + r * Math.sin(p.angle), y = cy - r * Math.cos(p.angle);
-        ctx.beginPath(); ctx.arc(x, y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(200,200,200,0.5)`;
+        const x = cx + r * Math.cos(p.angle), y = cy + r * Math.sin(p.angle);
+
+        ctx.beginPath();
+        ctx.arc(x, y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,0.6)`;
         ctx.fill();
-        // Trail
-        for (let t = 1; t <= 4; t++) {
-          const ta = p.angle - p.speed * harmonyDir * t * 3;
-          const tx = cx + r * Math.sin(ta), ty = cy - r * Math.cos(ta);
-          ctx.beginPath(); ctx.arc(tx, ty, p.size * 0.6, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(200,200,200,${0.15 - t * 0.03})`;
-          ctx.fill();
-        }
+
+        // Short, optimized tail
+        ctx.beginPath();
+        const tailX = cx + r * Math.cos(p.angle - p.speed * harmonyDir * 10);
+        const tailY = cy + r * Math.sin(p.angle - p.speed * harmonyDir * 10);
+
+        ctx.moveTo(x, y);
+        ctx.lineTo(tailX, tailY);
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = p.size;
+        ctx.lineCap = 'round';
+        ctx.stroke();
       }
       harmonyFlowFrame = requestAnimationFrame(drawHarmonyFlow);
     }
@@ -2304,15 +2585,23 @@
     }
 
     function cleanupHarmony() {
+      if (harmonyBgFrame) { cancelAnimationFrame(harmonyBgFrame); harmonyBgFrame = null; }
       if (harmonyFlowFrame) { cancelAnimationFrame(harmonyFlowFrame); harmonyFlowFrame = null; }
       if (harmonyDirTimer) { clearInterval(harmonyDirTimer); harmonyDirTimer = null; }
       if (harmonyCenterDecay) { clearInterval(harmonyCenterDecay); harmonyCenterDecay = null; }
       document.querySelectorAll('.harmony-el').forEach(el => {
         el.removeEventListener('touchstart', harmonyTap);
         el.removeEventListener('click', harmonyTap);
+        el.classList.remove('entered');
       });
       const canvas = document.getElementById('harmonyCanvas');
       if (canvas) { const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); }
+      const bgCanvas = document.getElementById('harmonyBgCanvas');
+      if (bgCanvas) {
+        bgCanvas.style.opacity = '0';
+        const ctx = bgCanvas.getContext('2d');
+        ctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+      }
     }
 
     function triggerAftermath() {
