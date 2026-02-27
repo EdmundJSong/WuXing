@@ -1285,21 +1285,24 @@
       }
     }
 
-    /* Bg-char flicker in destruction */
-    body.destruction-mode .bg-char {
-      animation: destructCharFlicker 0.3s infinite steps(2);
+    /* Bg-char flicker in destruction — per-element */
+    body.destruction-mode #wood-page .bg-char {
+      animation: destructFlickerWood 0.3s infinite steps(2);
+    }
+    body.destruction-mode #fire-page .bg-char,
+    body.destruction-mode #earth-page .bg-char,
+    body.destruction-mode #metal-page .bg-char,
+    body.destruction-mode #water-page .bg-char {
+      animation: destructFlickerSubtle 0.3s infinite steps(2);
     }
 
-    @keyframes destructCharFlicker {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.4;
-      }
+    @keyframes destructFlickerWood {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    @keyframes destructFlickerSubtle {
+      0%, 100% { opacity: 0.08; }
+      50% { opacity: 0.03; }
     }
 
     /* Invert flash removed — epilepsy risk */
@@ -1404,7 +1407,7 @@
       animation: aftermathFireBreathe 8s ease-in-out infinite alternate;
     }
 
-    /* "Cracked" gritty texture overlay */
+    /* "Cracked" gritty texture overlay — behind characters */
     #aftermathScreen::after {
       content: '';
       position: absolute;
@@ -1416,7 +1419,7 @@
         radial-gradient(ellipse at center, transparent 20%, rgba(0, 0, 0, 0.8) 100%),
         repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.01) 2px, rgba(255, 255, 255, 0.01) 4px);
       pointer-events: none;
-      z-index: 2;
+      z-index: 0;
       opacity: 0.6;
     }
 
@@ -1432,54 +1435,51 @@
       }
     }
 
-    /* Wreckage Floating Animation */
+    /* Wreckage Floating Animation — simple translate only, no calc(var) */
     @keyframes wreckageDrift {
       0% {
-        transform: translate(0, 0) rotate(var(--rot)) scale(1);
+        transform: translate(0, 0);
       }
 
       33% {
-        transform: translate(3px, -5px) rotate(calc(var(--rot) + 2deg)) scale(0.98);
+        transform: translate(3px, -5px);
       }
 
       66% {
-        transform: translate(-2px, 4px) rotate(calc(var(--rot) - 1deg)) scale(1.02);
+        transform: translate(-2px, 4px);
       }
 
       100% {
-        transform: translate(0, 0) rotate(var(--rot)) scale(1);
+        transform: translate(0, 0);
       }
     }
 
-    /* Fade flicker for ruin characters */
+    /* Fade flicker for ruin characters — sole opacity controller */
     @keyframes ruinFlicker {
 
       0%,
       100% {
-        opacity: 0.12;
+        opacity: 0.14;
       }
 
       50% {
-        opacity: 0.05;
+        opacity: 0.06;
       }
 
       80% {
-        opacity: 0.15;
+        opacity: 0.18;
       }
     }
 
     #aftermathScreen .ruin-char {
       position: absolute;
       font-size: clamp(3rem, 12vw, 7rem);
-      color: rgba(200, 200, 200, 0.12);
-      /* Base opacity overwritten by animation */
+      color: rgba(200, 200, 200, 1);
       font-family: "Noto Serif SC", serif;
       z-index: 5;
       animation:
         wreckageDrift 15s ease-in-out infinite alternate,
         ruinFlicker 6s ease-in-out infinite;
-      /* The base transforms are set inline, we let the animation override them, 
-         but we need to store the initial rotation in a CSS variable --rot inline */
     }
 
     /* Optimized Pulsing Ember Glows using pseudo-elements */
@@ -1496,7 +1496,6 @@
       z-index: -1;
       pointer-events: none;
       animation: emberPulse 4s ease-in-out infinite alternate;
-      /* Inherit the glow color from a custom property --glow-color set inline */
       background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
       opacity: 0.6;
     }
@@ -2168,20 +2167,20 @@
     <div class="ash-layer ash-layer-3"></div>
 
     <!-- Ruined Elements -->
-    <div class="ruin-char" style="top: 18%; left: 12%; --rot: -12deg; --glow-color: rgba(212,175,55,0.4);">
-      <span>金</span>
+    <div class="ruin-char" style="top: 18%; left: 12%; --glow-color: rgba(212,175,55,0.4);">
+      <span style="display:block; transform: rotate(-12deg);">金</span>
     </div>
-    <div class="ruin-char" style="top: 55%; left: 58%; --rot: 18deg; --glow-color: rgba(76,153,76,0.4);">
-      <span>木</span>
+    <div class="ruin-char" style="top: 55%; left: 58%; --glow-color: rgba(76,153,76,0.4);">
+      <span style="display:block; transform: rotate(18deg);">木</span>
     </div>
-    <div class="ruin-char" style="top: 38%; left: 35%; --rot: 4deg; --glow-color: rgba(70,130,200,0.4);">
-      <span>水</span>
+    <div class="ruin-char" style="top: 38%; left: 35%; --glow-color: rgba(70,130,200,0.4);">
+      <span style="display:block; transform: rotate(4deg);">水</span>
     </div>
-    <div class="ruin-char" style="top: 68%; left: 15%; --rot: -25deg; --glow-color: rgba(220,60,40,0.5);">
-      <span>火</span>
+    <div class="ruin-char" style="top: 68%; left: 15%; --glow-color: rgba(220,60,40,0.5);">
+      <span style="display:block; transform: rotate(-25deg);">火</span>
     </div>
-    <div class="ruin-char" style="top: 22%; left: 55%; --rot: 10deg; --glow-color: rgba(139,94,60,0.4);">
-      <span>土</span>
+    <div class="ruin-char" style="top: 22%; left: 55%; --glow-color: rgba(139,94,60,0.4);">
+      <span style="display:block; transform: rotate(10deg);">土</span>
     </div>
   </div>
 
