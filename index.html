@@ -1383,17 +1383,217 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: #050505;
+      background: #000;
       z-index: 9000;
       display: none;
       pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* Vignette and distant fires overlay */
+    #aftermathScreen::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60%;
+      background: linear-gradient(to top, rgba(220, 60, 40, 0.15) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 1;
+      animation: aftermathFireBreathe 8s ease-in-out infinite alternate;
+    }
+
+    /* "Cracked" gritty texture overlay */
+    #aftermathScreen::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        radial-gradient(ellipse at center, transparent 20%, rgba(0, 0, 0, 0.8) 100%),
+        repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.01) 2px, rgba(255, 255, 255, 0.01) 4px);
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.6;
+    }
+
+    @keyframes aftermathFireBreathe {
+      0% {
+        opacity: 0.5;
+        transform: scaleY(1);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scaleY(1.1);
+      }
+    }
+
+    /* Wreckage Floating Animation */
+    @keyframes wreckageDrift {
+      0% {
+        transform: translate(0, 0) rotate(var(--rot)) scale(1);
+      }
+
+      33% {
+        transform: translate(3px, -5px) rotate(calc(var(--rot) + 2deg)) scale(0.98);
+      }
+
+      66% {
+        transform: translate(-2px, 4px) rotate(calc(var(--rot) - 1deg)) scale(1.02);
+      }
+
+      100% {
+        transform: translate(0, 0) rotate(var(--rot)) scale(1);
+      }
+    }
+
+    /* Fade flicker for ruin characters */
+    @keyframes ruinFlicker {
+
+      0%,
+      100% {
+        opacity: 0.12;
+      }
+
+      50% {
+        opacity: 0.05;
+      }
+
+      80% {
+        opacity: 0.15;
+      }
     }
 
     #aftermathScreen .ruin-char {
       position: absolute;
       font-size: clamp(3rem, 12vw, 7rem);
       color: rgba(200, 200, 200, 0.12);
+      /* Base opacity overwritten by animation */
       font-family: "Noto Serif SC", serif;
+      z-index: 5;
+      animation:
+        wreckageDrift 15s ease-in-out infinite alternate,
+        ruinFlicker 6s ease-in-out infinite;
+      /* The base transforms are set inline, we let the animation override them, 
+         but we need to store the initial rotation in a CSS variable --rot inline */
+    }
+
+    /* Optimized Pulsing Ember Glows using pseudo-elements */
+    #aftermathScreen .ruin-char::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 120px;
+      height: 120px;
+      margin-top: -60px;
+      margin-left: -60px;
+      border-radius: 50%;
+      z-index: -1;
+      pointer-events: none;
+      animation: emberPulse 4s ease-in-out infinite alternate;
+      /* Inherit the glow color from a custom property --glow-color set inline */
+      background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+      opacity: 0.6;
+    }
+
+    @keyframes emberPulse {
+      0% {
+        transform: scale(0.8);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: scale(0.9);
+        opacity: 0.4;
+      }
+    }
+
+    /* Falling Ash Particles System */
+    .ash-layer {
+      position: absolute;
+      top: -100%;
+      /* Start above screen */
+      left: 0;
+      width: 100%;
+      height: 200%;
+      /* Double height for seamless scrolling */
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .ash-layer-1 {
+      /* Box shadow trick: x y blur color */
+      box-shadow:
+        10vw 10vh 2px rgba(255, 255, 255, 0.1),
+        30vw 30vh 1px rgba(220, 60, 40, 0.2),
+        50vw 5vh 3px rgba(200, 200, 200, 0.1),
+        70vw 50vh 2px rgba(255, 255, 255, 0.05),
+        90vw 20vh 1px rgba(220, 60, 40, 0.15),
+        20vw 80vh 2px rgba(255, 255, 255, 0.1),
+        80vw 90vh 1px rgba(200, 200, 200, 0.15),
+        40vw 60vh 3px rgba(220, 60, 40, 0.2),
+        60vw 10vh 1px rgba(255, 255, 255, 0.1);
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      animation: ashFall 15s linear infinite;
+    }
+
+    .ash-layer-2 {
+      box-shadow:
+        15vw 5vh 1px rgba(255, 255, 255, 0.1),
+        35vw 45vh 2px rgba(220, 60, 40, 0.15),
+        55vw 25vh 1px rgba(200, 200, 200, 0.1),
+        75vw 65vh 3px rgba(255, 255, 255, 0.05),
+        95vw 85vh 1px rgba(220, 60, 40, 0.2),
+        25vw 35vh 2px rgba(255, 255, 255, 0.1),
+        85vw 15vh 1px rgba(200, 200, 200, 0.15),
+        45vw 75vh 2px rgba(220, 60, 40, 0.1),
+        65vw 95vh 1px rgba(255, 255, 255, 0.1);
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      animation: ashFall 22s linear infinite;
+      animation-delay: -5s;
+      /* Offset start */
+    }
+
+    .ash-layer-3 {
+      box-shadow:
+        5vw 90vh 2px rgba(255, 255, 255, 0.08),
+        25vw 10vh 1px rgba(220, 60, 40, 0.12),
+        45vw 40vh 3px rgba(200, 200, 200, 0.1),
+        65vw 20vh 1px rgba(255, 255, 255, 0.05),
+        85vw 50vh 2px rgba(220, 60, 40, 0.15),
+        15vw 60vh 1px rgba(255, 255, 255, 0.1),
+        75vw 30vh 2px rgba(200, 200, 200, 0.12),
+        35vw 80vh 1px rgba(220, 60, 40, 0.1),
+        95vw 70vh 2px rgba(255, 255, 255, 0.08);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      animation: ashFall 28s linear infinite;
+      animation-delay: -12s;
+    }
+
+    @keyframes ashFall {
+      0% {
+        transform: translateY(0) translateX(0);
+      }
+
+      100% {
+        transform: translateY(100vh) translateX(-5vw);
+      }
     }
 
     /* ═══════════════════════════════════
@@ -1961,20 +2161,27 @@
 
   <!-- AFTERMATH / RUINS -->
   <div id="aftermathScreen">
-    <div class="ruin-char" style="top: 18%; left: 12%; transform: rotate(-12deg);">
-      <span style="text-shadow: 0 0 30px rgba(212,175,55,0.25), 0 0 60px rgba(212,175,55,0.1);">金</span>
+
+    <!-- Ash Particles System -->
+    <div class="ash-layer ash-layer-1"></div>
+    <div class="ash-layer ash-layer-2"></div>
+    <div class="ash-layer ash-layer-3"></div>
+
+    <!-- Ruined Elements -->
+    <div class="ruin-char" style="top: 18%; left: 12%; --rot: -12deg; --glow-color: rgba(212,175,55,0.4);">
+      <span>金</span>
     </div>
-    <div class="ruin-char" style="top: 55%; left: 58%; transform: rotate(18deg);">
-      <span style="text-shadow: 0 0 30px rgba(76,153,76,0.25), 0 0 60px rgba(76,153,76,0.1);">木</span>
+    <div class="ruin-char" style="top: 55%; left: 58%; --rot: 18deg; --glow-color: rgba(76,153,76,0.4);">
+      <span>木</span>
     </div>
-    <div class="ruin-char" style="top: 38%; left: 35%; transform: rotate(4deg);">
-      <span style="text-shadow: 0 0 30px rgba(70,130,200,0.25), 0 0 60px rgba(70,130,200,0.1);">水</span>
+    <div class="ruin-char" style="top: 38%; left: 35%; --rot: 4deg; --glow-color: rgba(70,130,200,0.4);">
+      <span>水</span>
     </div>
-    <div class="ruin-char" style="top: 68%; left: 15%; transform: rotate(-25deg);">
-      <span style="text-shadow: 0 0 30px rgba(220,60,40,0.25), 0 0 60px rgba(220,60,40,0.1);">火</span>
+    <div class="ruin-char" style="top: 68%; left: 15%; --rot: -25deg; --glow-color: rgba(220,60,40,0.5);">
+      <span>火</span>
     </div>
-    <div class="ruin-char" style="top: 22%; left: 55%; transform: rotate(10deg);">
-      <span style="text-shadow: 0 0 30px rgba(139,94,60,0.25), 0 0 60px rgba(139,94,60,0.1);">土</span>
+    <div class="ruin-char" style="top: 22%; left: 55%; --rot: 10deg; --glow-color: rgba(139,94,60,0.4);">
+      <span>土</span>
     </div>
   </div>
 
