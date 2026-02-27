@@ -1343,10 +1343,9 @@
     }
     #aftermathScreen .ruin-char {
       position: absolute;
-      font-size: clamp(4rem, 15vw, 8rem);
-      color: rgba(200, 200, 200, 0.15);
+      font-size: clamp(3rem, 12vw, 7rem);
+      color: rgba(200, 200, 200, 0.12);
       font-family: "Noto Serif SC", serif;
-      filter: blur(1px);
     }
 
     /* ═══════════════════════════════════
@@ -1354,23 +1353,35 @@
        ═══════════════════════════════════ */
     #harmonyScreen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: #000; z-index: 9000;
-      display: none; pointer-events: none;
+      background: #0a0a0a; z-index: 9000;
+      display: none; pointer-events: auto;
       justify-content: center; align-items: center;
     }
-    .harmony-mandala {
-      position: relative; width: 60vw; height: 60vw;
-      animation: rotateMandala 60s linear infinite;
+    .harmony-layout {
+      pointer-events: auto;
     }
-    .harmony-char {
-      position: absolute;
-      font-size: clamp(2rem, 8vw, 4rem);
-      font-family: "Noto Serif SC", serif;
-      transform-origin: 50% 50%;
+    .harmony-el {
+      cursor: pointer;
+      pointer-events: auto;
     }
-    @keyframes rotateMandala {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+    /* Harmony tap ripple */
+    .harmony-ripple {
+      position: absolute; border-radius: 50%;
+      width: 80px; height: 80px;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0.6; pointer-events: none;
+      animation: harmonyRippleOut 0.7s ease-out forwards;
+    }
+    @keyframes harmonyRippleOut {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.6; }
+      100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+    }
+    /* Harmony center glow */
+    #harmonyCenter {
+      transition: text-shadow 0.3s, box-shadow 0.3s;
+    }
+    #harmonyCenter.glowing {
+      box-shadow: 0 0 30px rgba(255,255,255,0.2), 0 0 60px rgba(255,255,255,0.1);
     }
     /* ═══════════════════════════════════
        ADMIN PANEL
@@ -1722,29 +1733,37 @@
 
   <!-- HARMONY / MANDALA -->
   <div id="harmonyScreen">
-    <div class="harmony-mandala" id="harmonyMandala">
-      <!-- Characters will be positioned by JS -->
-      <div class="harmony-char" style="top: 10%; left: 45%; color: rgba(212,175,55,0.7);">金</div>
-      <div class="harmony-char" style="top: 40%; left: 80%; color: rgba(76,153,76,0.7);">木</div>
-      <div class="harmony-char" style="top: 80%; left: 60%; color: rgba(70,130,200,0.7);">水</div>
-      <div class="harmony-char" style="top: 80%; left: 30%; color: rgba(220,60,40,0.7);">火</div>
-      <div class="harmony-char" style="top: 40%; left: 10%; color: rgba(139,94,60,0.7);">土</div>
+    <div class="circle-layout harmony-layout" id="harmonyLayout">
+      <div class="circle-ring"></div>
+      <canvas class="energy-canvas" id="harmonyCanvas"></canvas>
+      <div class="circle-el c-metal harmony-el" data-el="metal"><span class="char">金</span><span class="elname">Metal</span></div>
+      <div class="circle-el c-wood harmony-el" data-el="wood"><span class="char">木</span><span class="elname">Wood</span></div>
+      <div class="circle-el c-water harmony-el" data-el="water"><span class="char">水</span><span class="elname">Water</span></div>
+      <div class="circle-el c-fire harmony-el" data-el="fire"><span class="char">火</span><span class="elname">Fire</span></div>
+      <div class="circle-el c-earth harmony-el" data-el="earth"><span class="char">土</span><span class="elname">Earth</span></div>
+      <div class="circle-center" id="harmonyCenter">
+        <h1>五行</h1>
+        <div class="subtitle">Harmony</div>
+      </div>
     </div>
   </div>
 
   <!-- AFTERMATH / RUINS -->
   <div id="aftermathScreen">
-    <!-- Scattered Broken Characters -->
-    <div class="ruin-char"
-      style="top: 20%; left: 15%; transform: rotate(-15deg); clip-path: polygon(0 0, 100% 10%, 90% 100%, 10% 90%);">金
+    <div class="ruin-char" style="top: 18%; left: 12%; transform: rotate(-12deg);">
+      <span style="text-shadow: 0 0 30px rgba(212,175,55,0.25), 0 0 60px rgba(212,175,55,0.1);">金</span>
     </div>
-    <div class="ruin-char" style="top: 60%; left: 70%; transform: rotate(25deg); filter: blur(4px);">木</div>
-    <div class="ruin-char"
-      style="top: 40%; left: 40%; transform: rotate(5deg); font-size: 10rem; clip-path: polygon(10% 0, 90% 0, 100% 80%, 0 100%);">
-      水</div>
-    <div class="ruin-char" style="top: 75%; left: 20%; transform: rotate(-45deg); filter: blur(1px);">火</div>
-    <div class="ruin-char"
-      style="top: 15%; left: 60%; transform: rotate(12deg); clip-path: polygon(0 20%, 80% 0, 100% 100%, 20% 80%);">土
+    <div class="ruin-char" style="top: 55%; left: 58%; transform: rotate(18deg);">
+      <span style="text-shadow: 0 0 30px rgba(76,153,76,0.25), 0 0 60px rgba(76,153,76,0.1);">木</span>
+    </div>
+    <div class="ruin-char" style="top: 38%; left: 35%; transform: rotate(4deg);">
+      <span style="text-shadow: 0 0 30px rgba(70,130,200,0.25), 0 0 60px rgba(70,130,200,0.1);">水</span>
+    </div>
+    <div class="ruin-char" style="top: 68%; left: 15%; transform: rotate(-25deg);">
+      <span style="text-shadow: 0 0 30px rgba(220,60,40,0.25), 0 0 60px rgba(220,60,40,0.1);">火</span>
+    </div>
+    <div class="ruin-char" style="top: 22%; left: 55%; transform: rotate(10deg);">
+      <span style="text-shadow: 0 0 30px rgba(139,94,60,0.25), 0 0 60px rgba(139,94,60,0.1);">土</span>
     </div>
   </div>
 
@@ -2113,6 +2132,7 @@
           document.getElementById('permissionOverlay').classList.add('hidden');
 
           const harm = document.getElementById('harmonyScreen'); if (harm) harm.style.display = 'none';
+          cleanupHarmony();
           const aft = document.getElementById('aftermathScreen'); if (aft) aft.style.display = 'none';
 
           if (status === 'live') {
@@ -2173,10 +2193,131 @@
 
       const aft = document.getElementById('aftermathScreen');
       if (aft) aft.style.display = 'none';
+
+      initHarmonyFlow();
+    }
+
+    // ── Harmony energy flow + tap interaction ──
+    let harmonyFlowFrame = null, harmonyParticles = [], harmonyDir = 1, harmonyDirTimer = null;
+    let harmonyCenterGlow = 0, harmonyCenterDecay = null;
+
+    const HARMONY_COLORS = {
+      metal: 'rgba(212,175,55,0.5)', wood: 'rgba(76,153,76,0.5)',
+      water: 'rgba(70,130,200,0.5)', fire: 'rgba(220,60,40,0.5)', earth: 'rgba(139,94,60,0.5)'
+    };
+
+    function initHarmonyFlow() {
+      const canvas = document.getElementById('harmonyCanvas');
+      if (!canvas) return;
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      // Start particles
+      harmonyParticles = [];
+      for (let i = 0; i < 8; i++) {
+        harmonyParticles.push({
+          angle: (i / 8) * Math.PI * 2,
+          speed: 0.01 + Math.random() * 0.004,
+          size: 2 + Math.random() * 1.5
+        });
+      }
+      harmonyDir = 1;
+      drawHarmonyFlow();
+
+      // Auto-alternate direction every 5s
+      harmonyDirTimer = setInterval(() => {
+        harmonyDir *= -1;
+      }, 5000);
+
+      // Tap ripples on element buttons
+      document.querySelectorAll('.harmony-el').forEach(el => {
+        el.addEventListener('touchstart', harmonyTap);
+        el.addEventListener('click', harmonyTap);
+      });
+
+      // Center glow decay
+      harmonyCenterGlow = 0;
+      harmonyCenterDecay = setInterval(() => {
+        if (harmonyCenterGlow > 0) {
+          harmonyCenterGlow = Math.max(0, harmonyCenterGlow - 0.02);
+          updateHarmonyCenterGlow();
+        }
+      }, 50);
+    }
+
+    function drawHarmonyFlow() {
+      const canvas = document.getElementById('harmonyCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2, cy = canvas.height / 2;
+      const r = Math.min(cx, cy) * 0.72;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const p of harmonyParticles) {
+        p.angle += p.speed * harmonyDir;
+        const x = cx + r * Math.sin(p.angle), y = cy - r * Math.cos(p.angle);
+        ctx.beginPath(); ctx.arc(x, y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,200,200,0.5)`;
+        ctx.fill();
+        // Trail
+        for (let t = 1; t <= 4; t++) {
+          const ta = p.angle - p.speed * harmonyDir * t * 3;
+          const tx = cx + r * Math.sin(ta), ty = cy - r * Math.cos(ta);
+          ctx.beginPath(); ctx.arc(tx, ty, p.size * 0.6, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(200,200,200,${0.15 - t * 0.03})`;
+          ctx.fill();
+        }
+      }
+      harmonyFlowFrame = requestAnimationFrame(drawHarmonyFlow);
+    }
+
+    function harmonyTap(e) {
+      e.preventDefault();
+      const el = e.currentTarget;
+      const elName = el.dataset.el;
+      const color = HARMONY_COLORS[elName] || 'rgba(255,255,255,0.4)';
+
+      // Create ripple
+      const ripple = document.createElement('div');
+      ripple.className = 'harmony-ripple';
+      ripple.style.background = `radial-gradient(circle, ${color} 0%, transparent 70%)`;
+      ripple.style.left = '50%';
+      ripple.style.top = '50%';
+      el.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 700);
+
+      // Brighten center
+      harmonyCenterGlow = Math.min(1, harmonyCenterGlow + 0.15);
+      updateHarmonyCenterGlow();
+    }
+
+    function updateHarmonyCenterGlow() {
+      const center = document.getElementById('harmonyCenter');
+      if (!center) return;
+      if (harmonyCenterGlow > 0.05) {
+        center.classList.add('glowing');
+        center.style.boxShadow = `0 0 ${20 + harmonyCenterGlow * 40}px rgba(255,255,255,${harmonyCenterGlow * 0.25}), 0 0 ${40 + harmonyCenterGlow * 60}px rgba(255,255,255,${harmonyCenterGlow * 0.1})`;
+      } else {
+        center.classList.remove('glowing');
+        center.style.boxShadow = '';
+      }
+    }
+
+    function cleanupHarmony() {
+      if (harmonyFlowFrame) { cancelAnimationFrame(harmonyFlowFrame); harmonyFlowFrame = null; }
+      if (harmonyDirTimer) { clearInterval(harmonyDirTimer); harmonyDirTimer = null; }
+      if (harmonyCenterDecay) { clearInterval(harmonyCenterDecay); harmonyCenterDecay = null; }
+      document.querySelectorAll('.harmony-el').forEach(el => {
+        el.removeEventListener('touchstart', harmonyTap);
+        el.removeEventListener('click', harmonyTap);
+      });
+      const canvas = document.getElementById('harmonyCanvas');
+      if (canvas) { const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); }
     }
 
     function triggerAftermath() {
       if (currentElement) { cleanupCurrent(); document.getElementById(currentElement + '-page').classList.remove('active'); currentElement = null; }
+      cleanupHarmony();
       document.getElementById('permissionOverlay').classList.add('hidden');
       document.getElementById('landing').style.display = 'none';
       document.getElementById('bottomNav').style.display = 'none';
@@ -2236,6 +2377,7 @@
 
         const harm = document.getElementById('harmonyScreen');
         if (harm) harm.style.display = 'none';
+        cleanupHarmony();
         const aft = document.getElementById('aftermathScreen');
         if (aft) aft.style.display = 'none';
         document.body.classList.remove('destruction-mode');
@@ -2713,14 +2855,17 @@
       showCue('woodCue');
       if (woodLoop) {
         woodLoop.gain.gain.setValueAtTime(woodLoop.gain.gain.value, audioCtx.currentTime);
-        woodLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        woodLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
       }
       if (woodSynth) {
         woodSynth.gain.gain.setValueAtTime(woodSynth.gain.gain.value, audioCtx.currentTime);
-        woodSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        woodSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
       }
-      // Slow LFO back down
+      // Fade LFO modulation to prevent pop
+      if (woodSynthLfoGain) woodSynthLfoGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
+      // Slow LFO back down and restore LFO depth after fade
       if (woodSynthLfo) woodSynthLfo.frequency.linearRampToValueAtTime(0.15, audioCtx.currentTime + 1.0);
+      setTimeout(() => { if (woodSynthLfoGain) woodSynthLfoGain.gain.value = 0.03; }, 1200);
       if (woodLeafInterval) { clearTimeout(woodLeafInterval); woodLeafInterval = null; }
       if (woodBreathFrame) { cancelAnimationFrame(woodBreathFrame); woodBreathFrame = null; }
     }
@@ -2848,19 +2993,22 @@
 
     function cleanupWood() {
       woodPadActive = false;
+      const fadeDur = appStatus.startsWith('destroy_') ? 0.5 : 1.5;
+      const fadeTimeout = fadeDur * 1000 + 300;
       if (woodLoop) {
         woodLoop.gain.gain.setValueAtTime(woodLoop.gain.gain.value, audioCtx.currentTime);
-        woodLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
-        setTimeout(() => { try { woodLoop.source.stop(); } catch (e) { } woodLoop = null; }, 600);
+        woodLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDur);
+        setTimeout(() => { try { woodLoop.source.stop(); } catch (e) { } woodLoop = null; }, fadeTimeout);
       } else { woodLoop = null; }
       if (woodSynth) {
         woodSynth.gain.gain.setValueAtTime(woodSynth.gain.gain.value, audioCtx.currentTime);
-        woodSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        woodSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDur);
+        if (woodSynthLfoGain) woodSynthLfoGain.gain.setTargetAtTime(0, audioCtx.currentTime, fadeDur * 0.3);
         setTimeout(() => {
           if (woodSynthLfo) try { woodSynthLfo.stop(); } catch (e) { }
           try { woodSynth.osc1.stop(); woodSynth.osc2.stop(); } catch (e) { }
           woodSynth = null; woodSynthLfo = null; woodSynthLfoGain = null;
-        }, 600);
+        }, fadeTimeout);
       } else { woodSynth = null; woodSynthLfo = null; woodSynthLfoGain = null; }
       if (woodLeafInterval) { clearTimeout(woodLeafInterval); woodLeafInterval = null; }
       if (woodBreathFrame) { cancelAnimationFrame(woodBreathFrame); woodBreathFrame = null; }
@@ -3063,18 +3211,22 @@
       if (bubble) { bubble.style.left = '50%'; bubble.style.top = '47.5%'; }
       document.querySelectorAll('.water-stroke').forEach(p => p.setAttribute('stroke', 'rgba(70,130,200,0.25)'));
       if (waterLoop) {
+        const fadeDur = appStatus.startsWith('destroy_') ? 0.5 : 1.5;
+        const fadeTimeout = fadeDur * 1000 + 300;
         waterLoop.gain.gain.setValueAtTime(waterLoop.gain.gain.value, audioCtx.currentTime);
-        waterLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        waterLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDur);
         setTimeout(() => {
           if (waterLfo) try { waterLfo.stop(); } catch (e) { }
           try { waterLoop.source.stop(); } catch (e) { }
           waterLoop = null; waterLfo = null; waterLfoGain = null;
-        }, 600);
+        }, fadeTimeout);
       } else { waterLoop = null; waterLfo = null; waterLfoGain = null; }
       if (waterSynth) {
+        const fadeDur = appStatus.startsWith('destroy_') ? 0.5 : 1.5;
+        const fadeTimeout = fadeDur * 1000 + 300;
         waterSynth.gain.gain.setValueAtTime(waterSynth.gain.gain.value, audioCtx.currentTime);
-        waterSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
-        setTimeout(() => { try { waterSynth.osc1.stop(); waterSynth.osc2.stop(); } catch (e) { } waterSynth = null; }, 600);
+        waterSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDur);
+        setTimeout(() => { try { waterSynth.osc1.stop(); waterSynth.osc2.stop(); } catch (e) { } waterSynth = null; }, fadeTimeout);
       } else { waterSynth = null; }
     }
 
@@ -3310,19 +3462,22 @@
     }
     function cleanupFire() {
       stopFireGhost();
+      const fadeDur = appStatus.startsWith('destroy_') ? 0.5 : 1.5;
+      const fadeTimeout = fadeDur * 1000 + 300;
       if (fireLoop) {
         fireLoop.gain.gain.setValueAtTime(fireLoop.gain.gain.value, audioCtx.currentTime);
-        fireLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
-        setTimeout(() => { try { fireLoop.source.stop(); } catch (e) { } fireLoop = null; }, 600);
+        fireLoop.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDur);
+        setTimeout(() => { try { fireLoop.source.stop(); } catch (e) { } fireLoop = null; }, fadeTimeout);
       } else { fireLoop = null; }
       if (fireSynth) {
         fireSynth.gain.gain.setValueAtTime(fireSynth.gain.gain.value, audioCtx.currentTime);
-        fireSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        fireSynth.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDur);
+        if (fireSynthLfoGain) fireSynthLfoGain.gain.setTargetAtTime(0, audioCtx.currentTime, fadeDur * 0.3);
         setTimeout(() => {
           if (fireSynthLfo) try { fireSynthLfo.stop(); } catch (e) { }
           try { fireSynth.osc1.stop(); fireSynth.osc2.stop(); } catch (e) { }
           fireSynth = null; fireSynthLfo = null; fireSynthLfoGain = null;
-        }, 600);
+        }, fadeTimeout);
       } else { fireSynth = null; fireSynthLfo = null; fireSynthLfoGain = null; }
       if (fireIdleTimer) { clearTimeout(fireIdleTimer); fireIdleTimer = null; }
       const pad = document.getElementById('firePad');
@@ -3461,15 +3616,17 @@
     function cleanupEarth() {
       earthStartTime = null; earthQuaking = false; earthFirstQuake = true;
       if (earthAnimFrame) { cancelAnimationFrame(earthAnimFrame); earthAnimFrame = null; }
+      const fadeDur = appStatus.startsWith('destroy_') ? 0.5 : 1.5;
+      const fadeTimeout = fadeDur * 1000 + 300;
       if (earthDrone) {
         earthDrone.gain.gain.setValueAtTime(earthDrone.gain.gain.value, audioCtx.currentTime);
-        earthDrone.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
-        setTimeout(() => { try { earthDrone.osc1.stop(); earthDrone.osc2.stop(); } catch (e) { } earthDrone = null; }, 600);
+        earthDrone.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDur);
+        setTimeout(() => { try { earthDrone.osc1.stop(); earthDrone.osc2.stop(); } catch (e) { } earthDrone = null; }, fadeTimeout);
       } else { earthDrone = null; }
       if (earthBed) {
         earthBed.gain.gain.setValueAtTime(earthBed.gain.gain.value, audioCtx.currentTime);
-        earthBed.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
-        setTimeout(() => { try { earthBed.source.stop(); } catch (e) { } earthBed = null; }, 600);
+        earthBed.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeDur);
+        setTimeout(() => { try { earthBed.source.stop(); } catch (e) { } earthBed = null; }, fadeTimeout);
       } else { earthBed = null; }
       if (navigator.vibrate) navigator.vibrate(0);
       const ta = document.getElementById('earthTouch');
