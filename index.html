@@ -2298,11 +2298,59 @@
       }
     }
 
+    // ── Hard kill all audio (admin transitions) ──
+    function killAllAudio() {
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const KILL_FADE = 0.3;
+      const KILL_STOP = 400;
+
+      const fadeAndStop = (gainNode, ...stopNodes) => {
+        if (!gainNode) return;
+        try { gainNode.gain.setValueAtTime(gainNode.gain.value, t); } catch (e) { }
+        try { gainNode.gain.linearRampToValueAtTime(0, t + KILL_FADE); } catch (e) { }
+        setTimeout(() => {
+          stopNodes.forEach(n => { if (n) try { n.stop(); } catch (e) { } });
+        }, KILL_STOP);
+      };
+
+      // Wood
+      if (woodLoop) { fadeAndStop(woodLoop.gain, woodLoop.source); woodLoop = null; }
+      if (woodSynth) { fadeAndStop(woodSynth.gain, woodSynth.osc1, woodSynth.osc2); woodSynth = null; }
+      if (woodSynthLfo) { try { woodSynthLfo.stop(); } catch (e) { } woodSynthLfo = null; }
+      if (woodSynthLfoGain) woodSynthLfoGain = null;
+
+      // Water
+      if (waterLoop) { fadeAndStop(waterLoop.gain, waterLoop.source); waterLoop = null; }
+      if (waterSynth) { fadeAndStop(waterSynth.gain, waterSynth.osc1, waterSynth.osc2); waterSynth = null; }
+      if (waterLfo) { try { waterLfo.stop(); } catch (e) { } waterLfo = null; }
+      if (waterLfoGain) waterLfoGain = null;
+
+      // Fire
+      if (fireLoop) { fadeAndStop(fireLoop.gain, fireLoop.source); fireLoop = null; }
+      if (fireSynth) { fadeAndStop(fireSynth.gain, fireSynth.osc1, fireSynth.osc2); fireSynth = null; }
+      if (fireSynthLfo) { try { fireSynthLfo.stop(); } catch (e) { } fireSynthLfo = null; }
+      if (fireSynthLfoGain) fireSynthLfoGain = null;
+
+      // Earth
+      if (earthDrone) { fadeAndStop(earthDrone.gain, earthDrone.osc1, earthDrone.osc2); earthDrone = null; }
+      if (earthBed) { fadeAndStop(earthBed.gain, earthBed.source); earthBed = null; }
+
+      // Aftermath oscillator
+      if (window.aftermathOsc) {
+        try { window.aftermathGain.gain.setValueAtTime(0, t); window.aftermathOsc.stop(); } catch (e) { }
+        window.aftermathOsc = null; window.aftermathGain = null;
+      }
+    }
+
     function onStatusChange(status) {
       if (status === appStatus) return;
 
       // Admin is remote control only — no rendering
       if (IS_ADMIN) { appStatus = status; return; }
+
+      // Hard kill all audio — clean slate for admin-triggered transitions
+      killAllAudio();
 
       if (appStatus === 'ended' || appStatus === 'live_aftermath') {
         if (status !== 'ended' && status !== 'live_aftermath') {
@@ -3288,7 +3336,7 @@
     function triggerWoodSample(nId) {
       if (!audioCtx) return;
 
-      const conf = WOOD_NODES.find(n => n.id === nId);
+      const conf = WOOD_NODES[nId];
       const count = woodTapCounts[nId];
       let key;
       if (count < conf.defCount) {
