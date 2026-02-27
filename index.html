@@ -2349,9 +2349,6 @@
       // Admin is remote control only — no rendering
       if (IS_ADMIN) { appStatus = status; return; }
 
-      // Hard kill all audio — clean slate for admin-triggered transitions
-      killAllAudio();
-
       if (appStatus === 'ended' || appStatus === 'live_aftermath') {
         if (status !== 'ended' && status !== 'live_aftermath') {
           window.location.reload();
@@ -2373,6 +2370,7 @@
         document.getElementById('permissionOverlay').classList.add('hidden');
       } else if (status === 'ended') {
         stopDestruction();
+        killAllAudio();
         triggerSoftEnd();
       } else if (status === 'live_aftermath') {
         stopDestruction();
