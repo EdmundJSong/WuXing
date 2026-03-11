@@ -1721,144 +1721,226 @@
       right: 0;
       bottom: 0;
       z-index: 9999;
-      background: #0a0a0a;
+      background: rgba(10, 10, 15, 0.7);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       font-family: -apple-system, system-ui, sans-serif;
       padding: 16px;
+      padding-top: calc(16px + var(--safe-top));
+      padding-bottom: calc(16px + var(--safe-bottom));
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .admin-container {
+      width: 100%;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
 
     .admin-header {
       text-align: center;
-      margin-bottom: 16px;
-      border-bottom: 1px solid #333;
-      padding-bottom: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 20px;
     }
 
     .admin-title {
-      font-size: 20px;
-      font-weight: 700;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 600;
       color: #fff;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
+      letter-spacing: 0.15em;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
     }
 
     .admin-info {
       display: flex;
       justify-content: center;
-      gap: 16px;
-      font-size: 13px;
-      color: #aaa;
+      gap: 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 0.05em;
+    }
+
+    .admin-info span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px 14px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .admin-info strong {
       color: #fff;
+      font-weight: 500;
     }
 
     .admin-section {
-      margin-bottom: 12px;
+      margin-bottom: 24px;
     }
 
     .admin-label {
-      font-size: 11px;
-      color: #666;
-      letter-spacing: 2px;
-      margin-bottom: 6px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 0.2em;
+      margin-bottom: 12px;
       padding-left: 4px;
+      text-transform: uppercase;
     }
 
     .admin-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 8px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
     .admin-btn {
-      border: none;
-      border-radius: 10px;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
       padding: 16px 8px;
-      font-size: 15px;
-      font-weight: 600;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
       cursor: pointer;
-      transition: transform 0.1s, opacity 0.1s;
+      color: rgba(255, 255, 255, 0.8);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      overflow: hidden;
       -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .admin-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      pointer-events: none;
     }
 
     .admin-btn:active {
-      transform: scale(0.95);
-      opacity: 0.8;
+      transform: scale(0.96) translateY(2px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      filter: brightness(1.2);
     }
 
     /* System buttons */
     .admin-btn.sys {
-      background: #222;
-      color: #ccc;
-      border: 1px solid #444;
+      background: linear-gradient(180deg, rgba(60, 60, 65, 0.5) 0%, rgba(40, 40, 45, 0.5) 100%);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #fff;
     }
 
-    /* Creation buttons */
+    /* Element Colors */
     .admin-btn.create.wood {
-      background: #1a3318;
-      color: #6d9;
-      border: 1px solid #4c994c;
+      background: linear-gradient(180deg, rgba(76, 153, 76, 0.15) 0%, rgba(76, 153, 76, 0.05) 100%);
+      border-color: rgba(76, 153, 76, 0.3);
+      color: #9dfcb6;
+    }
+    .admin-btn.create.wood:active {
+      box-shadow: 0 0 15px rgba(76, 153, 76, 0.4);
     }
 
     .admin-btn.create.fire {
-      background: #331a16;
-      color: #f86;
-      border: 1px solid #c44;
+      background: linear-gradient(180deg, rgba(220, 60, 40, 0.15) 0%, rgba(220, 60, 40, 0.05) 100%);
+      border-color: rgba(220, 60, 40, 0.3);
+      color: #ffa498;
+    }
+    .admin-btn.create.fire:active {
+      box-shadow: 0 0 15px rgba(220, 60, 40, 0.4);
     }
 
     .admin-btn.create.earth {
-      background: #2a2116;
-      color: #c96;
-      border: 1px solid #8b5e3c;
+      background: linear-gradient(180deg, rgba(139, 94, 60, 0.15) 0%, rgba(139, 94, 60, 0.05) 100%);
+      border-color: rgba(139, 94, 60, 0.3);
+      color: #ffcf9e;
+    }
+    .admin-btn.create.earth:active {
+      box-shadow: 0 0 15px rgba(139, 94, 60, 0.4);
     }
 
     .admin-btn.create.metal {
-      background: #2a2610;
-      color: #da5;
-      border: 1px solid #d4af37;
+      background: linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border-color: rgba(212, 175, 55, 0.3);
+      color: #ffe694;
+    }
+    .admin-btn.create.metal:active {
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
     }
 
     .admin-btn.create.water {
-      background: #0f1a2a;
-      color: #6ae;
-      border: 1px solid #4682c8;
+      background: linear-gradient(180deg, rgba(70, 130, 200, 0.15) 0%, rgba(70, 130, 200, 0.05) 100%);
+      border-color: rgba(70, 130, 200, 0.3);
+      color: #a3daff;
+    }
+    .admin-btn.create.water:active {
+      box-shadow: 0 0 15px rgba(70, 130, 200, 0.4);
     }
 
     .admin-btn.create.harmony {
-      background: #1a1028;
-      color: #c8a;
-      border: 1px solid #a6c;
+      background: linear-gradient(180deg, rgba(170, 102, 204, 0.15) 0%, rgba(170, 102, 204, 0.05) 100%);
+      border-color: rgba(170, 102, 204, 0.3);
+      color: #eeddff;
+    }
+    .admin-btn.create.harmony:active {
+      box-shadow: 0 0 15px rgba(170, 102, 204, 0.4);
     }
 
     /* Destruction buttons */
     .admin-btn.destroy {
-      background: #2a0a0a;
-      color: #f66;
-      border: 1px solid #c33;
+      background: linear-gradient(180deg, rgba(180, 40, 40, 0.15) 0%, rgba(180, 40, 40, 0.05) 100%);
+      border-color: rgba(180, 40, 40, 0.4);
+      color: #ff7a7a;
+    }
+    .admin-btn.destroy:active {
+      box-shadow: 0 0 15px rgba(180, 40, 40, 0.5);
     }
 
     .admin-btn.destroy.aftermath {
-      background: #1a0a1a;
-      color: #a6a;
-      border: 1px solid #636;
+      background: linear-gradient(180deg, rgba(80, 30, 90, 0.2) 0%, rgba(80, 30, 90, 0.05) 100%);
+      border-color: rgba(120, 40, 140, 0.4);
+      color: #e59dfc;
     }
 
     /* End button */
     .admin-btn.end {
       grid-column: 1 / -1;
-      background: #111;
-      color: #888;
-      border: 1px solid #333;
-      padding: 14px;
+      background: linear-gradient(180deg, rgba(30, 30, 30, 0.8) 0%, rgba(15, 15, 15, 0.9) 100%);
+      color: #ff5555;
+      border: 1px solid rgba(255, 85, 85, 0.3);
+      padding: 18px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      margin-top: 12px;
+      text-transform: uppercase;
+    }
+    .admin-btn.end:active {
+      box-shadow: 0 0 20px rgba(255, 85, 85, 0.4);
     }
 
     /* Active state highlight */
     .admin-btn.admin-active {
-      box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.8), 0 0 16px rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>
@@ -1866,51 +1948,53 @@
 <body>
 
   <div id="adminPanel" style="display:none;">
-    <div class="admin-header">
-      <div class="admin-title">五行 ADMIN</div>
-      <div class="admin-info">
-        <span>Users: <strong id="adminUserCount">0</strong></span>
-        <span>Status: <strong id="adminCurrentStatus">loading...</strong></span>
-        <span id="adminTimer"></span>
+    <div class="admin-container">
+      <div class="admin-header">
+        <div class="admin-title">五行 ADMIN</div>
+        <div class="admin-info">
+          <span>Users: <strong id="adminUserCount">0</strong></span>
+          <span>Status: <strong id="adminCurrentStatus">loading...</strong></span>
+          <span id="adminTimer"></span>
+        </div>
       </div>
-    </div>
-    <div class="admin-section">
-      <div class="admin-label">SYSTEM</div>
-      <div class="admin-row">
-        <button class="admin-btn sys" onclick="setAdminStatus('locked')">🔒 Locked</button>
-        <button class="admin-btn sys" onclick="setAdminStatus('live')">▶ Live</button>
-        <button class="admin-btn sys" onclick="setAdminStatus('live_all')">⊞ All</button>
+      <div class="admin-section">
+        <div class="admin-label">SYSTEM</div>
+        <div class="admin-row">
+          <button class="admin-btn sys" onclick="setAdminStatus('locked')">🔒 Locked</button>
+          <button class="admin-btn sys" onclick="setAdminStatus('live')">▶ Live</button>
+          <button class="admin-btn sys" onclick="setAdminStatus('live_all')">⊞ All</button>
+        </div>
       </div>
-    </div>
-    <div class="admin-section">
-      <div class="admin-label">CREATION</div>
-      <div class="admin-row">
-        <button class="admin-btn create wood" onclick="setAdminStatus('live_wood')">木 Wood</button>
-        <button class="admin-btn create fire" onclick="setAdminStatus('live_fire')">火 Fire</button>
-        <button class="admin-btn create earth" onclick="setAdminStatus('live_earth')">土 Earth</button>
+      <div class="admin-section">
+        <div class="admin-label">CREATION</div>
+        <div class="admin-row">
+          <button class="admin-btn create wood" onclick="setAdminStatus('live_wood')">木 Wood</button>
+          <button class="admin-btn create fire" onclick="setAdminStatus('live_fire')">火 Fire</button>
+          <button class="admin-btn create earth" onclick="setAdminStatus('live_earth')">土 Earth</button>
+        </div>
+        <div class="admin-row">
+          <button class="admin-btn create metal" onclick="setAdminStatus('live_metal')">金 Metal</button>
+          <button class="admin-btn create water" onclick="setAdminStatus('live_water')">水 Water</button>
+          <button class="admin-btn create harmony" onclick="setAdminStatus('live_harmony')">✦ Harmony</button>
+        </div>
       </div>
-      <div class="admin-row">
-        <button class="admin-btn create metal" onclick="setAdminStatus('live_metal')">金 Metal</button>
-        <button class="admin-btn create water" onclick="setAdminStatus('live_water')">水 Water</button>
-        <button class="admin-btn create harmony" onclick="setAdminStatus('live_harmony')">✦ Harmony</button>
+      <div class="admin-section">
+        <div class="admin-label">DESTRUCTION</div>
+        <div class="admin-row">
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_water')">水 Tsunami</button>
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_fire')">火 Inferno</button>
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_metal')">金 Rust</button>
+        </div>
+        <div class="admin-row">
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_wood')">木 Ashes</button>
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_earth')">土 Quake</button>
+          <button class="admin-btn destroy aftermath" onclick="setAdminStatus('live_aftermath')">☠ Aftermath</button>
+        </div>
       </div>
-    </div>
-    <div class="admin-section">
-      <div class="admin-label">DESTRUCTION</div>
-      <div class="admin-row">
-        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_wood')">木 Ashes</button>
-        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_fire')">火 Inferno</button>
-        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_earth')">土 Quake</button>
-      </div>
-      <div class="admin-row">
-        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_metal')">金 Rust</button>
-        <button class="admin-btn destroy" onclick="setAdminStatus('destroy_water')">水 Tsunami</button>
-        <button class="admin-btn destroy aftermath" onclick="setAdminStatus('live_aftermath')">☠ Aftermath</button>
-      </div>
-    </div>
-    <div class="admin-section">
-      <div class="admin-row">
-        <button class="admin-btn end" onclick="setAdminStatus('ended')">⏹ END SHOW</button>
+      <div class="admin-section">
+        <div class="admin-row">
+          <button class="admin-btn end" onclick="setAdminStatus('ended')">⏹ END SHOW</button>
+        </div>
       </div>
     </div>
   </div>
