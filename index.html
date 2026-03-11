@@ -1490,18 +1490,25 @@
       overflow: visible;
     }
 
-    #aftermathScreen .ruin-svg-container path.stone-base {
-      fill: #222;
-      stroke: #111;
-      stroke-width: 2;
+    /* 3D SVG Text Layers */
+    #aftermathScreen .r-txt {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: 70px; 
+      dominant-baseline: central;
+      text-anchor: middle;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
     }
-
-    #aftermathScreen .ruin-svg-container path.stone-face {
-      fill: #4a4a4a;
-    }
-
-    #aftermathScreen .ruin-svg-container path.stone-highlight {
-      fill: #8a8a8a;
+    #aftermathScreen .r-deep { fill: #0a0a0a; transform: translate(5px, 9px); }
+    #aftermathScreen .r-mid1 { fill: #1c1c1c; transform: translate(3px, 6px); }
+    #aftermathScreen .r-mid2 { fill: #333333; transform: translate(1px, 3px); }
+    #aftermathScreen .r-face { 
+      fill: url(#stone-grad); 
+      stroke: #111; 
+      stroke-width: 1.5px; 
+      transition: fill 0.3s, stroke 0.3s, filter 0.3s; 
     }
 
     /* Interactive States */
@@ -1516,14 +1523,14 @@
       filter: drop-shadow(0px 20px 10px rgba(0,0,0,0.6)) drop-shadow(0px 0px 40px var(--glow-color));
     }
 
-    #aftermathScreen .ruin-svg-container.brightening path.stone-face {
-      transition: fill 0.3s;
+    #aftermathScreen .ruin-svg-container.brightening .r-face {
       fill: var(--glow-color-solid);
+      stroke: #fff;
     }
     
-    #aftermathScreen .ruin-svg-container.brightening path.stone-highlight {
+    #aftermathScreen .ruin-svg-container.brightening .r-mid2 {
       transition: fill 0.3s;
-      fill: #fff;
+      fill: rgba(255,255,255,0.8);
     }
 
     /* ── Aftermath interaction ── */
@@ -2413,6 +2420,17 @@
   <!-- AFTERMATH / RUINS -->
   <div id="aftermathScreen">
 
+    <!-- Global SVG Defs for 3D Ruin Textures -->
+    <svg width="0" height="0" style="position: absolute; pointer-events: none;">
+      <defs>
+        <linearGradient id="stone-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#a3aab3" />
+          <stop offset="50%" stop-color="#7e848c" />
+          <stop offset="100%" stop-color="#4d5256" />
+        </linearGradient>
+      </defs>
+    </svg>
+
     <!-- Ash Particles System -->
     <div class="ash-layer ash-layer-1"></div>
     <div class="ash-layer ash-layer-2"></div>
@@ -2446,18 +2464,10 @@
     <div class="ruin-svg-container" data-element="metal" data-color="212,175,55" data-dur="2.5" 
          style="top: 18%; left: 12%; --rot: -12deg; --glow-color: rgba(212,175,55,0.4); --glow-color-solid: rgb(212,175,55);">
       <svg viewBox="0 0 100 100">
-        <!-- Base for shadow -->
-        <path class="stone-base" d="M50 15 L20 45 L35 45 L35 85 L65 85 L65 45 L80 45 Z" transform="translate(4,4)" />
-        <path class="stone-base" d="M30 65 L70 65 M40 75 L60 75 M25 85 L75 85" stroke-width="4" transform="translate(4,4)" />
-        <circle cx="40" cy="55" r="4" class="stone-base" transform="translate(4,4)" />
-        <circle cx="60" cy="55" r="4" class="stone-base" transform="translate(4,4)" />
-        <!-- Face -->
-        <path class="stone-face" d="M50 15 L20 45 L35 45 L35 85 L65 85 L65 45 L80 45 Z" />
-        <path class="stone-face" d="M30 65 L70 65 M40 75 L60 75 M25 85 L75 85" stroke="#4a4a4a" stroke-width="4" />
-        <circle cx="40" cy="55" r="4" class="stone-face" />
-        <circle cx="60" cy="55" r="4" class="stone-face" />
-        <!-- Highlights -->
-        <path class="stone-highlight" d="M50 15 L20 45 L35 45 L50 15 M35 45 L35 85 L38 85 L38 45 Z" />
+        <text x="50%" y="50%" class="r-txt r-deep">金</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">金</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">金</text>
+        <text x="50%" y="50%" class="r-txt r-face">金</text>
       </svg>
     </div>
 
@@ -2465,9 +2475,10 @@
     <div class="ruin-svg-container" data-element="wood" data-color="76,153,76" data-dur="3.5" 
          style="top: 55%; left: 58%; --rot: 18deg; --glow-color: rgba(76,153,76,0.4); --glow-color-solid: rgb(76,153,76);">
       <svg viewBox="0 0 100 100">
-        <path class="stone-base" d="M20 40 L80 40 M50 15 L50 90 M50 40 L25 85 M50 40 L75 85" stroke-width="12" stroke-linecap="square" transform="translate(4,4)" />
-        <path class="stone-face" d="M20 40 L80 40 M50 15 L50 90 M50 40 L25 85 M50 40 L75 85" stroke="#4a4a4a" stroke-width="12" stroke-linecap="square" />
-        <path class="stone-highlight" d="M20 36 L80 36 M46 15 L46 90" stroke="#8a8a8a" stroke-width="4" />
+        <text x="50%" y="50%" class="r-txt r-deep">木</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">木</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">木</text>
+        <text x="50%" y="50%" class="r-txt r-face">木</text>
       </svg>
     </div>
 
@@ -2475,9 +2486,10 @@
     <div class="ruin-svg-container" data-element="water" data-color="70,130,200" data-dur="4.0" 
          style="top: 38%; left: 35%; --rot: 4deg; --glow-color: rgba(70,130,200,0.4); --glow-color-solid: rgb(70,130,200);">
       <svg viewBox="0 0 100 100">
-        <path class="stone-base" d="M50 10 L45 80 Q50 90 65 85 M25 40 L45 55 M15 75 L35 60 M75 35 L55 55 M85 70 L65 55" stroke-width="10" stroke-linecap="round" fill="none" transform="translate(4,4)" />
-        <path class="stone-face" d="M50 10 L45 80 Q50 90 65 85 M25 40 L45 55 M15 75 L35 60 M75 35 L55 55 M85 70 L65 55" stroke="#4a4a4a" stroke-width="10" stroke-linecap="round" fill="none" />
-        <path class="stone-highlight" d="M48 10 L43 80 M24 38 L44 53" stroke="#8a8a8a" stroke-width="3" fill="none" />
+        <text x="50%" y="50%" class="r-txt r-deep">水</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">水</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">水</text>
+        <text x="50%" y="50%" class="r-txt r-face">水</text>
       </svg>
     </div>
 
@@ -2485,9 +2497,10 @@
     <div class="ruin-svg-container" data-element="fire" data-color="220,60,40" data-dur="2.0" 
          style="top: 68%; left: 15%; --rot: -25deg; --glow-color: rgba(220,60,40,0.5); --glow-color-solid: rgb(220,60,40);">
       <svg viewBox="0 0 100 100">
-        <path class="stone-base" d="M30 45 L50 85 M70 45 L50 85 M20 60 L35 30 M80 60 L65 30" stroke-width="11" stroke-linecap="round" fill="none" transform="translate(4,4)" />
-        <path class="stone-face" d="M30 45 L50 85 M70 45 L50 85 M20 60 L35 30 M80 60 L65 30" stroke="#4a4a4a" stroke-width="11" stroke-linecap="round" fill="none" />
-        <path class="stone-highlight" d="M28 45 L48 85 M18 60 L33 30" stroke="#8a8a8a" stroke-width="3" fill="none" />
+        <text x="50%" y="50%" class="r-txt r-deep">火</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">火</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">火</text>
+        <text x="50%" y="50%" class="r-txt r-face">火</text>
       </svg>
     </div>
 
@@ -2495,9 +2508,10 @@
     <div class="ruin-svg-container" data-element="earth" data-color="139,94,60" data-dur="5.0" 
          style="top: 22%; left: 55%; --rot: 10deg; --glow-color: rgba(139,94,60,0.4); --glow-color-solid: rgb(139,94,60);">
       <svg viewBox="0 0 100 100">
-        <path class="stone-base" d="M30 45 L70 45 M50 15 L50 85 M15 85 L85 85" stroke-width="12" stroke-linecap="square" fill="none" transform="translate(4,4)" />
-        <path class="stone-face" d="M30 45 L70 45 M50 15 L50 85 M15 85 L85 85" stroke="#4a4a4a" stroke-width="12" stroke-linecap="square" fill="none" />
-        <path class="stone-highlight" d="M30 41 L70 41 M46 15 L46 85 M15 81 L85 81" stroke="#8a8a8a" stroke-width="4" fill="none" />
+        <text x="50%" y="50%" class="r-txt r-deep">土</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">土</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">土</text>
+        <text x="50%" y="50%" class="r-txt r-face">土</text>
       </svg>
     </div>
   </div>
