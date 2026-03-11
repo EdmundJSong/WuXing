@@ -1771,36 +1771,76 @@
 
     /* Position elements in a circle (pentagon shape) around the center */
     /* Exact angles matching the r=0.72 pentagram on the canvas */
-    .harmony-el[data-el="water"] {
-      top: 14.0%;
-      left: 50.0%;
-    }
-
-    .harmony-el[data-el="wood"] {
-      top: 38.9%;
-      left: 84.2%;
-    }
-
-    .harmony-el[data-el="fire"] {
-      top: 79.1%;
-      left: 71.2%;
-    }
-
-    .harmony-el[data-el="earth"] {
-      top: 79.1%;
-      left: 28.8%;
-    }
-
-    .harmony-el[data-el="metal"] {
-      top: 38.9%;
-      left: 15.8%;
-    }
+    .harmony-el[data-el="water"] { top: 14.0%; left: 50.0%; }
+    .harmony-el[data-el="wood"] { top: 38.9%; left: 84.2%; }
+    .harmony-el[data-el="fire"] { top: 79.1%; left: 71.2%; }
+    .harmony-el[data-el="earth"] { top: 79.1%; left: 28.8%; }
+    .harmony-el[data-el="metal"] { top: 38.9%; left: 15.8%; }
 
     /* Entrance Animation Classes Addded via JS */
     .harmony-el.entered {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
     }
+    
+    /* ── Prestige Glass Nodes ── */
+    .harmony-prestige-node {
+      position: relative;
+      width: clamp(70px, 16vw, 110px);
+      height: clamp(70px, 16vw, 110px);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.05);
+      transition: box-shadow 0.3s, transform 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .harmony-el:active .harmony-prestige-node {
+      transform: scale(0.95);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7), inset 0 0 25px rgba(255, 255, 255, 0.1);
+    }
+
+    .harmony-prestige-node svg {
+      width: 80%;
+      height: 80%;
+      overflow: visible;
+    }
+    
+    /* Luminous Gold SVG Text */
+    .harmony-prestige-node .p-txt {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: 75px; 
+      dominant-baseline: central;
+      text-anchor: middle;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    .harmony-prestige-node .p-deep { fill: rgba(0,0,0,0.8); transform: translate(3px, 5px); }
+    .harmony-prestige-node .p-face { stroke-width: 0.5px; }
+
+    /* Prestige Element specific colors */
+    .harmony-el[data-el="metal"] .harmony-prestige-node svg { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4)); }
+    .harmony-el[data-el="metal"] .p-face { fill: url(#prestige-metal); stroke: #ffd700; }
+    
+    .harmony-el[data-el="wood"] .harmony-prestige-node svg { filter: drop-shadow(0 0 10px rgba(76, 153, 76, 0.4)); }
+    .harmony-el[data-el="wood"] .p-face { fill: url(#prestige-wood); stroke: #4c994c; }
+    
+    .harmony-el[data-el="water"] .harmony-prestige-node svg { filter: drop-shadow(0 0 10px rgba(70, 130, 200, 0.4)); }
+    .harmony-el[data-el="water"] .p-face { fill: url(#prestige-water); stroke: #4682b4; }
+    
+    .harmony-el[data-el="fire"] .harmony-prestige-node svg { filter: drop-shadow(0 0 10px rgba(220, 60, 40, 0.4)); }
+    .harmony-el[data-el="fire"] .p-face { fill: url(#prestige-fire); stroke: #dc3c28; }
+    
+    .harmony-el[data-el="earth"] .harmony-prestige-node svg { filter: drop-shadow(0 0 10px rgba(139, 94, 60, 0.4)); }
+    .harmony-el[data-el="earth"] .p-face { fill: url(#prestige-earth); stroke: #8b5e3c; }
 
     /* Harmony tap ripple */
     .harmony-ripple {
@@ -1829,10 +1869,63 @@
     /* Harmony center glow */
     #harmonyCenter {
       transition: text-shadow 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      pointer-events: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
+    /* Base ring scale (animated via JS convergence) */
+    #harmonyCenter svg {
+      width: 120%;
+      height: 120%;
+      overflow: visible;
+      pointer-events: none;
+      filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+      opacity: 0.2;
+      transition: opacity 0.5s, filter 0.5s;
+    }
+
+    /* Active holding state */
+    #harmonyCenter.glowing svg {
+      opacity: 1;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+    }
+    
     #harmonyCenter.glowing {
       box-shadow: 0 0 30px rgba(255, 255, 255, 0.2), 0 0 60px rgba(255, 255, 255, 0.1);
+    }
+
+    #harmonyCue {
+      position: absolute;
+      top: 58%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 20;
+      letter-spacing: 0.1em;
+    }
+
+    #harmonyPulseOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(200,140,50,0);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    #harmonyKeCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 8;
     }
 
     /* ═══════════════════════════════════
@@ -2398,21 +2491,98 @@
   <!-- HARMONY / MANDALA -->
   <div id="harmonyScreen">
     <canvas id="harmonyBgCanvas"></canvas>
+    <div id="harmonyPulseOverlay"></div>
     <div class="circle-layout harmony-layout" id="harmonyLayout">
       <div class="circle-ring" style="opacity: 0.2;"></div>
       <canvas class="energy-canvas" id="harmonyCanvas"></canvas>
-      <div class="circle-el c-metal harmony-el" data-el="metal"><span class="char">金</span><span
-          class="elname">Metal</span></div>
-      <div class="circle-el c-wood harmony-el" data-el="wood"><span class="char">木</span><span
-          class="elname">Wood</span></div>
-      <div class="circle-el c-water harmony-el" data-el="water"><span class="char">水</span><span
-          class="elname">Water</span></div>
-      <div class="circle-el c-fire harmony-el" data-el="fire"><span class="char">火</span><span
-          class="elname">Fire</span></div>
-      <div class="circle-el c-earth harmony-el" data-el="earth"><span class="char">土</span><span
-          class="elname">Earth</span></div>
+      <canvas id="harmonyKeCanvas"></canvas>
+      
+      <!-- Harmony Global Defs -->
+      <svg width="0" height="0" style="position: absolute; pointer-events: none;">
+        <defs>
+          <linearGradient id="prestige-metal" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="50%" stop-color="#fdfbf7" />
+            <stop offset="100%" stop-color="#d4af37" />
+          </linearGradient>
+          <linearGradient id="prestige-wood" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="50%" stop-color="#00fa9a" />
+            <stop offset="100%" stop-color="#006400" />
+          </linearGradient>
+          <linearGradient id="prestige-water" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="50%" stop-color="#00bfff" />
+            <stop offset="100%" stop-color="#0000cd" />
+          </linearGradient>
+          <linearGradient id="prestige-fire" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="50%" stop-color="#ff4500" />
+            <stop offset="100%" stop-color="#8b0000" />
+          </linearGradient>
+          <linearGradient id="prestige-earth" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="50%" stop-color="#cd853f" />
+            <stop offset="100%" stop-color="#5c4033" />
+          </linearGradient>
+          <linearGradient id="prestige-gold" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="30%" stop-color="#fff5cc" />
+            <stop offset="70%" stop-color="#ffd700" />
+            <stop offset="100%" stop-color="#b8860b" />
+          </linearGradient>
+        </defs>
+      </svg>
+      
+      <div class="harmony-el" data-el="metal">
+        <div class="harmony-prestige-node">
+          <svg viewBox="0 0 100 100">
+            <text x="50%" y="50%" class="p-txt p-deep">金</text>
+            <text x="50%" y="50%" class="p-txt p-face">金</text>
+          </svg>
+        </div>
+      </div>
+      <div class="harmony-el" data-el="wood">
+        <div class="harmony-prestige-node">
+          <svg viewBox="0 0 100 100">
+            <text x="50%" y="50%" class="p-txt p-deep">木</text>
+            <text x="50%" y="50%" class="p-txt p-face">木</text>
+          </svg>
+        </div>
+      </div>
+      <div class="harmony-el" data-el="water">
+        <div class="harmony-prestige-node">
+          <svg viewBox="0 0 100 100">
+            <text x="50%" y="50%" class="p-txt p-deep">水</text>
+            <text x="50%" y="50%" class="p-txt p-face">水</text>
+          </svg>
+        </div>
+      </div>
+      <div class="harmony-el" data-el="fire">
+        <div class="harmony-prestige-node">
+          <svg viewBox="0 0 100 100">
+            <text x="50%" y="50%" class="p-txt p-deep">火</text>
+            <text x="50%" y="50%" class="p-txt p-face">火</text>
+          </svg>
+        </div>
+      </div>
+      <div class="harmony-el" data-el="earth">
+        <div class="harmony-prestige-node">
+          <svg viewBox="0 0 100 100">
+            <text x="50%" y="50%" class="p-txt p-deep">土</text>
+            <text x="50%" y="50%" class="p-txt p-face">土</text>
+          </svg>
+        </div>
+      </div>
       <div class="circle-center" id="harmonyCenter" style="width: 100px; height: 100px; border-radius: 50%;">
-        <!-- Empty center core to anchor the tap glows -->
+        <svg id="harmonyCenterMandala" viewBox="-50 -50 100 100">
+          <g id="mandala-rotator">
+            <circle cx="0" cy="0" r="30" fill="none" stroke="url(#prestige-gold)" stroke-width="1.5" stroke-dasharray="4 6" />
+            <path d="M0 -38 L8 -20 L27 -24 L15 -10 L30 5 L12 12 L15 30 L0 20 L-15 30 L-12 12 L-30 5 L-15 -10 L-27 -24 L-8 -20 Z" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1" />
+            <circle cx="0" cy="0" r="10" fill="url(#prestige-gold)" />
+          </g>
+        </svg>
+        <div id="harmonyCue">hold</div>
       </div>
     </div>
   </div>
@@ -2595,6 +2765,10 @@
 
     window.setAdminStatus = function (status) {
       db.ref('status').set(status);
+      if (status === 'live_harmony') {
+        db.ref('harmony_start').set(firebase.database.ServerValue.TIMESTAMP);
+        db.ref('harmony_freq').set({ 50: 0, 52: 0, 54: 0, 56: 0, 58: 0 });
+      }
     };
 
     let isPresenceInitialized = false;
@@ -3047,6 +3221,7 @@
       db.ref('status').once('value', snap => { if (snap.val()) onStatusChange(snap.val()); });
     }, 30000);
 
+
     function triggerHarmony() {
       if (currentElement) { cleanupCurrent(); document.getElementById(currentElement + '-page').classList.remove('active'); currentElement = null; }
       document.getElementById('permissionOverlay').classList.add('hidden');
@@ -3061,132 +3236,284 @@
       const aft = document.getElementById('aftermathScreen');
       if (aft) { aft.style.display = 'none'; aft.classList.remove('interactive'); }
 
-      // Reset Element animation states
+      // Reset element entrance animations
       document.querySelectorAll('.harmony-el').forEach((el, index) => {
         el.classList.remove('entered');
-        // Add a slight stagger to the entrance
-        setTimeout(() => {
-          el.classList.add('entered');
-        }, 100 + (index * 150));
+        setTimeout(() => el.classList.add('entered'), 100 + (index * 150));
       });
 
-      // Fade in background canvas
       const bgCanvas = document.getElementById('harmonyBgCanvas');
-      if (bgCanvas) {
-        bgCanvas.style.opacity = '1';
-      }
+      if (bgCanvas) bgCanvas.style.opacity = '1';
 
-      initHarmonyFlow();
+      initHarmonyPulse();
     }
 
-    // ── Harmony energy flow + tap interaction ──
-    let harmonyFlowFrame = null, harmonyBgFrame = null;
-    let harmonyParticles = [], harmonyDir = 1, harmonyDirTimer = null;
-    let harmonyCenterGlow = 0, harmonyCenterDecay = null;
-    let bgTime = 0; // For background gradient animation
+    // ── Harmony Pulse System ──
+    let harmonyBgFrame = null;
+    let bgTime = 0;
+    let harmonyHolding = false;
+    let harmonyStartTime = 0;
+    let harmonyFreqBucket = null;
+    let harmonyPulseOsc = null, harmonyPulseGain = null;
+    let harmonyPulseFrame = null;
+    let harmonyReleaseCount = 0;
+    let harmonyKeFrame = null;
+    let harmonyCenterHandler = null, harmonyCenterEndHandler = null;
 
-    // Low-opacity, deep colors for the background
-    const BG_COLORS = [
-      { r: 30, g: 25, b: 5 },   // Metal
-      { r: 5, g: 20, b: 5 },    // Wood
-      { r: 5, g: 15, b: 30 },   // Water
-      { r: 30, g: 5, b: 5 },    // Fire
-      { r: 20, g: 12, b: 5 }    // Earth
+    const HARMONY_FREQS = [50, 52, 54, 56, 58];
+    const HARMONY_PULSE_START = 3.0;
+    const HARMONY_PULSE_END = 1.1;
+    const HARMONY_ACCEL_DUR = 30;
+
+    // Ke cycle: Water>Fire, Fire>Metal, Metal>Wood, Wood>Earth, Earth>Water
+    const KE_PAIRS = [
+      ['water', 'fire'], ['fire', 'metal'], ['metal', 'wood'], ['wood', 'earth'], ['earth', 'water']
     ];
-
-    const HARMONY_COLORS = {
-      metal: 'rgba(212,175,55,0.5)', wood: 'rgba(76,153,76,0.5)',
-      water: 'rgba(70,130,200,0.5)', fire: 'rgba(220,60,40,0.5)', earth: 'rgba(139,94,60,0.5)'
+    const HARMONY_EL_ANGLES = {
+      water: -Math.PI / 2,
+      wood: -Math.PI / 2 + (2 * Math.PI * 1 / 5),
+      fire: -Math.PI / 2 + (2 * Math.PI * 2 / 5),
+      earth: -Math.PI / 2 + (2 * Math.PI * 3 / 5),
+      metal: -Math.PI / 2 + (2 * Math.PI * 4 / 5)
     };
 
-    function initHarmonyFlow() {
-      const canvas = document.getElementById('harmonyCanvas');
-      const bgCanvas = document.getElementById('harmonyBgCanvas');
-      if (!canvas || !bgCanvas) return;
+    const BG_COLORS = [
+      { r: 30, g: 25, b: 5 }, { r: 5, g: 20, b: 5 },
+      { r: 5, g: 15, b: 30 }, { r: 30, g: 5, b: 5 }, { r: 20, g: 12, b: 5 }
+    ];
 
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
-
-      bgCanvas.width = window.innerWidth;
-      bgCanvas.height = window.innerHeight;
+    function initHarmonyPulse() {
+      harmonyHolding = false;
+      harmonyReleaseCount = 0;
+      harmonyFreqBucket = null;
       bgTime = 0;
 
-      // Start particles passing each other (half clockwise, half counter-clockwise)
-      harmonyParticles = [];
-      for (let i = 0; i < 16; i++) {
-        harmonyParticles.push({
-          angle: (i / 16) * Math.PI * 2,
-          speed: 0.005 + Math.random() * 0.003, // Slower for elegance
-          direction: i % 2 === 0 ? 1 : -1, // Alternate directions
-          size: 1.5 + Math.random() * 1.5
-        });
-      }
-      harmonyDir = 1;
-
-      drawHarmonyBg();
-      drawHarmonyFlow();
-
-      // Auto-alternate direction every 8s
-      harmonyDirTimer = setInterval(() => {
-        harmonyDir *= -1;
-      }, 8000);
-
-      // Tap ripples on element buttons
-      document.querySelectorAll('.harmony-el').forEach(el => {
-        el.addEventListener('touchstart', harmonyTap);
-        el.addEventListener('click', harmonyTap);
+      // Get shared start time from Firebase (admin sets this)
+      db.ref('harmony_start').on('value', snap => {
+        if (snap.val()) harmonyStartTime = snap.val();
       });
 
-      // Center glow decay
-      harmonyCenterGlow = 0;
-      harmonyCenterDecay = setInterval(() => {
-        if (harmonyCenterGlow > 0) {
-          harmonyCenterGlow = Math.max(0, harmonyCenterGlow - 0.02);
-          updateHarmonyCenterGlow();
-        }
-      }, 50);
+      // Setup canvases
+      const bgCanvas = document.getElementById('harmonyBgCanvas');
+      if (bgCanvas) { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+      const keCanvas = document.getElementById('harmonyKeCanvas');
+      if (keCanvas) { keCanvas.width = keCanvas.parentElement.clientWidth; keCanvas.height = keCanvas.parentElement.clientHeight; }
+      const flowCanvas = document.getElementById('harmonyCanvas');
+      if (flowCanvas) { flowCanvas.width = flowCanvas.parentElement.clientWidth; flowCanvas.height = flowCanvas.parentElement.clientHeight; }
+
+      drawHarmonyBg();
+      drawHarmonyKe();
+
+      // Show initial cue
+      const cue = document.getElementById('harmonyCue');
+      if (cue) { cue.textContent = 'hold'; cue.style.opacity = '1'; }
+
+      // Center hold handlers
+      const center = document.getElementById('harmonyCenter');
+      harmonyCenterHandler = function (e) { e.preventDefault(); harmonyHoldStart(); };
+      harmonyCenterEndHandler = function (e) { e.preventDefault(); harmonyHoldEnd(); };
+      center.addEventListener('touchstart', harmonyCenterHandler, { passive: false });
+      center.addEventListener('touchend', harmonyCenterEndHandler, { passive: false });
+      center.addEventListener('touchcancel', harmonyCenterEndHandler, { passive: false });
+      center.addEventListener('mousedown', harmonyCenterHandler);
+      center.addEventListener('mouseup', harmonyCenterEndHandler);
     }
 
-    // Low GPU Background Gradient Loop
-    function drawHarmonyBg() {
-      const canvas = document.getElementById('harmonyBgCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d', { alpha: false }); // alpha: false helps performance
+    function harmonyHoldStart() {
+      if (harmonyHolding) return;
+      harmonyHolding = true;
 
-      bgTime += 0.002;
+      // Hide cue
+      const cue = document.getElementById('harmonyCue');
+      if (cue) cue.style.opacity = '0';
 
-      // Calculate 3 shifting points for a simple, soft mesh gradient
-      const w = canvas.width, h = canvas.height;
-
-      // Create a solid black base
-      ctx.fillStyle = '#050505';
-      ctx.fillRect(0, 0, w, h);
-
-      // Add 3 soft, slow-moving radial gradients (Low GPU cost vs many gradients)
-      for (let i = 0; i < 3; i++) {
-        const color = BG_COLORS[(Math.floor(bgTime * 10) + i) % BG_COLORS.length];
-
-        const x = w / 2 + Math.sin(bgTime + i * 2) * w * 0.3;
-        const y = h / 2 + Math.cos(bgTime * 0.8 + i) * h * 0.3;
-        const r = Math.max(w, h) * 0.6;
-
-        const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
-        grad.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.8)`);
-        grad.addColorStop(1, 'rgba(0,0,0,0)');
-
-        ctx.fillStyle = grad;
-        // Use lighter blend mode to accumulate colors
-        ctx.globalCompositeOperation = 'screen';
-        ctx.fillRect(0, 0, w, h);
-        ctx.globalCompositeOperation = 'source-over'; // reset
+      // Assign frequency bucket (pick the one with fewest users)
+      if (!harmonyFreqBucket) {
+        let bestFreq = HARMONY_FREQS[0];
+        let bestCount = Infinity;
+        const checks = HARMONY_FREQS.map(f =>
+          db.ref('harmony_freq/' + f).once('value').then(snap => {
+            const count = snap.val() || 0;
+            if (count < bestCount) { bestCount = count; bestFreq = f; }
+          })
+        );
+        Promise.all(checks).then(() => {
+          harmonyFreqBucket = bestFreq;
+          db.ref('harmony_freq/' + harmonyFreqBucket).transaction(v => (v || 0) + 1);
+          startHarmonyAudio();
+        });
+      } else {
+        startHarmonyAudio();
       }
 
-      harmonyBgFrame = requestAnimationFrame(drawHarmonyBg);
+      // Start visual pulse loop
+      if (!harmonyPulseFrame) harmonyPulseLoop();
     }
 
-    // Generative Lines and Particles Loop
-    function drawHarmonyFlow() {
-      const canvas = document.getElementById('harmonyCanvas');
+    function harmonyHoldEnd() {
+      if (!harmonyHolding) return;
+      harmonyHolding = false;
+
+      // Escalating cue
+      harmonyReleaseCount++;
+      const cue = document.getElementById('harmonyCue');
+      if (cue) {
+        if (harmonyReleaseCount >= 4) {
+          cue.textContent = 'HOLD';
+        } else {
+          cue.textContent = 'hold' + '!'.repeat(harmonyReleaseCount);
+        }
+        cue.style.opacity = '1';
+      }
+
+      // Quick fade out audio (300ms)
+      if (harmonyPulseGain && audioCtx) {
+        harmonyPulseGain.gain.setValueAtTime(harmonyPulseGain.gain.value, audioCtx.currentTime);
+        harmonyPulseGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+      }
+    }
+
+    let harmonyOscNodes = [];
+    function startHarmonyAudio() {
+      if (!audioCtx || !harmonyFreqBucket) return;
+      // Stop existing nodes
+      harmonyOscNodes.forEach(o => { try { o.stop(); } catch (e) { } });
+      harmonyOscNodes = [];
+
+      harmonyPulseGain = audioCtx.createGain();
+      harmonyPulseGain.gain.value = 0;
+      harmonyPulseGain.connect(audioCtx.destination);
+
+      // Create fundamental + 3 harmonics so phone speakers can reproduce the sub-bass
+      // Fundamental (50-58Hz): inaudible on phones but felt as beating
+      // 2nd harmonic (100-116Hz): low rumble, barely audible
+      // 3rd harmonic (150-174Hz): clearly audible thump
+      // 4th harmonic (200-232Hz): presence and attack
+      const harmonicGains = [0.4, 0.35, 0.25, 0.15];
+      for (let h = 1; h <= 4; h++) {
+        const osc = audioCtx.createOscillator();
+        const hGain = audioCtx.createGain();
+        osc.type = h === 1 ? 'sine' : 'triangle';
+        osc.frequency.value = harmonyFreqBucket * h;
+        hGain.gain.value = harmonicGains[h - 1];
+        osc.connect(hGain);
+        hGain.connect(harmonyPulseGain);
+        osc.start();
+        harmonyOscNodes.push(osc);
+      }
+      // Store first osc as reference for frequency convergence
+      harmonyPulseOsc = harmonyOscNodes[0];
+    }
+
+    function getCurrentPulseInterval() {
+      if (!harmonyStartTime) return HARMONY_PULSE_START;
+      const elapsed = (Date.now() - harmonyStartTime) / 1000;
+      if (elapsed >= HARMONY_ACCEL_DUR) return HARMONY_PULSE_END;
+      const t = elapsed / HARMONY_ACCEL_DUR;
+      return HARMONY_PULSE_START + (HARMONY_PULSE_END - HARMONY_PULSE_START) * (t * t);
+    }
+
+    function getCurrentConvergence() {
+      if (!harmonyStartTime) return 0;
+      const elapsed = (Date.now() - harmonyStartTime) / 1000;
+      if (elapsed < 15) return 0;
+      return Math.min(1, (elapsed - 15) / 45);
+    }
+
+    let lastPulseVibTime = 0;
+    let globalPulseAmp = 0; // Export for external canvas use
+    function harmonyPulseLoop() {
+      if (!harmonyStartTime) {
+        harmonyPulseFrame = requestAnimationFrame(harmonyPulseLoop);
+        return;
+      }
+
+      const now = Date.now();
+      const elapsed = (now - harmonyStartTime) / 1000;
+      const interval = getCurrentPulseInterval();
+      const cyclePos = ((elapsed % interval) / interval);
+
+      // Sharp hairpin: spike only in first 6% of each cycle
+      const pulseWidth = 0.06;
+      let pulseAmp = 0;
+      if (cyclePos < pulseWidth) {
+        // Attack is fast and sharp, decay is a bit softer
+        const t = cyclePos / pulseWidth;
+        pulseAmp = t < 0.3 ? (t / 0.3) : Math.pow(1 - ((t - 0.3) / 0.7), 2);
+      }
+      globalPulseAmp = pulseAmp;
+
+      // Audio envelope
+      if (harmonyHolding && harmonyPulseGain && audioCtx) {
+        const convergence = getCurrentConvergence();
+        const targetFreq = harmonyFreqBucket + (50 - harmonyFreqBucket) * convergence;
+        // Converge all harmonics
+        harmonyOscNodes.forEach((osc, i) => {
+          osc.frequency.setTargetAtTime(targetFreq * (i + 1), audioCtx.currentTime, 0.1);
+        });
+
+        const baseVol = 0.5;
+        harmonyPulseGain.gain.setTargetAtTime(pulseAmp * baseVol, audioCtx.currentTime, 0.008);
+
+        // Haptic on pulse peak (throttled)
+        if (pulseAmp > 0.8 && navigator.vibrate && (now - lastPulseVibTime > interval * 500)) {
+          navigator.vibrate(40);
+          lastPulseVibTime = now;
+        }
+      }
+
+      // Visual pulse overlay
+      const overlay = document.getElementById('harmonyPulseOverlay');
+      if (overlay && harmonyHolding) {
+        const glowAmt = pulseAmp * 0.18;
+        overlay.style.background = `rgba(200,140,50,${glowAmt})`;
+      } else if (overlay && !harmonyHolding) {
+        overlay.style.background = 'rgba(200,140,50,0)';
+      }
+
+      // Ring pulse (scales and glows with each heartbeat)
+      const ring = document.querySelector('#harmonyLayout .circle-ring');
+      if (ring) {
+        const ringScale = 1 + pulseAmp * 0.04;
+        const ringOp = 0.15 + pulseAmp * 0.35;
+        const ringGlow = pulseAmp * 8;
+        ring.style.transform = `translate(-50%, -50%) scale(${ringScale})`;
+        ring.style.opacity = ringOp;
+        ring.style.boxShadow = ringGlow > 0.5 ? `0 0 ${ringGlow}px rgba(200,140,50,${pulseAmp * 0.4}), inset 0 0 ${ringGlow}px rgba(200,140,50,${pulseAmp * 0.2})` : 'none';
+      }
+
+      // Center glow and SVG Mandala on pulse
+      const center = document.getElementById('harmonyCenter');
+      if (center && harmonyHolding) {
+        const glow = pulseAmp * 50;
+        
+        // Shift global shadow from Amber to White based on convergence
+        const cGlow = Math.min(1, getCurrentConvergence() * 1.5);
+        const r = Math.round(200 + cGlow * 55);
+        const g = Math.round(140 + cGlow * 115);
+        const b = Math.round(50 + cGlow * 205);
+        
+        center.classList.add('glowing');
+        center.style.boxShadow = `0 0 ${glow}px rgba(${r},${g},${b},${pulseAmp * 0.6}), 0 0 ${glow * 2}px rgba(${r},${g},${b},${pulseAmp * 0.25})`;
+        
+        // Rotate and expand Mandala SVG
+        const mandala = document.getElementById('mandala-rotator');
+        if (mandala) {
+          const rotation = (elapsed * 30) % 360;
+          const scale = 1 + (getCurrentConvergence() * 0.6) + (pulseAmp * 0.1);
+          mandala.setAttribute('transform', `rotate(${rotation}) scale(${scale})`);
+        }
+      } else if (center && !harmonyHolding) {
+        center.style.boxShadow = '';
+        center.classList.remove('glowing');
+      }
+
+      harmonyPulseFrame = requestAnimationFrame(harmonyPulseLoop);
+    }
+
+    // Ke star lines drawing
+    function drawHarmonyKe() {
+      const canvas = document.getElementById('harmonyKeCanvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const cx = canvas.width / 2, cy = canvas.height / 2;
@@ -3194,100 +3521,147 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw Generative Network Lines (Pentagram shape: Wood->Fire->Earth->Metal->Water)
-      ctx.beginPath();
-      for (let i = 0; i < 5; i++) {
-        // The traditional Sheng cycle points (simplified visually to a star/pentagon)
-        const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
-        const nextAngle = (((i + 1) % 5) / 5) * Math.PI * 2 - Math.PI / 2;
-
-        const x1 = cx + r * Math.cos(angle);
-        const y1 = cy + r * Math.sin(angle);
-        const x2 = cx + r * Math.cos(nextAngle);
-        const y2 = cy + r * Math.sin(nextAngle);
-
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
+      if (!harmonyStartTime) {
+        harmonyKeFrame = requestAnimationFrame(drawHarmonyKe);
+        return;
       }
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
 
-      for (const p of harmonyParticles) {
-        // Individual direction instead of global harmonyDir
-        p.angle += p.speed * p.direction;
-        const x = cx + r * Math.cos(p.angle), y = cy + r * Math.sin(p.angle);
+      // Use the global convergence and pulse variables
+      const convergence = getCurrentConvergence();
+      const dynamicPulse = globalPulseAmp;
 
+      for (let i = 0; i < 5; i++) {
+        const lineElapsed = elapsed - lineStartTime - (i * lineInterval);
+        if (lineElapsed <= 0) continue;
+
+        const progress = Math.min(1, lineElapsed / 3);
+        const pair = KE_PAIRS[i];
+        const a1 = HARMONY_EL_ANGLES[pair[0]];
+        const a2 = HARMONY_EL_ANGLES[pair[1]];
+
+        const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+        const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+        const ex = x1 + (x2 - x1) * progress;
+        const ey = y1 + (y2 - y1) * progress;
+
+        // Base color transitions from Red -> Amber -> Pure White based on convergence
+        const red = Math.round(180 + convergence * 75);
+        const green = Math.round(40 + convergence * 215);
+        const blue = Math.round(40 + convergence * 215);
+        
+        // Energy Beam rendering (layered lines)
+        ctx.globalCompositeOperation = 'screen';
+        
+        // 1. Thick, translucent colored aura (pulses with the beat)
+        const auraAlpha = 0.15 + (progress * 0.25) + (dynamicPulse * 0.4);
         ctx.beginPath();
-        ctx.arc(x, y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,0.6)`;
-        ctx.fill();
-
-        // Short, optimized tail
-        ctx.beginPath();
-        const tailX = cx + r * Math.cos(p.angle - p.speed * p.direction * 10);
-        const tailY = cy + r * Math.sin(p.angle - p.speed * p.direction * 10);
-
-        ctx.moveTo(x, y);
-        ctx.lineTo(tailX, tailY);
-        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-        ctx.lineWidth = p.size;
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(ex, ey);
+        ctx.strokeStyle = `rgba(${red},${green},${blue},${auraAlpha})`;
+        ctx.lineWidth = 12 + (dynamicPulse * 8) + (convergence * 5);
         ctx.lineCap = 'round';
         ctx.stroke();
+
+        // 2. Bright, thin inner core (constant energy)
+        const coreAlpha = 0.6 + (progress * 0.4);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(ex, ey);
+        ctx.strokeStyle = `rgba(255,255,255,${coreAlpha})`;
+        ctx.lineWidth = 2 + (convergence * 2);
+        ctx.stroke();
+        
+        ctx.globalCompositeOperation = 'source-over';
       }
-      harmonyFlowFrame = requestAnimationFrame(drawHarmonyFlow);
+
+      // After all 5 lines, ambient center glow (shifts color with frequency convergence)
+      if (elapsed > 60) {
+        const glowProgress = Math.min(1, (elapsed - 60) / 10);
+        const gRed = Math.round(200 + convergence * 55);
+        const gGreen = Math.round(140 + convergence * 115);
+        const gBlue = Math.round(50 + convergence * 205);
+        
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 0.5);
+        grad.addColorStop(0, `rgba(${gRed},${gGreen},${gBlue},${glowProgress * (0.15 + dynamicPulse * 0.2)})`);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      harmonyKeFrame = requestAnimationFrame(drawHarmonyKe);
     }
 
-    function harmonyTap(e) {
-      e.preventDefault();
-      const el = e.currentTarget;
-      const elName = el.dataset.el;
-      const color = HARMONY_COLORS[elName] || 'rgba(255,255,255,0.4)';
-
-      // Create ripple
-      const ripple = document.createElement('div');
-      ripple.className = 'harmony-ripple';
-      ripple.style.background = `radial-gradient(circle, ${color} 0%, transparent 70%)`;
-      ripple.style.left = '50%';
-      ripple.style.top = '50%';
-      el.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 700);
-
-      // Brighten center
-      harmonyCenterGlow = Math.min(1, harmonyCenterGlow + 0.15);
-      updateHarmonyCenterGlow();
-    }
-
-    function updateHarmonyCenterGlow() {
-      const center = document.getElementById('harmonyCenter');
-      if (!center) return;
-      if (harmonyCenterGlow > 0.05) {
-        center.classList.add('glowing');
-        center.style.boxShadow = `0 0 ${20 + harmonyCenterGlow * 40}px rgba(255,255,255,${harmonyCenterGlow * 0.25}), 0 0 ${40 + harmonyCenterGlow * 60}px rgba(255,255,255,${harmonyCenterGlow * 0.1})`;
-      } else {
-        center.classList.remove('glowing');
-        center.style.boxShadow = '';
+    // Background gradient loop
+    function drawHarmonyBg() {
+      const canvas = document.getElementById('harmonyBgCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d', { alpha: false });
+      bgTime += 0.002;
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, w, h);
+      for (let i = 0; i < 3; i++) {
+        const color = BG_COLORS[(Math.floor(bgTime * 10) + i) % BG_COLORS.length];
+        const x = w / 2 + Math.sin(bgTime + i * 2) * w * 0.3;
+        const y = h / 2 + Math.cos(bgTime * 0.8 + i) * h * 0.3;
+        const rr = Math.max(w, h) * 0.6;
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, rr);
+        grad.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.8)`);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.globalCompositeOperation = 'screen';
+        ctx.fillRect(0, 0, w, h);
+        ctx.globalCompositeOperation = 'source-over';
       }
+      harmonyBgFrame = requestAnimationFrame(drawHarmonyBg);
     }
 
     function cleanupHarmony() {
       if (harmonyBgFrame) { cancelAnimationFrame(harmonyBgFrame); harmonyBgFrame = null; }
-      if (harmonyFlowFrame) { cancelAnimationFrame(harmonyFlowFrame); harmonyFlowFrame = null; }
-      if (harmonyDirTimer) { clearInterval(harmonyDirTimer); harmonyDirTimer = null; }
-      if (harmonyCenterDecay) { clearInterval(harmonyCenterDecay); harmonyCenterDecay = null; }
-      document.querySelectorAll('.harmony-el').forEach(el => {
-        el.removeEventListener('touchstart', harmonyTap);
-        el.removeEventListener('click', harmonyTap);
-        el.classList.remove('entered');
-      });
+      if (harmonyPulseFrame) { cancelAnimationFrame(harmonyPulseFrame); harmonyPulseFrame = null; }
+      if (harmonyKeFrame) { cancelAnimationFrame(harmonyKeFrame); harmonyKeFrame = null; }
+
+      // Remove hold handlers
+      const center = document.getElementById('harmonyCenter');
+      if (center && harmonyCenterHandler) {
+        center.removeEventListener('touchstart', harmonyCenterHandler);
+        center.removeEventListener('touchend', harmonyCenterEndHandler);
+        center.removeEventListener('touchcancel', harmonyCenterEndHandler);
+        center.removeEventListener('mousedown', harmonyCenterHandler);
+        center.removeEventListener('mouseup', harmonyCenterEndHandler);
+      }
+      harmonyCenterHandler = null; harmonyCenterEndHandler = null;
+
+      // Stop audio (all harmonics)
+      harmonyOscNodes.forEach(o => { try { o.stop(); } catch (e) { } });
+      harmonyOscNodes = [];
+      harmonyPulseOsc = null;
+      harmonyPulseGain = null;
+
+      // Decrement freq bucket and cleanup Firebase
+      if (harmonyFreqBucket) {
+        db.ref('harmony_freq/' + harmonyFreqBucket).transaction(v => Math.max(0, (v || 1) - 1));
+        harmonyFreqBucket = null;
+      }
+      db.ref('harmony_start').off();
+
+      // Reset visuals
+      harmonyHolding = false;
+      harmonyReleaseCount = 0;
+      const overlay = document.getElementById('harmonyPulseOverlay');
+      if (overlay) overlay.style.background = 'rgba(200,140,50,0)';
+      const cue = document.getElementById('harmonyCue');
+      if (cue) cue.style.opacity = '0';
+      const ring = document.querySelector('#harmonyLayout .circle-ring');
+      if (ring) { ring.style.transform = ''; ring.style.opacity = ''; ring.style.boxShadow = 'none'; }
+      document.querySelectorAll('.harmony-el').forEach(el => el.classList.remove('entered'));
       const canvas = document.getElementById('harmonyCanvas');
       if (canvas) { const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); }
+      const keCanvas = document.getElementById('harmonyKeCanvas');
+      if (keCanvas) { const ctx = keCanvas.getContext('2d'); ctx.clearRect(0, 0, keCanvas.width, keCanvas.height); }
       const bgCanvas = document.getElementById('harmonyBgCanvas');
-      if (bgCanvas) {
-        bgCanvas.style.opacity = '0';
-        const ctx = bgCanvas.getContext('2d');
-        ctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-      }
+      if (bgCanvas) { bgCanvas.style.opacity = '0'; const ctx = bgCanvas.getContext('2d'); ctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height); }
+      if (center) { center.style.boxShadow = ''; center.classList.remove('glowing'); }
     }
 
     function triggerAftermath() {
@@ -3366,6 +3740,27 @@
       // Haptic feedback if supported
       if (navigator.vibrate) navigator.vibrate(50);
 
+      // Audio Hook: Low Frequency Crescendo
+      if (typeof audioCtx !== 'undefined' && audioCtx) {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle'; // Gives a nice gritty texture
+          osc.frequency.setValueAtTime(45, audioCtx.currentTime);
+          osc.frequency.linearRampToValueAtTime(65, audioCtx.currentTime + 0.8);
+          
+          gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.9, audioCtx.currentTime + 0.6); // Crescendo
+          gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 1.5); // Fade
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          
+          osc.start();
+          osc.stop(audioCtx.currentTime + 1.5);
+        } catch (err) { console.warn("Audio Context error:", err); }
+      }
+
       const charEl = e.currentTarget;
       const color = charEl.dataset.color;
       const dur = parseFloat(charEl.dataset.dur);
@@ -3394,22 +3789,29 @@
       const brightenTime = dur * 0.12;
       charEl.classList.add('brightening');
       
-      // Setup the radial burst on the flash div
+      // Setup the radial burst on the flash div — starts from tap point
       flash.style.transition = 'none';
       flash.style.opacity = '0';
-      flash.style.background = `radial-gradient(circle at ${touchX}px ${touchY}px, rgb(${color}) 0%, rgba(${color}, 0.8) 40%, transparent 100%)`;
+      flash.style.background = `radial-gradient(circle at ${touchX}px ${touchY}px, rgb(${color}) 0%, rgba(${color}, 0.8) 30%, transparent 70%)`;
 
-      // Phase 2: Burst expands
-      const fillTime = dur * 0.15;
+      // Phase 2: Burst expands from tap point
+      const burstTime = dur * 0.08;
       setTimeout(() => {
-        flash.style.transition = `opacity ${fillTime}s ease-in`;
+        flash.style.transition = `opacity ${burstTime}s ease-in`;
         flash.style.opacity = '1';
-        if (navigator.vibrate) navigator.vibrate([100, 50, 100]); // Heavier burst vibration
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
       }, brightenTime * 1000);
 
-      // Phase 3: Hold at full color
+      // Phase 2b: Snap to solid full-screen color
+      const solidTime = dur * 0.07;
+      setTimeout(() => {
+        flash.style.transition = `background ${solidTime}s ease-in`;
+        flash.style.background = `rgb(${color})`;
+      }, (brightenTime + burstTime) * 1000);
+
+      // Phase 3: Hold at full solid color
       const holdTime = dur * 0.2;
-      const holdStart = (brightenTime + fillTime) * 1000;
+      const holdStart = (brightenTime + burstTime + solidTime + holdTime) * 1000;
 
       // Phase 4: Fade back to black, character gone
       const fadeTime = dur * 0.53;
@@ -3417,7 +3819,7 @@
         charEl.style.display = 'none';
         flash.style.transition = `opacity ${fadeTime}s ease-out`;
         flash.style.opacity = '0';
-      }, holdStart + holdTime * 1000);
+      }, holdStart);
 
       // Cleanup and unlock
       const totalMs = dur * 1000;
@@ -3444,7 +3846,34 @@
       e.stopPropagation();
       e.preventDefault();
       
-      if (navigator.vibrate) navigator.vibrate([50, 50, 100, 50, 200]); // Pulsing hum
+      // Dynamic haptic "warmmm" (long, building pulse sequence)
+      if (navigator.vibrate) navigator.vibrate([100, 30, 200, 30, 400, 30, 600, 30, 800]); 
+
+      // Audio Hook: Low Frequency dynamic "warmmm"
+      if (typeof audioCtx !== 'undefined' && audioCtx) {
+        try {
+          const freqs = [40, 40.5, 41]; // Deep, slightly detuned bass for a thick 'warm' drone
+          freqs.forEach((f) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.value = f;
+            
+            gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+            // Slow warm swell
+            gain.gain.exponentialRampToValueAtTime(0.6, audioCtx.currentTime + 2.0);
+            // Long decay
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 7.0);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 7.0);
+          });
+        } catch (err) { console.warn("Audio Context error:", err); }
+      }
 
       const ember = document.getElementById('aftermathEmber');
       const burst = document.createElement('div');
