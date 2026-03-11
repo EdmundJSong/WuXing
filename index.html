@@ -1529,6 +1529,79 @@
       }
     }
 
+    /* ── Aftermath interaction ── */
+    #aftermathScreen.interactive {
+      pointer-events: auto;
+    }
+
+    #aftermathScreen.interactive .ruin-char {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    #aftermathScreen .ruin-char.brightening {
+      animation: none;
+      transition: color 0.3s, text-shadow 0.3s, transform 0.3s;
+      transform: scale(1.2);
+    }
+
+    #aftermathFlash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    #aftermathEmber {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 30px;
+      height: 30px;
+      margin-top: -15px;
+      margin-left: -15px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,120,40,0.8) 0%, rgba(200,120,40,0) 70%);
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 2s;
+    }
+
+    #aftermathEmber.visible {
+      opacity: 1;
+      pointer-events: auto;
+      animation: emberBreath 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes emberBreath {
+      0% { transform: scale(0.8); opacity: 0.5; }
+      100% { transform: scale(1.2); opacity: 1; }
+    }
+
+    .ember-tap-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 80px;
+      height: 80px;
+      margin-top: -40px;
+      margin-left: -40px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,120,40,0.6) 0%, transparent 70%);
+      pointer-events: none;
+      animation: emberTapFade 1s ease-out forwards;
+    }
+
+    @keyframes emberTapFade {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+
     /* Falling Ash Particles System */
     .ash-layer {
       position: absolute;
@@ -2312,20 +2385,26 @@
     <div class="ash-layer ash-layer-2"></div>
     <div class="ash-layer ash-layer-3"></div>
 
+    <!-- Fullscreen color flash overlay -->
+    <div id="aftermathFlash"></div>
+
+    <!-- Center ember (appears after all 5 cleared) -->
+    <div id="aftermathEmber"></div>
+
     <!-- Ruined Elements -->
-    <div class="ruin-char" style="top: 18%; left: 12%; --rot: -12deg; --glow-color: rgba(212,175,55,0.4);">
+    <div class="ruin-char" data-element="metal" data-color="212,175,55" data-dur="2.5" style="top: 18%; left: 12%; --rot: -12deg; --glow-color: rgba(212,175,55,0.4);">
       <span>金</span>
     </div>
-    <div class="ruin-char" style="top: 55%; left: 58%; --rot: 18deg; --glow-color: rgba(76,153,76,0.4);">
+    <div class="ruin-char" data-element="wood" data-color="76,153,76" data-dur="3.5" style="top: 55%; left: 58%; --rot: 18deg; --glow-color: rgba(76,153,76,0.4);">
       <span>木</span>
     </div>
-    <div class="ruin-char" style="top: 38%; left: 35%; --rot: 4deg; --glow-color: rgba(70,130,200,0.4);">
+    <div class="ruin-char" data-element="water" data-color="70,130,200" data-dur="4.0" style="top: 38%; left: 35%; --rot: 4deg; --glow-color: rgba(70,130,200,0.4);">
       <span>水</span>
     </div>
-    <div class="ruin-char" style="top: 68%; left: 15%; --rot: -25deg; --glow-color: rgba(220,60,40,0.5);">
+    <div class="ruin-char" data-element="fire" data-color="220,60,40" data-dur="2.0" style="top: 68%; left: 15%; --rot: -25deg; --glow-color: rgba(220,60,40,0.5);">
       <span>火</span>
     </div>
-    <div class="ruin-char" style="top: 22%; left: 55%; --rot: 10deg; --glow-color: rgba(139,94,60,0.4);">
+    <div class="ruin-char" data-element="earth" data-color="139,94,60" data-dur="5.0" style="top: 22%; left: 55%; --rot: 10deg; --glow-color: rgba(139,94,60,0.4);">
       <span>土</span>
     </div>
   </div>
@@ -2800,7 +2879,7 @@
 
           const harm = document.getElementById('harmonyScreen'); if (harm) harm.style.display = 'none';
           cleanupHarmony();
-          const aft = document.getElementById('aftermathScreen'); if (aft) aft.style.display = 'none';
+          const aft = document.getElementById('aftermathScreen'); if (aft) { aft.style.display = 'none'; aft.classList.remove('interactive'); }
 
           if (status === 'live') {
             document.getElementById('landing').style.display = 'flex';
@@ -2859,7 +2938,7 @@
       harm.style.display = 'flex';
 
       const aft = document.getElementById('aftermathScreen');
-      if (aft) aft.style.display = 'none';
+      if (aft) { aft.style.display = 'none'; aft.classList.remove('interactive'); }
 
       // Reset Element animation states
       document.querySelectorAll('.harmony-el').forEach((el, index) => {
@@ -3117,6 +3196,109 @@
         window.aftermathGain.connect(audioCtx.destination);
         window.aftermathOsc.start();
       }
+
+      // Initialize interactive aftermath
+      initAftermathInteraction();
+    }
+
+    // ── AFTERMATH INTERACTION ──
+    let aftermathBusy = false;
+    let aftermathCleared = 0;
+
+    function initAftermathInteraction() {
+      aftermathBusy = false;
+      aftermathCleared = 0;
+      const aft = document.getElementById('aftermathScreen');
+      aft.classList.add('interactive');
+
+      // Reset all ruin-chars to visible and tappable
+      const chars = aft.querySelectorAll('.ruin-char');
+      chars.forEach(ch => {
+        ch.style.display = '';
+        ch.style.opacity = '';
+        ch.classList.remove('brightening');
+        ch.addEventListener('touchstart', aftermathCharTap, { passive: true });
+        ch.addEventListener('click', aftermathCharTap);
+      });
+
+      // Hide ember
+      const ember = document.getElementById('aftermathEmber');
+      ember.classList.remove('visible');
+      ember.removeEventListener('touchstart', aftermathEmberTap);
+      ember.removeEventListener('click', aftermathEmberTap);
+
+      // Hide flash
+      const flash = document.getElementById('aftermathFlash');
+      flash.style.opacity = '0';
+      flash.style.background = 'transparent';
+    }
+
+    function aftermathCharTap(e) {
+      e.stopPropagation();
+      if (aftermathBusy) return;
+      aftermathBusy = true;
+
+      const charEl = e.currentTarget;
+      const color = charEl.dataset.color;
+      const dur = parseFloat(charEl.dataset.dur);
+      const flash = document.getElementById('aftermathFlash');
+
+      // Phase 1: Character brightens to full native color
+      const brightenTime = dur * 0.12;
+      charEl.classList.add('brightening');
+      charEl.style.color = `rgb(${color})`;
+      charEl.style.textShadow = `0 0 30px rgba(${color},1), 0 0 60px rgba(${color},0.8), 0 0 100px rgba(${color},0.5)`;
+
+      // Phase 2: Fullscreen fills solid native color
+      const fillTime = dur * 0.15;
+      setTimeout(() => {
+        flash.style.transition = `opacity ${fillTime}s ease-in`;
+        flash.style.background = `rgb(${color})`;
+        flash.style.opacity = '1';
+      }, brightenTime * 1000);
+
+      // Phase 3: Hold at full color
+      const holdTime = dur * 0.2;
+      const holdStart = (brightenTime + fillTime) * 1000;
+
+      // Phase 4: Fade back to black, character gone
+      const fadeTime = dur * 0.53;
+      setTimeout(() => {
+        // Hide character behind the flash
+        charEl.style.display = 'none';
+        // Fade flash back to black
+        flash.style.transition = `opacity ${fadeTime}s ease-out`;
+        flash.style.opacity = '0';
+      }, holdStart + holdTime * 1000);
+
+      // Cleanup and unlock
+      const totalMs = dur * 1000;
+      setTimeout(() => {
+        charEl.removeEventListener('touchstart', aftermathCharTap);
+        charEl.removeEventListener('click', aftermathCharTap);
+        flash.style.background = 'transparent';
+        aftermathBusy = false;
+        aftermathCleared++;
+
+        // All five cleared: show ember
+        if (aftermathCleared >= 5) {
+          setTimeout(() => {
+            const ember = document.getElementById('aftermathEmber');
+            ember.classList.add('visible');
+            ember.addEventListener('touchstart', aftermathEmberTap, { passive: true });
+            ember.addEventListener('click', aftermathEmberTap);
+          }, 1000);
+        }
+      }, totalMs);
+    }
+
+    function aftermathEmberTap(e) {
+      e.stopPropagation();
+      const ember = document.getElementById('aftermathEmber');
+      const glow = document.createElement('div');
+      glow.className = 'ember-tap-glow';
+      ember.appendChild(glow);
+      setTimeout(() => glow.remove(), 1000);
     }
 
     function triggerSoftEnd() {
@@ -3154,7 +3336,7 @@
         if (harm) harm.style.display = 'none';
         cleanupHarmony();
         const aft = document.getElementById('aftermathScreen');
-        if (aft) aft.style.display = 'none';
+        if (aft) { aft.style.display = 'none'; aft.classList.remove('interactive'); }
         document.body.classList.remove('destruction-mode');
 
         document.getElementById('permissionOverlay').classList.add('hidden');
