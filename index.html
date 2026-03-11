@@ -1451,27 +1451,27 @@
       }
     }
 
-    /* Fade flicker for ruin characters */
+    /* Fade flicker for ruin characters (Increased base brightness for mobile) */
     @keyframes ruinFlicker {
 
       0%,
       100% {
-        opacity: 0.12;
+        opacity: 0.6;
       }
 
       50% {
-        opacity: 0.05;
+        opacity: 0.4;
       }
 
       80% {
-        opacity: 0.15;
+        opacity: 0.8;
       }
     }
 
     #aftermathScreen .ruin-char {
       position: absolute;
       font-size: clamp(3rem, 12vw, 7rem);
-      color: #1a1a1a; /* Dark charcoal base */
+      color: #6a6a6a; /* Much brighter base stone color */
       font-family: "Noto Serif SC", serif;
       font-weight: 900;
       z-index: 5;
@@ -1480,17 +1480,17 @@
         ruinFlicker 6s ease-in-out infinite;
       /* The base transforms are set inline, we let the animation override them, 
          but we need to store the initial rotation in a CSS variable --rot inline */
-      /* 3D Stone Effect via text-shadows simulating lighting and depth */
+      /* Brighter 3D Stone Effect */
       text-shadow: 
-        -1px -1px 0 #2a2a2a,
-        1px -1px 0 #2a2a2a,
-        -1px 1px 0 #0a0a0a,
-        1px 1px 0 #0a0a0a,
-        1px 2px 0 #080808,
-        2px 3px 0 #050505,
-        3px 4px 0 #020202,
-        4px 5px 2px rgba(0,0,0,0.8),
-        0 0 10px rgba(200, 40, 40, 0.4); /* Faint ambient ember glow on the stone */
+        -1px -1px 0 #8a8a8a, /* Light edge highlight */
+        1px -1px 0 #8a8a8a,  /* Light edge highlight */
+        -1px 1px 0 #4a4a4a,  /* Medium shadow */
+        1px 1px 0 #4a4a4a,   /* Medium shadow */
+        1px 2px 0 #3a3a3a,   /* Deepening shadow */
+        2px 3px 0 #2a2a2a,
+        3px 4px 0 #1a1a1a,
+        4px 5px 2px rgba(0,0,0,0.9), /* Sharp drop shadow to pop from background */
+        0 0 15px rgba(255, 60, 40, 0.6); /* Brighter ambient ember glow */
     }
 
     /* Optimized Pulsing Ember Glows using pseudo-elements */
