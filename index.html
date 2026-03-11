@@ -1787,6 +1787,25 @@
       font-weight: 500;
     }
 
+    #adminTimer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      font-size: 28px;
+      font-weight: 700;
+      color: #ff3366;
+      background: rgba(40, 0, 10, 0.4);
+      padding: 10px 24px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 50, 100, 0.3);
+      box-shadow: 0 0 20px rgba(255, 50, 100, 0.15) inset, 0 4px 12px rgba(0, 0, 0, 0.5);
+      margin: 16px auto;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 10px rgba(255, 50, 100, 0.5);
+      width: max-content;
+    }
+
     .admin-section {
       margin-bottom: 24px;
     }
@@ -1862,12 +1881,12 @@
     }
 
     .admin-btn.create.fire {
-      background: linear-gradient(180deg, rgba(220, 60, 40, 0.15) 0%, rgba(220, 60, 40, 0.05) 100%);
-      border-color: rgba(220, 60, 40, 0.3);
-      color: #ffa498;
+      background: linear-gradient(180deg, rgba(240, 90, 20, 0.15) 0%, rgba(240, 90, 20, 0.05) 100%);
+      border-color: rgba(240, 90, 20, 0.3);
+      color: #ffb585;
     }
     .admin-btn.create.fire:active {
-      box-shadow: 0 0 15px rgba(220, 60, 40, 0.4);
+      box-shadow: 0 0 15px rgba(240, 90, 20, 0.4);
     }
 
     .admin-btn.create.earth {
@@ -1908,18 +1927,49 @@
 
     /* Destruction buttons */
     .admin-btn.destroy {
-      background: linear-gradient(180deg, rgba(180, 40, 40, 0.15) 0%, rgba(180, 40, 40, 0.05) 100%);
-      border-color: rgba(180, 40, 40, 0.4);
-      color: #ff7a7a;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(30, 0, 0, 0.6) 0,
+        rgba(30, 0, 0, 0.6) 8px,
+        rgba(80, 0, 0, 0.6) 8px,
+        rgba(80, 0, 0, 0.6) 16px
+      );
+      border: 1.5px dashed rgba(255, 30, 30, 0.8);
+      border-radius: 2px;
+      color: #ff3333;
+      font-family: inherit;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: -0.05em;
+      text-shadow: 1px 1px 0 #000;
     }
+    
+    .admin-btn.destroy::after {
+      display: none;
+    }
+
     .admin-btn.destroy:active {
-      box-shadow: 0 0 15px rgba(180, 40, 40, 0.5);
+      transform: scale(0.95);
+      background: rgba(255, 0, 0, 0.3);
+      border-style: solid;
+      box-shadow: 0 0 15px rgba(255, 30, 30, 0.7) inset;
     }
 
     .admin-btn.destroy.aftermath {
-      background: linear-gradient(180deg, rgba(80, 30, 90, 0.2) 0%, rgba(80, 30, 90, 0.05) 100%);
-      border-color: rgba(120, 40, 140, 0.4);
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(30, 0, 40, 0.6) 0,
+        rgba(30, 0, 40, 0.6) 8px,
+        rgba(70, 0, 90, 0.6) 8px,
+        rgba(70, 0, 90, 0.6) 16px
+      );
+      border: 1.5px dashed rgba(200, 40, 255, 0.8);
       color: #e59dfc;
+    }
+    
+    .admin-btn.destroy.aftermath:active {
+      background: rgba(140, 0, 255, 0.3);
+      box-shadow: 0 0 15px rgba(200, 40, 255, 0.7) inset;
     }
 
     /* End button */
@@ -1954,8 +2004,8 @@
         <div class="admin-info">
           <span>Users: <strong id="adminUserCount">0</strong></span>
           <span>Status: <strong id="adminCurrentStatus">loading...</strong></span>
-          <span id="adminTimer"></span>
         </div>
+        <div id="adminTimer">00:00</div>
       </div>
       <div class="admin-section">
         <div class="admin-label">SYSTEM</div>
