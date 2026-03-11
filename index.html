@@ -1435,19 +1435,19 @@
     /* Wreckage Floating Animation */
     @keyframes wreckageDrift {
       0% {
-        transform: translate(0, 0) rotate(var(--rot)) scale(1);
+        transform: translate(-50%, -50%) rotate(var(--rot)) scale(1);
       }
 
       33% {
-        transform: translate(3px, -5px) rotate(calc(var(--rot) + 2deg)) scale(0.98);
+        transform: translate(calc(-50% + 3px), calc(-50% - 5px)) rotate(calc(var(--rot) + 2deg)) scale(0.98);
       }
 
       66% {
-        transform: translate(-2px, 4px) rotate(calc(var(--rot) - 1deg)) scale(1.02);
+        transform: translate(calc(-50% - 2px), calc(-50% + 4px)) rotate(calc(var(--rot) - 1deg)) scale(1.02);
       }
 
       100% {
-        transform: translate(0, 0) rotate(var(--rot)) scale(1);
+        transform: translate(-50%, -50%) rotate(var(--rot)) scale(1);
       }
     }
 
@@ -1474,6 +1474,8 @@
       width: clamp(60px, 15vw, 100px);
       height: clamp(60px, 15vw, 100px);
       z-index: 5;
+      /* Crucial: Center the container on its top/left coordinates before animations apply */
+      transform: translate(-50%, -50%);
       animation:
         wreckageDrift 15s ease-in-out infinite alternate,
         ruinFlicker 6s ease-in-out infinite;
@@ -1510,7 +1512,7 @@
     #aftermathScreen .ruin-svg-container.brightening {
       animation: none;
       transition: filter 0.3s, transform 0.3s;
-      transform: scale(1.2);
+      transform: translate(-50%, -50%) scale(1.2);
       filter: drop-shadow(0px 20px 10px rgba(0,0,0,0.6)) drop-shadow(0px 0px 40px var(--glow-color));
     }
 
@@ -2516,17 +2518,23 @@
 
   <script>
     // ═══════════════════════════════════
-    // FIREBASE STATUS CONTROL
+    // FRONTEND SECURITY & SCOPE LOCKDOWN
     // ═══════════════════════════════════
+    (function () {
+      "use strict";
 
-    // *** REPLACE with your Firebase config ***
-    const FIREBASE_CONFIG = {
-      databaseURL: 'https://wuxing-fa488-default-rtdb.firebaseio.com'
-    };
-    firebase.initializeApp(FIREBASE_CONFIG);
-    const db = firebase.database();
-    let appStatus = 'locked'; // locked | live | ended | live_wood | destroy_water | etc.
-    let globalActiveUsers = 1; // Default to 1 to avoid division by zero
+      // ═══════════════════════════════════
+      // FIREBASE STATUS CONTROL
+      // ═══════════════════════════════════
+
+      // *** REPLACE with your Firebase config ***
+      const FIREBASE_CONFIG = {
+        databaseURL: 'https://wuxing-fa488-default-rtdb.firebaseio.com'
+      };
+      firebase.initializeApp(FIREBASE_CONFIG);
+      const db = firebase.database();
+      let appStatus = 'locked'; // locked | live | ended | live_wood | destroy_water | etc.
+      let globalActiveUsers = 1; // Default to 1 to avoid division by zero
 
     const IS_ADMIN = window.location.search.includes('admin=true');
     let adminTimerInterval = null, adminStatusTime = 0;
@@ -2878,12 +2886,20 @@
       }
     }
 
-    // ── Hard kill all audio (admin transitions) ──
+    // ── Hard kill all audio and connections (admin transitions) ──
     function killAllAudio() {
       if (!audioCtx) return;
       const t = audioCtx.currentTime;
       const KILL_FADE = 0.3;
       const KILL_STOP = 400;
+
+      // SECURITY: Disconnect from the realtime database so malicious clients 
+      // cannot send fake presence or status updates after the show is over.
+      if (!IS_ADMIN) {
+        try {
+            db.goOffline();
+        } catch(e) { console.warn('Failed to offline db', e); }
+      }
 
       const fadeAndStop = (gainNode, ...stopNodes) => {
         if (!gainNode) return;
@@ -4728,6 +4744,18 @@
     }
 
     document.addEventListener('touchmove', e => { if (currentElement) e.preventDefault(); }, { passive: false });
+
+    // ═══════════════════════════════════
+    // EXPOSE GLOBALS FOR HTML HANDLERS
+    // ═══════════════════════════════════
+    window.setAdminStatus = setAdminStatus;
+    window.openElement = openElement;
+    window.switchElement = switchElement;
+    window.goHome = goHome;
+    window.cycleLandingState = cycleLandingState;
+    window.triggerSoftEnd = triggerSoftEnd;
+
+    })(); // End of Security IIFE
   </script>
 </body>
 
