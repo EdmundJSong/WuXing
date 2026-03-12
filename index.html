@@ -1294,10 +1294,7 @@
     /* Blackout overlay — sits above content, below bg-char */
     .destruct-blackout {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: #000;
       opacity: 0;
       pointer-events: none;
@@ -1322,19 +1319,6 @@
 
     body.destruction-mode #wood-page svg path {
       stroke: var(--d-wood-branch, rgba(76, 153, 76, 0.12));
-    }
-
-    /* ── SVG Glitch Filter Application ── */
-    body.destruction-mode .interaction-area,
-    body.destruction-mode .bg-char {
-      filter: url(#glitch-filter);
-    }
-
-    /* Target generic buttons and text too */
-    body.destruction-mode .home-btn,
-    body.destruction-mode .element-page h1,
-    body.destruction-mode .element-page p {
-      filter: url(#glitch-filter);
     }
 
     /* ── Fire destruction ── */
@@ -1512,7 +1496,7 @@
     #aftermathScreen .r-txt {
       font-family: 'Noto Serif SC', serif;
       font-weight: 900;
-      font-size: 70px;
+      font-size: 70px; 
       dominant-baseline: central;
       text-anchor: middle;
       pointer-events: none;
@@ -1522,11 +1506,11 @@
     #aftermathScreen .r-deep { fill: #0a0a0a; transform: translate(5px, 9px); }
     #aftermathScreen .r-mid1 { fill: #1c1c1c; transform: translate(3px, 6px); }
     #aftermathScreen .r-mid2 { fill: #333333; transform: translate(1px, 3px); }
-    #aftermathScreen .r-face {
-      fill: url(#stone-grad);
-      stroke: #111;
-      stroke-width: 1.5px;
-      transition: fill 0.3s, stroke 0.3s, filter 0.3s;
+    #aftermathScreen .r-face { 
+      fill: url(#stone-grad); 
+      stroke: #111; 
+      stroke-width: 1.5px; 
+      transition: fill 0.3s, stroke 0.3s, filter 0.3s; 
     }
 
     /* Interactive States */
@@ -1545,7 +1529,7 @@
       fill: var(--glow-color-solid);
       stroke: #fff;
     }
-
+    
     #aftermathScreen .ruin-svg-container.brightening .r-mid2 {
       transition: fill 0.3s;
       fill: rgba(255,255,255,0.8);
@@ -1607,20 +1591,13 @@
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
-      stroke-dasharray: 200;
-      stroke-dashoffset: 200;
     }
 
     #aftermathEmber.visible {
       opacity: 1;
       pointer-events: auto;
       animation: emberBreatheSVG 4s ease-in-out infinite alternate;
-      transition: opacity 2s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-
-    #aftermathEmber.visible path {
-      transition: stroke-dashoffset 12s cubic-bezier(0.25, 1, 0.5, 1);
-      stroke-dashoffset: 0;
+      transition: opacity 3s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     @keyframes emberBreatheSVG {
@@ -1864,10 +1841,7 @@
 
     #harmonyPulseOverlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(200,140,50,0);
       pointer-events: none;
       z-index: 5;
@@ -1875,10 +1849,8 @@
 
     #harmonyKeCanvas {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       pointer-events: none;
       z-index: 8;
     }
@@ -2115,7 +2087,7 @@
       letter-spacing: -0.05em;
       text-shadow: 1px 1px 0 #000;
     }
-
+    
     .admin-btn.destroy::after {
       display: none;
     }
@@ -2138,7 +2110,7 @@
       border: 1.5px dashed rgba(200, 40, 255, 0.8);
       color: #e59dfc;
     }
-
+    
     .admin-btn.destroy.aftermath:active {
       background: rgba(140, 0, 255, 0.3);
       box-shadow: 0 0 15px rgba(200, 40, 255, 0.7) inset;
@@ -2669,12 +2641,6 @@
     let destructLeafTimer = null, destructCrackleTimer = null, destructPulseTimer = null;
     const DESTRUCT_DURATION = 30000; // 30s baseline
 
-    // Tinnitus Audio State
-    let tinnitusOsc = null;
-    let tinnitusNoiseBufferSrc = null;
-    let tinnitusGain = null;
-    let tinnitusNoiseGain = null;
-
     function startDestruction(el) {
       // Cancel any existing destruction loop first (prevents double rAF)
       if (destructionFrame) { cancelAnimationFrame(destructionFrame); destructionFrame = null; }
@@ -2684,46 +2650,6 @@
 
       destructionElement = el;
       destructionStartTime = Date.now();
-      
-      // Initialize Tinnitus audio
-      if (audioCtx) {
-        try {
-          const t = audioCtx.currentTime;
-          
-          // 1. High-pitched whine (starts outside hearing, drops in, gets louder/higher)
-          tinnitusOsc = audioCtx.createOscillator();
-          tinnitusGain = audioCtx.createGain();
-          tinnitusOsc.type = 'sine';
-          tinnitusOsc.frequency.setValueAtTime(8000, t); 
-          tinnitusGain.gain.setValueAtTime(0.001, t);
-          tinnitusOsc.connect(tinnitusGain);
-          tinnitusGain.connect(audioCtx.destination);
-          tinnitusOsc.start();
-
-          // 2. White noise layer (static buildup)
-          const bufferSize = audioCtx.sampleRate * 2; // 2 seconds of noise 
-          const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-          const data = buffer.getChannelData(0);
-          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-          
-          tinnitusNoiseBufferSrc = audioCtx.createBufferSource();
-          tinnitusNoiseBufferSrc.buffer = buffer;
-          tinnitusNoiseBufferSrc.loop = true;
-          
-          // Needs a highpass filter so it doesn't muddy the room
-          const noiseFilter = audioCtx.createBiquadFilter();
-          noiseFilter.type = 'highpass';
-          noiseFilter.frequency.value = 1000;
-          
-          tinnitusNoiseGain = audioCtx.createGain();
-          tinnitusNoiseGain.gain.setValueAtTime(0.001, t);
-          
-          tinnitusNoiseBufferSrc.connect(noiseFilter);
-          noiseFilter.connect(tinnitusNoiseGain);
-          tinnitusNoiseGain.connect(audioCtx.destination);
-          tinnitusNoiseBufferSrc.start();
-        } catch (e) { console.warn("Tinnitus init failed", e); }
-      }
       document.body.classList.add('destruction-mode');
 
       // Create blackout overlay for non-fire elements
@@ -2752,15 +2678,6 @@
       if (destructPulseTimer) { clearInterval(destructPulseTimer); destructPulseTimer = null; }
       // Remove blackout overlays
       document.querySelectorAll('.destruct-blackout').forEach(el => el.remove());
-      
-      // Hard stop Tinnitus audio on destruction end
-      if (tinnitusOsc) { try { tinnitusOsc.stop(); } catch(e){} tinnitusOsc = null; }
-      if (tinnitusNoiseBufferSrc) { try { tinnitusNoiseBufferSrc.stop(); } catch(e){} tinnitusNoiseBufferSrc = null; }
-      
-      // Reset SVG filter scale
-      const disp = document.getElementById('glitch-displacement');
-      if (disp) disp.setAttribute('scale', 0);
-      
       destructionElement = null;
       destructionStartTime = 0;
       waterDestructSnap = 1.0;
@@ -2789,36 +2706,6 @@
       root.style.setProperty('--d-ty4', (-shakeAmt * 0.6) + 'px');
       root.style.setProperty('--d-rot', rotAmt + 'deg');
       root.style.setProperty('--d-skew', skewAmt + 'deg');
-      
-      // ── SVG Glitch Application ──
-      // Spikes rapidly at higher destruction levels
-      const disp = document.getElementById('glitch-displacement');
-      if (disp) {
-        // Base tearing scale + extra random tearing at high destruction
-        let scale = p * 15;
-        if (p > 0.5 && Math.random() > 0.8) scale += Math.random() * (p * 40);
-        disp.setAttribute('scale', scale);
-      }
-      
-      // ── Tinnitus Audio Application ──
-      if (audioCtx) {
-        const t = audioCtx.currentTime;
-        // Pitch rises subtly from 8000Hz to 12000Hz
-        if (tinnitusOsc) tinnitusOsc.frequency.setTargetAtTime(8000 + p * 4000, t, 0.1);
-        
-        // Sine wave volume ramps up exponentially
-        if (tinnitusGain) {
-          // Volume is very low until p=0.4, then climbs rapidly
-          const gainVol = p < 0.4 ? p * 0.05 : 0.02 + Math.pow((p - 0.4) / 0.6, 2) * 0.15;
-          tinnitusGain.gain.setTargetAtTime(gainVol, t, 0.1);
-        }
-        
-        // Static noise ramps up with the glitching 
-        if (tinnitusNoiseGain) {
-          const noiseVol = p * p * 0.1;
-          tinnitusNoiseGain.gain.setTargetAtTime(noiseVol, t, 0.1);
-        }
-      }
 
       // ── Bg-char blink (progressive — hard on/off like original steps(2)) ──
       const flickerHz = 6 + p * 18;
@@ -3135,11 +3022,12 @@
       // Admin is remote control only — no rendering
       if (IS_ADMIN) { appStatus = status; return; }
 
-      if (appStatus === 'ended' || appStatus === 'live_aftermath') {
-        if (status !== 'ended' && status !== 'live_aftermath') {
-          window.location.reload();
-          return;
-        }
+      // Clean up aftermath or end screen if transitioning away
+      if (appStatus === 'ended' && status !== 'ended') {
+        document.getElementById('endScreen').classList.add('hidden');
+      }
+      if (appStatus === 'live_aftermath' && status !== 'live_aftermath') {
+        cleanupAftermath();
       }
 
       // Clean up previous destruction if switching away
@@ -3176,7 +3064,7 @@
 
           const harm = document.getElementById('harmonyScreen'); if (harm) harm.style.display = 'none';
           cleanupHarmony();
-          const aft = document.getElementById('aftermathScreen'); if (aft) { aft.style.display = 'none'; aft.classList.remove('interactive'); }
+          cleanupAftermath();
 
           if (status === 'live') {
             document.getElementById('landing').style.display = 'flex';
@@ -3235,8 +3123,7 @@
       const harm = document.getElementById('harmonyScreen');
       harm.style.display = 'flex';
 
-      const aft = document.getElementById('aftermathScreen');
-      if (aft) { aft.style.display = 'none'; aft.classList.remove('interactive'); }
+      cleanupAftermath();
 
       document.querySelectorAll('.harmony-el').forEach((el, index) => {
         el.classList.remove('entered');
@@ -3387,60 +3274,6 @@
       const elapsed = (Date.now() - harmonyStartTime) / 1000;
       if (elapsed < 15) return 0;
       return Math.min(1, (elapsed - 15) / 45);
-    }
-
-    // Background ring system (Gravity Well)
-    function drawHarmonyBg() {
-      const canvas = document.getElementById('harmonyBgCanvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d', { alpha: false });
-      const w = canvas.width, h = canvas.height;
-      const cx = w / 2, cy = h / 2;
-      
-      // Get globalPulseAmp from harmonyPulseLoop for acceleration
-      const globalPulseAmp = harmonyPulseFrame ? ((Date.now() - harmonyStartTime) / 1000 % getCurrentPulseInterval()) / getCurrentPulseInterval() < 0.06 ? (((Date.now() - harmonyStartTime) / 1000 % getCurrentPulseInterval()) / getCurrentPulseInterval()) < 0.03 ? (((Date.now() - harmonyStartTime) / 1000 % getCurrentPulseInterval()) / getCurrentPulseInterval()) * 2 : (1 - (((Date.now() - harmonyStartTime) / 1000 % getCurrentPulseInterval()) / getCurrentPulseInterval())) * 2 : 0 : 0;
-
-      bgTime += 0.005 + (globalPulseAmp * 0.02); // Accelerate flow on hold
-      
-      ctx.fillStyle = '#050505';
-      ctx.fillRect(0, 0, w, h);
-      
-      const maxR = Math.max(w, h);
-      const ringCount = 12;
-      const spacing = maxR / ringCount;
-
-      ctx.globalCompositeOperation = 'screen';
-      
-      // Calculate global color shift based on convergence
-      const cGlow = Math.min(1, getCurrentConvergence());
-      const baseR = 20 + cGlow * 180;
-      const baseG = 15 + cGlow * 125;
-      const baseB = 25 + cGlow * 25;
-
-      for (let i = 0; i < ringCount; i++) {
-        // Rings move INWARD based on time
-        let r = ((i * spacing) - (bgTime * maxR * 0.1)) % maxR;
-        if (r < 0) r += maxR; // Wrap around to the outside
-        
-        // Rings fade out as they reach the edge or the very center
-        let alpha = 0;
-        if (r < maxR * 0.8) {
-          const depth = r / (maxR * 0.8); // 0 (center) to 1 (edge)
-          alpha = Math.sin(depth * Math.PI) * (0.15 + globalPulseAmp * 0.15);
-        }
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, Math.max(0.1, r), 0, Math.PI * 2);
-        
-        // Slight color variation per ring
-        const rOff = Math.sin(i) * 20;
-        ctx.strokeStyle = `rgba(${baseR + rOff}, ${baseG}, ${baseB}, ${alpha})`;
-        ctx.lineWidth = 2 + (r * 0.01) + (globalPulseAmp * 4);
-        ctx.stroke();
-      }
-      
-      ctx.globalCompositeOperation = 'source-over';
-      harmonyBgFrame = requestAnimationFrame(drawHarmonyBg);
     }
 
     let lastPulseVibTime = 0;
@@ -3764,6 +3597,44 @@
       setTimeout(() => burst.remove(), 1200);
     }
 
+    function cleanupAftermath() {
+      const aft = document.getElementById('aftermathScreen');
+      if (aft) {
+        aft.style.display = 'none';
+        aft.classList.remove('interactive');
+        // Remove event listeners from ruin containers
+        aft.querySelectorAll('.ruin-svg-container').forEach(ch => {
+          ch.removeEventListener('touchstart', aftermathCharTap);
+          ch.removeEventListener('click', aftermathCharTap);
+          ch.style.display = '';
+          ch.style.opacity = '';
+          ch.classList.remove('brightening');
+        });
+        // Reset ash layers
+        document.querySelectorAll('.ash-layer').forEach(layer => {
+          layer.style.transition = '';
+          layer.style.opacity = '1';
+        });
+        // Reset flash
+        const flash = document.getElementById('aftermathFlash');
+        if (flash) { flash.style.opacity = '0'; flash.style.background = 'transparent'; }
+      }
+      // Tear down ember
+      const ember = document.getElementById('aftermathEmber');
+      if (ember) {
+        ember.classList.remove('visible');
+        ember.removeEventListener('touchstart', aftermathEmberTap);
+        ember.removeEventListener('click', aftermathEmberTap);
+      }
+      // Stop aftermath oscillator
+      if (window.aftermathOsc) {
+        try { window.aftermathGain.gain.setValueAtTime(0, audioCtx.currentTime); window.aftermathOsc.stop(); } catch (e) { }
+        window.aftermathOsc = null; window.aftermathGain = null;
+      }
+      aftermathBusy = false;
+      aftermathCleared = 0;
+    }
+
     function triggerSoftEnd() {
       // Random fade 3-6 seconds per device
       const fadeDur = 3 + Math.random() * 3;
@@ -3798,8 +3669,7 @@
         const harm = document.getElementById('harmonyScreen');
         if (harm) harm.style.display = 'none';
         cleanupHarmony();
-        const aft = document.getElementById('aftermathScreen');
-        if (aft) { aft.style.display = 'none'; aft.classList.remove('interactive'); }
+        cleanupAftermath();
         document.body.classList.remove('destruction-mode');
 
         document.getElementById('permissionOverlay').classList.add('hidden');
@@ -5069,25 +4939,6 @@
     }
 
     document.addEventListener('touchmove', e => { if (currentElement) e.preventDefault(); }, { passive: false });
-    
-    // ═══════════════════════════════════
-    // GYROSCOPE (Aftermath Ash Sway)
-    // ═══════════════════════════════════
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', function(e) {
-        if (!e.gamma || appStatus !== 'ended') return;
-        // e.gamma is left/right tilt in degrees (-90 to 90)
-        let tilt = e.gamma; 
-        if (tilt > 45) tilt = 45;
-        if (tilt < -45) tilt = -45;
-        
-        // Map tilt to horizontal drift (parallax effect)
-        document.documentElement.style.setProperty('--ash-gyr1', (tilt * 0.4) + 'px');
-        document.documentElement.style.setProperty('--ash-gyr2', (tilt * 0.8) + 'px');
-        document.documentElement.style.setProperty('--ash-gyr3', (tilt * 1.5) + 'px');
-      }, true);
-    }
-
   </script>
 </body>
 
