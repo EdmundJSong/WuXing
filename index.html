@@ -28,7 +28,7 @@
       padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
+      touch-action: none;
     }
 
     html,
@@ -1285,21 +1285,23 @@
       }
     }
 
-    /* Bg-char flicker in destruction */
+    /* Bg-char flicker in destruction — driven progressively by JS */
     body.destruction-mode .bg-char {
-      animation: destructCharFlicker 0.3s infinite steps(2);
+      opacity: var(--d-flicker-opacity, 0.06);
+      z-index: 20;
     }
 
-    @keyframes destructCharFlicker {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.4;
-      }
+    /* Blackout overlay — sits above content, below bg-char */
+    .destruct-blackout {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 15;
     }
 
     /* Invert flash removed — epilepsy risk */
@@ -1311,12 +1313,28 @@
       box-shadow: none;
     }
 
+    /* INTENTIONAL: Wood bg-char is much brighter than other elements during destruction.
+       Wood burns white-hot; others stay subtle. This is by design — do not normalize. */
     body.destruction-mode #wood-page .bg-char {
       color: var(--d-wood-char-color, rgba(76, 153, 76, 0.06));
+      opacity: var(--d-flicker-opacity-wood, 0.06);
     }
 
     body.destruction-mode #wood-page svg path {
       stroke: var(--d-wood-branch, rgba(76, 153, 76, 0.12));
+    }
+
+    /* ── SVG Glitch Filter Application ── */
+    body.destruction-mode .interaction-area,
+    body.destruction-mode .bg-char {
+      filter: url(#glitch-filter);
+    }
+
+    /* Target generic buttons and text too */
+    body.destruction-mode .home-btn,
+    body.destruction-mode .element-page h1,
+    body.destruction-mode .element-page p {
+      filter: url(#glitch-filter);
     }
 
     /* ── Fire destruction ── */
@@ -1416,7 +1434,7 @@
         radial-gradient(ellipse at center, transparent 20%, rgba(0, 0, 0, 0.8) 100%),
         repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255, 255, 255, 0.01) 2px, rgba(255, 255, 255, 0.01) 4px);
       pointer-events: none;
-      z-index: 2;
+      z-index: 0;
       opacity: 0.6;
     }
 
@@ -1435,19 +1453,19 @@
     /* Wreckage Floating Animation */
     @keyframes wreckageDrift {
       0% {
-        transform: translate(0, 0) rotate(var(--rot)) scale(1);
+        transform: translate(-50%, -50%) rotate(var(--rot)) scale(1);
       }
 
       33% {
-        transform: translate(3px, -5px) rotate(calc(var(--rot) + 2deg)) scale(0.98);
+        transform: translate(calc(-50% + 3px), calc(-50% - 5px)) rotate(calc(var(--rot) + 2deg)) scale(0.98);
       }
 
       66% {
-        transform: translate(-2px, 4px) rotate(calc(var(--rot) - 1deg)) scale(1.02);
+        transform: translate(calc(-50% - 2px), calc(-50% + 4px)) rotate(calc(var(--rot) - 1deg)) scale(1.02);
       }
 
       100% {
-        transform: translate(0, 0) rotate(var(--rot)) scale(1);
+        transform: translate(-50%, -50%) rotate(var(--rot)) scale(1);
       }
     }
 
@@ -1474,6 +1492,8 @@
       width: clamp(60px, 15vw, 100px);
       height: clamp(60px, 15vw, 100px);
       z-index: 5;
+      /* Crucial: Center the container on its top/left coordinates before animations apply */
+      transform: translate(-50%, -50%);
       animation:
         wreckageDrift 15s ease-in-out infinite alternate,
         ruinFlicker 6s ease-in-out infinite;
@@ -1488,18 +1508,25 @@
       overflow: visible;
     }
 
-    #aftermathScreen .ruin-svg-container path.stone-base {
-      fill: #222;
+    /* 3D SVG Text Layers */
+    #aftermathScreen .r-txt {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: 70px;
+      dominant-baseline: central;
+      text-anchor: middle;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #aftermathScreen .r-deep { fill: #0a0a0a; transform: translate(5px, 9px); }
+    #aftermathScreen .r-mid1 { fill: #1c1c1c; transform: translate(3px, 6px); }
+    #aftermathScreen .r-mid2 { fill: #333333; transform: translate(1px, 3px); }
+    #aftermathScreen .r-face {
+      fill: url(#stone-grad);
       stroke: #111;
-      stroke-width: 2;
-    }
-
-    #aftermathScreen .ruin-svg-container path.stone-face {
-      fill: #4a4a4a;
-    }
-
-    #aftermathScreen .ruin-svg-container path.stone-highlight {
-      fill: #8a8a8a;
+      stroke-width: 1.5px;
+      transition: fill 0.3s, stroke 0.3s, filter 0.3s;
     }
 
     /* Interactive States */
@@ -1510,18 +1537,18 @@
     #aftermathScreen .ruin-svg-container.brightening {
       animation: none;
       transition: filter 0.3s, transform 0.3s;
-      transform: scale(1.2);
+      transform: translate(-50%, -50%) scale(1.2);
       filter: drop-shadow(0px 20px 10px rgba(0,0,0,0.6)) drop-shadow(0px 0px 40px var(--glow-color));
     }
 
-    #aftermathScreen .ruin-svg-container.brightening path.stone-face {
-      transition: fill 0.3s;
+    #aftermathScreen .ruin-svg-container.brightening .r-face {
       fill: var(--glow-color-solid);
+      stroke: #fff;
     }
-    
-    #aftermathScreen .ruin-svg-container.brightening path.stone-highlight {
+
+    #aftermathScreen .ruin-svg-container.brightening .r-mid2 {
       transition: fill 0.3s;
-      fill: #fff;
+      fill: rgba(255,255,255,0.8);
     }
 
     /* ── Aftermath interaction ── */
@@ -1580,13 +1607,20 @@
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
     }
 
     #aftermathEmber.visible {
       opacity: 1;
       pointer-events: auto;
       animation: emberBreatheSVG 4s ease-in-out infinite alternate;
-      transition: opacity 3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: opacity 2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    #aftermathEmber.visible path {
+      transition: stroke-dashoffset 12s cubic-bezier(0.25, 1, 0.5, 1);
+      stroke-dashoffset: 0;
     }
 
     @keyframes emberBreatheSVG {
@@ -1830,7 +1864,10 @@
 
     #harmonyPulseOverlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(200,140,50,0);
       pointer-events: none;
       z-index: 5;
@@ -1838,8 +1875,10 @@
 
     #harmonyKeCanvas {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
       z-index: 8;
     }
@@ -2076,7 +2115,7 @@
       letter-spacing: -0.05em;
       text-shadow: 1px 1px 0 #000;
     }
-    
+
     .admin-btn.destroy::after {
       display: none;
     }
@@ -2099,7 +2138,7 @@
       border: 1.5px dashed rgba(200, 40, 255, 0.8);
       color: #e59dfc;
     }
-    
+
     .admin-btn.destroy.aftermath:active {
       background: rgba(140, 0, 255, 0.3);
       box-shadow: 0 0 15px rgba(200, 40, 255, 0.7) inset;
@@ -2430,6 +2469,17 @@
   <!-- AFTERMATH / RUINS -->
   <div id="aftermathScreen">
 
+    <!-- Global SVG Defs for 3D Ruin Textures -->
+    <svg width="0" height="0" style="position: absolute; pointer-events: none;">
+      <defs>
+        <linearGradient id="stone-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#a3aab3" />
+          <stop offset="50%" stop-color="#7e848c" />
+          <stop offset="100%" stop-color="#4d5256" />
+        </linearGradient>
+      </defs>
+    </svg>
+
     <!-- Ash Particles System -->
     <div class="ash-layer ash-layer-1"></div>
     <div class="ash-layer ash-layer-2"></div>
@@ -2457,24 +2507,16 @@
       </svg>
     </div>
 
-    <!-- Ruined Elements replacing text with chiseled SVGs (approximate kanji structures) -->
+    <!-- Ruined Elements — 3D chiseled kanji text layers -->
     
     <!-- METAL 金 -->
     <div class="ruin-svg-container" data-element="metal" data-color="212,175,55" data-dur="2.5" 
          style="top: 18%; left: 12%; --rot: -12deg; --glow-color: rgba(212,175,55,0.4); --glow-color-solid: rgb(212,175,55);">
       <svg viewBox="0 0 100 100">
-        <!-- Base for shadow -->
-        <path class="stone-base" d="M50 15 L20 45 L35 45 L35 85 L65 85 L65 45 L80 45 Z" transform="translate(4,4)" />
-        <path class="stone-base" d="M30 65 L70 65 M40 75 L60 75 M25 85 L75 85" stroke-width="4" transform="translate(4,4)" />
-        <circle cx="40" cy="55" r="4" class="stone-base" transform="translate(4,4)" />
-        <circle cx="60" cy="55" r="4" class="stone-base" transform="translate(4,4)" />
-        <!-- Face -->
-        <path class="stone-face" d="M50 15 L20 45 L35 45 L35 85 L65 85 L65 45 L80 45 Z" />
-        <path class="stone-face" d="M30 65 L70 65 M40 75 L60 75 M25 85 L75 85" stroke="#4a4a4a" stroke-width="4" />
-        <circle cx="40" cy="55" r="4" class="stone-face" />
-        <circle cx="60" cy="55" r="4" class="stone-face" />
-        <!-- Highlights -->
-        <path class="stone-highlight" d="M50 15 L20 45 L35 45 L50 15 M35 45 L35 85 L38 85 L38 45 Z" />
+        <text x="50%" y="50%" class="r-txt r-deep">金</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">金</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">金</text>
+        <text x="50%" y="50%" class="r-txt r-face">金</text>
       </svg>
     </div>
 
@@ -2482,9 +2524,10 @@
     <div class="ruin-svg-container" data-element="wood" data-color="76,153,76" data-dur="3.5" 
          style="top: 55%; left: 58%; --rot: 18deg; --glow-color: rgba(76,153,76,0.4); --glow-color-solid: rgb(76,153,76);">
       <svg viewBox="0 0 100 100">
-        <path class="stone-base" d="M20 40 L80 40 M50 15 L50 90 M50 40 L25 85 M50 40 L75 85" stroke-width="12" stroke-linecap="square" transform="translate(4,4)" />
-        <path class="stone-face" d="M20 40 L80 40 M50 15 L50 90 M50 40 L25 85 M50 40 L75 85" stroke="#4a4a4a" stroke-width="12" stroke-linecap="square" />
-        <path class="stone-highlight" d="M20 36 L80 36 M46 15 L46 90" stroke="#8a8a8a" stroke-width="4" />
+        <text x="50%" y="50%" class="r-txt r-deep">木</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">木</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">木</text>
+        <text x="50%" y="50%" class="r-txt r-face">木</text>
       </svg>
     </div>
 
@@ -2492,9 +2535,10 @@
     <div class="ruin-svg-container" data-element="water" data-color="70,130,200" data-dur="4.0" 
          style="top: 38%; left: 35%; --rot: 4deg; --glow-color: rgba(70,130,200,0.4); --glow-color-solid: rgb(70,130,200);">
       <svg viewBox="0 0 100 100">
-        <path class="stone-base" d="M50 10 L45 80 Q50 90 65 85 M25 40 L45 55 M15 75 L35 60 M75 35 L55 55 M85 70 L65 55" stroke-width="10" stroke-linecap="round" fill="none" transform="translate(4,4)" />
-        <path class="stone-face" d="M50 10 L45 80 Q50 90 65 85 M25 40 L45 55 M15 75 L35 60 M75 35 L55 55 M85 70 L65 55" stroke="#4a4a4a" stroke-width="10" stroke-linecap="round" fill="none" />
-        <path class="stone-highlight" d="M48 10 L43 80 M24 38 L44 53" stroke="#8a8a8a" stroke-width="3" fill="none" />
+        <text x="50%" y="50%" class="r-txt r-deep">水</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">水</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">水</text>
+        <text x="50%" y="50%" class="r-txt r-face">水</text>
       </svg>
     </div>
 
@@ -2502,9 +2546,10 @@
     <div class="ruin-svg-container" data-element="fire" data-color="220,60,40" data-dur="2.0" 
          style="top: 68%; left: 15%; --rot: -25deg; --glow-color: rgba(220,60,40,0.5); --glow-color-solid: rgb(220,60,40);">
       <svg viewBox="0 0 100 100">
-        <path class="stone-base" d="M30 45 L50 85 M70 45 L50 85 M20 60 L35 30 M80 60 L65 30" stroke-width="11" stroke-linecap="round" fill="none" transform="translate(4,4)" />
-        <path class="stone-face" d="M30 45 L50 85 M70 45 L50 85 M20 60 L35 30 M80 60 L65 30" stroke="#4a4a4a" stroke-width="11" stroke-linecap="round" fill="none" />
-        <path class="stone-highlight" d="M28 45 L48 85 M18 60 L33 30" stroke="#8a8a8a" stroke-width="3" fill="none" />
+        <text x="50%" y="50%" class="r-txt r-deep">火</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">火</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">火</text>
+        <text x="50%" y="50%" class="r-txt r-face">火</text>
       </svg>
     </div>
 
@@ -2512,9 +2557,10 @@
     <div class="ruin-svg-container" data-element="earth" data-color="139,94,60" data-dur="5.0" 
          style="top: 22%; left: 55%; --rot: 10deg; --glow-color: rgba(139,94,60,0.4); --glow-color-solid: rgb(139,94,60);">
       <svg viewBox="0 0 100 100">
-        <path class="stone-base" d="M30 45 L70 45 M50 15 L50 85 M15 85 L85 85" stroke-width="12" stroke-linecap="square" fill="none" transform="translate(4,4)" />
-        <path class="stone-face" d="M30 45 L70 45 M50 15 L50 85 M15 85 L85 85" stroke="#4a4a4a" stroke-width="12" stroke-linecap="square" fill="none" />
-        <path class="stone-highlight" d="M30 41 L70 41 M46 15 L46 85 M15 81 L85 81" stroke="#8a8a8a" stroke-width="4" fill="none" />
+        <text x="50%" y="50%" class="r-txt r-deep">土</text>
+        <text x="50%" y="50%" class="r-txt r-mid1">土</text>
+        <text x="50%" y="50%" class="r-txt r-mid2">土</text>
+        <text x="50%" y="50%" class="r-txt r-face">土</text>
       </svg>
     </div>
   </div>
@@ -2623,6 +2669,12 @@
     let destructLeafTimer = null, destructCrackleTimer = null, destructPulseTimer = null;
     const DESTRUCT_DURATION = 30000; // 30s baseline
 
+    // Tinnitus Audio State
+    let tinnitusOsc = null;
+    let tinnitusNoiseBufferSrc = null;
+    let tinnitusGain = null;
+    let tinnitusNoiseGain = null;
+
     function startDestruction(el) {
       // Cancel any existing destruction loop first (prevents double rAF)
       if (destructionFrame) { cancelAnimationFrame(destructionFrame); destructionFrame = null; }
@@ -2632,7 +2684,58 @@
 
       destructionElement = el;
       destructionStartTime = Date.now();
+      
+      // Initialize Tinnitus audio
+      if (audioCtx) {
+        try {
+          const t = audioCtx.currentTime;
+          
+          // 1. High-pitched whine (starts outside hearing, drops in, gets louder/higher)
+          tinnitusOsc = audioCtx.createOscillator();
+          tinnitusGain = audioCtx.createGain();
+          tinnitusOsc.type = 'sine';
+          tinnitusOsc.frequency.setValueAtTime(8000, t); 
+          tinnitusGain.gain.setValueAtTime(0.001, t);
+          tinnitusOsc.connect(tinnitusGain);
+          tinnitusGain.connect(audioCtx.destination);
+          tinnitusOsc.start();
+
+          // 2. White noise layer (static buildup)
+          const bufferSize = audioCtx.sampleRate * 2; // 2 seconds of noise 
+          const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+          
+          tinnitusNoiseBufferSrc = audioCtx.createBufferSource();
+          tinnitusNoiseBufferSrc.buffer = buffer;
+          tinnitusNoiseBufferSrc.loop = true;
+          
+          // Needs a highpass filter so it doesn't muddy the room
+          const noiseFilter = audioCtx.createBiquadFilter();
+          noiseFilter.type = 'highpass';
+          noiseFilter.frequency.value = 1000;
+          
+          tinnitusNoiseGain = audioCtx.createGain();
+          tinnitusNoiseGain.gain.setValueAtTime(0.001, t);
+          
+          tinnitusNoiseBufferSrc.connect(noiseFilter);
+          noiseFilter.connect(tinnitusNoiseGain);
+          tinnitusNoiseGain.connect(audioCtx.destination);
+          tinnitusNoiseBufferSrc.start();
+        } catch (e) { console.warn("Tinnitus init failed", e); }
+      }
       document.body.classList.add('destruction-mode');
+
+      // Create blackout overlay for non-fire elements
+      if (el !== 'fire') {
+        const page = document.getElementById(el + '-page');
+        if (page && !page.querySelector('.destruct-blackout')) {
+          const overlay = document.createElement('div');
+          overlay.className = 'destruct-blackout';
+          page.appendChild(overlay);
+        }
+      }
+
       destructionTick();
 
       // Element-specific auto-triggers
@@ -2647,6 +2750,17 @@
       if (destructLeafTimer) { clearInterval(destructLeafTimer); destructLeafTimer = null; }
       if (destructCrackleTimer) { clearInterval(destructCrackleTimer); destructCrackleTimer = null; }
       if (destructPulseTimer) { clearInterval(destructPulseTimer); destructPulseTimer = null; }
+      // Remove blackout overlays
+      document.querySelectorAll('.destruct-blackout').forEach(el => el.remove());
+      
+      // Hard stop Tinnitus audio on destruction end
+      if (tinnitusOsc) { try { tinnitusOsc.stop(); } catch(e){} tinnitusOsc = null; }
+      if (tinnitusNoiseBufferSrc) { try { tinnitusNoiseBufferSrc.stop(); } catch(e){} tinnitusNoiseBufferSrc = null; }
+      
+      // Reset SVG filter scale
+      const disp = document.getElementById('glitch-displacement');
+      if (disp) disp.setAttribute('scale', 0);
+      
       destructionElement = null;
       destructionStartTime = 0;
       waterDestructSnap = 1.0;
@@ -2675,6 +2789,55 @@
       root.style.setProperty('--d-ty4', (-shakeAmt * 0.6) + 'px');
       root.style.setProperty('--d-rot', rotAmt + 'deg');
       root.style.setProperty('--d-skew', skewAmt + 'deg');
+      
+      // ── SVG Glitch Application ──
+      // Spikes rapidly at higher destruction levels
+      const disp = document.getElementById('glitch-displacement');
+      if (disp) {
+        // Base tearing scale + extra random tearing at high destruction
+        let scale = p * 15;
+        if (p > 0.5 && Math.random() > 0.8) scale += Math.random() * (p * 40);
+        disp.setAttribute('scale', scale);
+      }
+      
+      // ── Tinnitus Audio Application ──
+      if (audioCtx) {
+        const t = audioCtx.currentTime;
+        // Pitch rises subtly from 8000Hz to 12000Hz
+        if (tinnitusOsc) tinnitusOsc.frequency.setTargetAtTime(8000 + p * 4000, t, 0.1);
+        
+        // Sine wave volume ramps up exponentially
+        if (tinnitusGain) {
+          // Volume is very low until p=0.4, then climbs rapidly
+          const gainVol = p < 0.4 ? p * 0.05 : 0.02 + Math.pow((p - 0.4) / 0.6, 2) * 0.15;
+          tinnitusGain.gain.setTargetAtTime(gainVol, t, 0.1);
+        }
+        
+        // Static noise ramps up with the glitching 
+        if (tinnitusNoiseGain) {
+          const noiseVol = p * p * 0.1;
+          tinnitusNoiseGain.gain.setTargetAtTime(noiseVol, t, 0.1);
+        }
+      }
+
+      // ── Bg-char blink (progressive — hard on/off like original steps(2)) ──
+      const flickerHz = 6 + p * 18;
+      const flickerBlink = Math.sin(elapsed * flickerHz * 0.001 * Math.PI * 2) > 0 ? 1 : -1;
+      const baseOp = 0.06;
+      // Non-wood/non-fire: subtle blink, just enough to see through blackout
+      const subtleOp = baseOp + p * 0.06 + flickerBlink * p * 0.03;
+      root.style.setProperty('--d-flicker-opacity', Math.max(0.02, subtleOp).toFixed(3));
+      // INTENTIONAL: Wood bg-char is much brighter than other elements.
+      // Wood burns white-hot through the blackout (1.0↔0.4 at full destruction).
+      // Other elements stay subtle. Do not "fix" this to match — it is by design.
+      const woodOp = baseOp + p * 0.64 + flickerBlink * p * 0.3;
+      root.style.setProperty('--d-flicker-opacity-wood', Math.max(0.02, woodOp).toFixed(3));
+
+      // ── Blackout overlay: non-fire pages darken linearly to black ──
+      if (el !== 'fire') {
+        const overlay = document.querySelector('.destruct-blackout');
+        if (overlay) overlay.style.opacity = p.toFixed(3);
+      }
 
       // ── Per-element degradation ──
       if (el === 'wood') destructTickWood(p);
@@ -2695,10 +2858,12 @@
       const b = Math.round(76 - p * 40);
       root.style.setProperty('--d-wood-border', `rgba(${r},${g},${b},${0.3 - p * 0.2})`);
       root.style.setProperty('--d-wood-node-bg', `rgba(${r},${g},${b},${p * 0.15})`);
-      // Bg-char: shift to white/grey with visible alpha
-      const charGrey = Math.round(120 + p * 60);
-      root.style.setProperty('--d-wood-char-color', `rgba(${charGrey},${charGrey},${charGrey},${0.12 - p * 0.05})`);
-      root.style.setProperty('--d-wood-branch', `rgba(${r},${g},${b},${0.12 - p * 0.08})`);
+      // Bg-char: shift green → white (opacity handled by --d-flicker-opacity-wood)
+      const charWhite = Math.round(180 + p * 75);
+      root.style.setProperty('--d-wood-char-color', `rgb(${charWhite},${charWhite},${charWhite})`);
+      // SVG branches: build up — brighten from faint green to vivid white
+      const branchWhite = Math.round(76 + p * 160);
+      root.style.setProperty('--d-wood-branch', `rgba(${branchWhite},${branchWhite},${branchWhite},${0.12 + p * 0.5})`);
 
       // Audio degradation
       if (woodSynth) {
@@ -2825,6 +2990,24 @@
       // Extra shake intensity
       root.style.setProperty('--d-earth-shake', (3 + p * 12) + 'px');
 
+      // SVG buildup: thumbprint and touch area glow brighter
+      const er = Math.round(139 + p * 116);  // 139→255
+      const eg = Math.round(94 + p * 116);   // 94→210
+      const eb = Math.round(60 + p * 100);   // 60→160
+      const thumbOp = 0.55 + p * 0.45;
+      const thumb = document.getElementById('earthCue');
+      if (thumb) {
+        thumb.style.opacity = thumbOp;
+        thumb.querySelectorAll('path, circle, ellipse').forEach(el => {
+          el.setAttribute('stroke', `rgba(${er},${eg},${eb},${0.3 + p * 0.7})`);
+        });
+      }
+      const ta = document.getElementById('earthTouch');
+      if (ta) {
+        ta.style.borderColor = `rgba(${er},${eg},${eb},${0.35 + p * 0.6})`;
+        ta.style.boxShadow = `0 0 ${20 + p * 60}px rgba(${er},${eg},${eb},${p * 0.5})`;
+      }
+
       // Audio: drone drops lower, filter opens
       if (earthDrone) {
         earthDrone.osc1.frequency.setTargetAtTime(55 - p * 15, audioCtx.currentTime, 0.3);
@@ -2854,11 +3037,11 @@
     // ── METAL DESTRUCTION ──
     function destructTickMetal(p) {
       const root = document.documentElement;
-      // Gold → rust: interpolate color
-      const r = Math.round(212 - p * 73);  // 212→139
-      const g = Math.round(175 - p * 81);  // 175→94
-      const b = Math.round(55 - p * 25);   // 55→30
-      root.style.setProperty('--d-metal-color', `rgba(${r},${g},${b},0.45)`);
+      // Gold → bright white-gold: SVG buildup
+      const r = Math.round(212 + p * 43);   // 212→255
+      const g = Math.round(175 + p * 55);   // 175→230
+      const b = Math.round(55 + p * 145);   // 55→200
+      root.style.setProperty('--d-metal-color', `rgba(${r},${g},${b},${0.45 + p * 0.5})`);
     }
 
     // Metal bell audio degradation applied per-strike via progress check
@@ -2875,11 +3058,11 @@
       // Bubble grows
       const bubbleSize = 28 + p * 30;
       root.style.setProperty('--d-water-bubble-size', bubbleSize + 'px');
-      // Stroke colors shift red
-      const sr = Math.round(70 + p * 150);
-      const sg = Math.round(130 - p * 80);
-      const sb = Math.round(200 - p * 100);
-      root.style.setProperty('--d-water-stroke', `rgba(${sr},${sg},${sb},${0.15 + p * 0.15})`);
+      // Stroke colors shift to bright white-blue, opacity builds up
+      const sr = Math.round(70 + p * 185);
+      const sg = Math.round(130 + p * 80);
+      const sb = Math.round(200 + p * 55);
+      root.style.setProperty('--d-water-stroke', `rgba(${sr},${sg},${sb},${0.15 + p * 0.65})`);
 
       // Loosen stroke constraint
       waterDestructSnap = 1 - p * 0.85; // goes from 1.0 → 0.15
@@ -3204,6 +3387,60 @@
       const elapsed = (Date.now() - harmonyStartTime) / 1000;
       if (elapsed < 15) return 0;
       return Math.min(1, (elapsed - 15) / 45);
+    }
+
+    // Background ring system (Gravity Well)
+    function drawHarmonyBg() {
+      const canvas = document.getElementById('harmonyBgCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d', { alpha: false });
+      const w = canvas.width, h = canvas.height;
+      const cx = w / 2, cy = h / 2;
+      
+      // Get globalPulseAmp from harmonyPulseLoop for acceleration
+      const globalPulseAmp = harmonyPulseFrame ? ((Date.now() - harmonyStartTime) / 1000 % getCurrentPulseInterval()) / getCurrentPulseInterval() < 0.06 ? (((Date.now() - harmonyStartTime) / 1000 % getCurrentPulseInterval()) / getCurrentPulseInterval()) < 0.03 ? (((Date.now() - harmonyStartTime) / 1000 % getCurrentPulseInterval()) / getCurrentPulseInterval()) * 2 : (1 - (((Date.now() - harmonyStartTime) / 1000 % getCurrentPulseInterval()) / getCurrentPulseInterval())) * 2 : 0 : 0;
+
+      bgTime += 0.005 + (globalPulseAmp * 0.02); // Accelerate flow on hold
+      
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, w, h);
+      
+      const maxR = Math.max(w, h);
+      const ringCount = 12;
+      const spacing = maxR / ringCount;
+
+      ctx.globalCompositeOperation = 'screen';
+      
+      // Calculate global color shift based on convergence
+      const cGlow = Math.min(1, getCurrentConvergence());
+      const baseR = 20 + cGlow * 180;
+      const baseG = 15 + cGlow * 125;
+      const baseB = 25 + cGlow * 25;
+
+      for (let i = 0; i < ringCount; i++) {
+        // Rings move INWARD based on time
+        let r = ((i * spacing) - (bgTime * maxR * 0.1)) % maxR;
+        if (r < 0) r += maxR; // Wrap around to the outside
+        
+        // Rings fade out as they reach the edge or the very center
+        let alpha = 0;
+        if (r < maxR * 0.8) {
+          const depth = r / (maxR * 0.8); // 0 (center) to 1 (edge)
+          alpha = Math.sin(depth * Math.PI) * (0.15 + globalPulseAmp * 0.15);
+        }
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, Math.max(0.1, r), 0, Math.PI * 2);
+        
+        // Slight color variation per ring
+        const rOff = Math.sin(i) * 20;
+        ctx.strokeStyle = `rgba(${baseR + rOff}, ${baseG}, ${baseB}, ${alpha})`;
+        ctx.lineWidth = 2 + (r * 0.01) + (globalPulseAmp * 4);
+        ctx.stroke();
+      }
+      
+      ctx.globalCompositeOperation = 'source-over';
+      harmonyBgFrame = requestAnimationFrame(drawHarmonyBg);
     }
 
     let lastPulseVibTime = 0;
@@ -4832,6 +5069,25 @@
     }
 
     document.addEventListener('touchmove', e => { if (currentElement) e.preventDefault(); }, { passive: false });
+    
+    // ═══════════════════════════════════
+    // GYROSCOPE (Aftermath Ash Sway)
+    // ═══════════════════════════════════
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', function(e) {
+        if (!e.gamma || appStatus !== 'ended') return;
+        // e.gamma is left/right tilt in degrees (-90 to 90)
+        let tilt = e.gamma; 
+        if (tilt > 45) tilt = 45;
+        if (tilt < -45) tilt = -45;
+        
+        // Map tilt to horizontal drift (parallax effect)
+        document.documentElement.style.setProperty('--ash-gyr1', (tilt * 0.4) + 'px');
+        document.documentElement.style.setProperty('--ash-gyr2', (tilt * 0.8) + 'px');
+        document.documentElement.style.setProperty('--ash-gyr3', (tilt * 1.5) + 'px');
+      }, true);
+    }
+
   </script>
 </body>
 
