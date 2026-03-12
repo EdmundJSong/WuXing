@@ -1950,6 +1950,51 @@
       width: max-content;
     }
 
+    .admin-stopwatch {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 8px auto 16px;
+    }
+
+    #adminStopwatch {
+      font-family: monospace;
+      font-size: 22px;
+      font-weight: 700;
+      color: #44ccff;
+      background: rgba(0, 20, 40, 0.4);
+      padding: 6px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(70, 200, 255, 0.25);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 8px rgba(70, 200, 255, 0.4);
+      min-width: 90px;
+      text-align: center;
+    }
+
+    .sw-btn {
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      letter-spacing: 0.05em;
+    }
+
+    .sw-btn:active {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .sw-btn.sw-running {
+      border-color: rgba(70, 200, 255, 0.4);
+      color: #44ccff;
+    }
+
     .admin-section {
       margin-bottom: 24px;
     }
@@ -2150,6 +2195,11 @@
           <span>Status: <strong id="adminCurrentStatus">loading...</strong></span>
         </div>
         <div id="adminTimer">00:00</div>
+        <div class="admin-stopwatch">
+          <span id="adminStopwatch">00:00</span>
+          <button class="sw-btn" id="swStartPause" onclick="toggleStopwatch()">START</button>
+          <button class="sw-btn" onclick="resetStopwatch()">RESET</button>
+        </div>
       </div>
       <div class="admin-section">
         <div class="admin-label">SYSTEM</div>
@@ -2614,6 +2664,47 @@
         db.ref('harmony_start').set(firebase.database.ServerValue.TIMESTAMP);
         db.ref('harmony_freq').set({ 50: 0, 52: 0, 54: 0, 56: 0, 58: 0 });
       }
+    };
+
+    // ── Admin Stopwatch (independent of status timer) ──
+    let swRunning = false, swElapsed = 0, swStart = 0, swInterval = null;
+
+    function formatSW(ms) {
+      const totalSec = Math.floor(ms / 1000);
+      const m = Math.floor(totalSec / 60);
+      const s = totalSec % 60;
+      return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }
+
+    window.toggleStopwatch = function () {
+      const btn = document.getElementById('swStartPause');
+      if (swRunning) {
+        // Pause
+        swElapsed += Date.now() - swStart;
+        clearInterval(swInterval); swInterval = null;
+        swRunning = false;
+        btn.textContent = 'START';
+        btn.classList.remove('sw-running');
+      } else {
+        // Start
+        swStart = Date.now();
+        swRunning = true;
+        btn.textContent = 'PAUSE';
+        btn.classList.add('sw-running');
+        swInterval = setInterval(() => {
+          const total = swElapsed + (Date.now() - swStart);
+          document.getElementById('adminStopwatch').textContent = formatSW(total);
+        }, 250);
+      }
+    };
+
+    window.resetStopwatch = function () {
+      swRunning = false; swElapsed = 0;
+      if (swInterval) { clearInterval(swInterval); swInterval = null; }
+      document.getElementById('adminStopwatch').textContent = '00:00';
+      const btn = document.getElementById('swStartPause');
+      btn.textContent = 'START';
+      btn.classList.remove('sw-running');
     };
 
     let isPresenceInitialized = false;
@@ -3125,10 +3216,26 @@
 
       cleanupAftermath();
 
+      // Reset elements and ring to visible for entrance
+      const ring = document.querySelector('#harmonyLayout .circle-ring');
+      if (ring) { ring.style.transition = ''; ring.style.opacity = '0.2'; }
       document.querySelectorAll('.harmony-el').forEach((el, index) => {
         el.classList.remove('entered');
+        el.style.transition = '';
+        el.style.opacity = '';
         setTimeout(() => el.classList.add('entered'), 100 + (index * 150));
       });
+
+      // After elements finish entering, fade them + ring out
+      harmonyCirclesFaded = false;
+      setTimeout(() => {
+        if (ring) { ring.style.transition = 'opacity 1.5s ease-out'; ring.style.opacity = '0'; }
+        document.querySelectorAll('.harmony-el').forEach(el => {
+          el.style.transition = 'opacity 1.5s ease-out, transform 1.5s ease-out';
+          el.style.opacity = '0';
+        });
+        harmonyCirclesFaded = true;
+      }, 3000);
 
       initHarmonyPulse();
     }
@@ -3143,6 +3250,7 @@
     let harmonyKeFrame = null;
     let harmonyReleaseCount = 0;
     let harmonyCenterHandler = null, harmonyCenterEndHandler = null;
+    let harmonyCirclesFaded = false;
 
     const HARMONY_FREQS = [50, 52, 54, 56, 58];
     const HARMONY_PULSE_START = 3.0;
@@ -3316,7 +3424,7 @@
       }
 
       const ring = document.querySelector('#harmonyLayout .circle-ring');
-      if (ring) {
+      if (ring && !harmonyCirclesFaded) {
         const ringScale = 1 + pulseAmp * 0.04;
         const ringOp = 0.15 + pulseAmp * 0.35;
         const ringGlow = pulseAmp * 8;
@@ -3427,8 +3535,13 @@
       const cue = document.getElementById('harmonyCue');
       if (cue) cue.style.opacity = '0';
       const ring = document.querySelector('#harmonyLayout .circle-ring');
-      if (ring) { ring.style.transform = ''; ring.style.opacity = ''; ring.style.boxShadow = 'none'; }
-      document.querySelectorAll('.harmony-el').forEach(el => el.classList.remove('entered'));
+      if (ring) { ring.style.transform = ''; ring.style.opacity = ''; ring.style.boxShadow = 'none'; ring.style.transition = ''; }
+      document.querySelectorAll('.harmony-el').forEach(el => {
+        el.classList.remove('entered');
+        el.style.transition = '';
+        el.style.opacity = '';
+      });
+      harmonyCirclesFaded = false;
       const keCanvas = document.getElementById('harmonyKeCanvas');
       if (keCanvas) { const ctx = keCanvas.getContext('2d'); ctx.clearRect(0, 0, keCanvas.width, keCanvas.height); }
       if (center) { center.style.boxShadow = ''; center.classList.remove('glowing'); }
