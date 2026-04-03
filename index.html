@@ -2181,6 +2181,30 @@
     .admin-btn.admin-active {
       box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.8), 0 0 16px rgba(255, 255, 255, 0.2);
     }
+
+    /* PATCH: Admin panel needs native scrolling -- override global touch-action: none */
+    #adminPanel,
+    #adminPanel * {
+      touch-action: auto;
+    }
+
+    /* PATCH: Admin error banner */
+    .admin-error {
+      background: rgba(255, 30, 30, 0.2);
+      border: 1px solid rgba(255, 30, 30, 0.6);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 12px 0;
+      font-family: monospace;
+      font-size: 12px;
+      color: #ff6666;
+      word-break: break-all;
+      display: none;
+    }
+
+    .admin-error.visible {
+      display: block;
+    }
   </style>
 </head>
 
@@ -2201,6 +2225,7 @@
           <button class="sw-btn" onclick="resetStopwatch()">RESET</button>
         </div>
       </div>
+      <div class="admin-error" id="adminError"></div>
       <div class="admin-section">
         <div class="admin-label">SYSTEM</div>
         <div class="admin-row">
@@ -2649,6 +2674,14 @@
           });
         }
       });
+      // PATCH: Firebase write diagnostic on admin load
+      db.ref('_admin_ping').set(Date.now()).then(function() {
+        db.ref('_admin_ping').remove();
+        console.log('[ADMIN] Firebase write OK');
+      }).catch(function(err) {
+        showAdminError('FIREBASE RULES BLOCKED -- writes rejected. Check Firebase Console > Realtime Database > Rules. Error: ' + err.message);
+      });
+
       // Elapsed timer
       adminTimerInterval = setInterval(() => {
         if (adminStatusTime) {
@@ -2658,11 +2691,23 @@
       }, 500);
     }
 
+    function showAdminError(msg) {
+      var el = document.getElementById('adminError');
+      if (el) { el.textContent = msg; el.classList.add('visible'); }
+      setTimeout(function() { if (el) el.classList.remove('visible'); }, 8000);
+    }
+
     window.setAdminStatus = function (status) {
-      db.ref('status').set(status);
+      db.ref('status').set(status).catch(function(err) {
+        showAdminError('WRITE FAILED: ' + err.message + ' -- check Firebase rules');
+      });
       if (status === 'live_harmony') {
-        db.ref('harmony_start').set(firebase.database.ServerValue.TIMESTAMP);
-        db.ref('harmony_freq').set({ 50: 0, 52: 0, 54: 0, 56: 0, 58: 0 });
+        db.ref('harmony_start').set(firebase.database.ServerValue.TIMESTAMP).catch(function(err) {
+          showAdminError('harmony_start write failed: ' + err.message);
+        });
+        db.ref('harmony_freq').set({ 50: 0, 52: 0, 54: 0, 56: 0, 58: 0 }).catch(function(err) {
+          showAdminError('harmony_freq write failed: ' + err.message);
+        });
       }
     };
 
