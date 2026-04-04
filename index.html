@@ -2116,59 +2116,94 @@
 
     /* Destruction buttons */
     .admin-btn.destroy {
-      background: repeating-linear-gradient(
-        -45deg,
-        rgba(30, 0, 0, 0.6) 0,
-        rgba(30, 0, 0, 0.6) 8px,
-        rgba(80, 0, 0, 0.6) 8px,
-        rgba(80, 0, 0, 0.6) 16px
-      );
-      border: 1.5px dashed rgba(255, 30, 30, 0.8);
-      border-radius: 2px;
-      color: #ff3333;
-      font-family: inherit;
+      border-radius: 6px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: -0.05em;
-      text-shadow: 1px 1px 0 #000;
+      letter-spacing: -0.02em;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+      border-left: 3.5px solid rgba(255, 40, 40, 0.85);
+      position: relative;
+      overflow: hidden;
     }
-    
-    .admin-btn.destroy::after {
-      display: none;
+
+    /* Red danger slash across corner */
+    .admin-btn.destroy::before {
+      content: '';
+      position: absolute;
+      top: -1px; right: -1px;
+      width: 18px; height: 18px;
+      background: linear-gradient(225deg, rgba(255,40,40,0.7) 40%, transparent 41%);
+      pointer-events: none;
+      z-index: 1;
     }
+
+    .admin-btn.destroy::after { display: none; }
+
+    /* Per-element destruction colours */
+    .admin-btn.destroy.d-water {
+      background: linear-gradient(135deg, rgba(70,130,200,0.2) 0%, rgba(30,50,80,0.4) 100%);
+      border-color: rgba(70,130,200,0.35);
+      border-left-color: rgba(255,40,40,0.85);
+      color: #a3daff;
+    }
+    .admin-btn.destroy.d-water:active { box-shadow: 0 0 15px rgba(70,130,200,0.5); }
+
+    .admin-btn.destroy.d-fire {
+      background: linear-gradient(135deg, rgba(240,90,20,0.2) 0%, rgba(60,20,10,0.4) 100%);
+      border-color: rgba(240,90,20,0.35);
+      border-left-color: rgba(255,40,40,0.85);
+      color: #ffb585;
+    }
+    .admin-btn.destroy.d-fire:active { box-shadow: 0 0 15px rgba(240,90,20,0.5); }
+
+    .admin-btn.destroy.d-metal {
+      background: linear-gradient(135deg, rgba(212,175,55,0.2) 0%, rgba(60,50,15,0.4) 100%);
+      border-color: rgba(212,175,55,0.35);
+      border-left-color: rgba(255,40,40,0.85);
+      color: #ffe694;
+    }
+    .admin-btn.destroy.d-metal:active { box-shadow: 0 0 15px rgba(212,175,55,0.5); }
+
+    .admin-btn.destroy.d-wood {
+      background: linear-gradient(135deg, rgba(76,153,76,0.2) 0%, rgba(20,40,20,0.4) 100%);
+      border-color: rgba(76,153,76,0.35);
+      border-left-color: rgba(255,40,40,0.85);
+      color: #9dfcb6;
+    }
+    .admin-btn.destroy.d-wood:active { box-shadow: 0 0 15px rgba(76,153,76,0.5); }
+
+    .admin-btn.destroy.d-earth {
+      background: linear-gradient(135deg, rgba(139,94,60,0.2) 0%, rgba(40,25,15,0.4) 100%);
+      border-color: rgba(139,94,60,0.35);
+      border-left-color: rgba(255,40,40,0.85);
+      color: #ffcf9e;
+    }
+    .admin-btn.destroy.d-earth:active { box-shadow: 0 0 15px rgba(139,94,60,0.5); }
 
     .admin-btn.destroy:active {
       transform: scale(0.95);
-      background: rgba(255, 0, 0, 0.3);
-      border-style: solid;
-      box-shadow: 0 0 15px rgba(255, 30, 30, 0.7) inset;
     }
 
     .admin-btn .btn-sub {
       display: block;
       font-size: 9px;
       font-weight: 400;
-      opacity: 0.5;
+      opacity: 0.6;
       margin-top: 4px;
       letter-spacing: 0.02em;
       text-transform: none;
+      color: rgba(255,255,255,0.55);
     }
 
     .admin-btn.destroy.aftermath {
-      background: repeating-linear-gradient(
-        45deg,
-        rgba(30, 0, 40, 0.6) 0,
-        rgba(30, 0, 40, 0.6) 8px,
-        rgba(70, 0, 90, 0.6) 8px,
-        rgba(70, 0, 90, 0.6) 16px
-      );
-      border: 1.5px dashed rgba(200, 40, 255, 0.8);
-      color: #e59dfc;
+      background: linear-gradient(135deg, rgba(170,102,204,0.15) 0%, rgba(40,15,55,0.4) 100%);
+      border-color: rgba(170,102,204,0.35);
+      border-left-color: rgba(255,40,40,0.85);
+      color: #eeddff;
     }
     
     .admin-btn.destroy.aftermath:active {
-      background: rgba(140, 0, 255, 0.3);
-      box-shadow: 0 0 15px rgba(200, 40, 255, 0.7) inset;
+      box-shadow: 0 0 15px rgba(170,102,204,0.5);
     }
 
     /* End button */
@@ -2260,13 +2295,13 @@
       <div class="admin-section">
         <div class="admin-label">DESTRUCTION</div>
         <div class="admin-row">
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_water')">水 Tsunami<span class="btn-sub">Phones show: 火 Fire</span></button>
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_fire')">火 Inferno<span class="btn-sub">Phones show: 金 Metal</span></button>
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_metal')">金 Splinter<span class="btn-sub">Phones show: 木 Wood</span></button>
+          <button class="admin-btn destroy d-water" onclick="setAdminStatus('destroy_water')">水 Tsunami<span class="btn-sub">Phones show: 火 Fire</span></button>
+          <button class="admin-btn destroy d-fire" onclick="setAdminStatus('destroy_fire')">火 Inferno<span class="btn-sub">Phones show: 金 Metal</span></button>
+          <button class="admin-btn destroy d-metal" onclick="setAdminStatus('destroy_metal')">金 Splinter<span class="btn-sub">Phones show: 木 Wood</span></button>
         </div>
         <div class="admin-row">
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_wood')">木 Fissure<span class="btn-sub">Phones show: 土 Earth</span></button>
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_earth')">土 Quake<span class="btn-sub">Phones show: 水 Water</span></button>
+          <button class="admin-btn destroy d-wood" onclick="setAdminStatus('destroy_wood')">木 Fissure<span class="btn-sub">Phones show: 土 Earth</span></button>
+          <button class="admin-btn destroy d-earth" onclick="setAdminStatus('destroy_earth')">土 Quake<span class="btn-sub">Phones show: 水 Water</span></button>
           <button class="admin-btn destroy aftermath" onclick="setAdminStatus('live_aftermath')">☠ Aftermath</button>
         </div>
       </div>
