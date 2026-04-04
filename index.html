@@ -2144,6 +2144,16 @@
       box-shadow: 0 0 15px rgba(255, 30, 30, 0.7) inset;
     }
 
+    .admin-btn .btn-sub {
+      display: block;
+      font-size: 9px;
+      font-weight: 400;
+      opacity: 0.5;
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
     .admin-btn.destroy.aftermath {
       background: repeating-linear-gradient(
         45deg,
@@ -2250,13 +2260,13 @@
       <div class="admin-section">
         <div class="admin-label">DESTRUCTION</div>
         <div class="admin-row">
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_water')">水 Tsunami</button>
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_fire')">火 Inferno</button>
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_metal')">金 Splinter</button>
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_water')">水 Tsunami<span class="btn-sub">Phones show: 火 Fire</span></button>
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_fire')">火 Inferno<span class="btn-sub">Phones show: 金 Metal</span></button>
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_metal')">金 Splinter<span class="btn-sub">Phones show: 木 Wood</span></button>
         </div>
         <div class="admin-row">
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_wood')">木 Fissure</button>
-          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_earth')">土 Quake</button>
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_wood')">木 Fissure<span class="btn-sub">Phones show: 土 Earth</span></button>
+          <button class="admin-btn destroy" onclick="setAdminStatus('destroy_earth')">土 Quake<span class="btn-sub">Phones show: 水 Water</span></button>
           <button class="admin-btn destroy aftermath" onclick="setAdminStatus('live_aftermath')">☠ Aftermath</button>
         </div>
       </div>
@@ -2670,7 +2680,7 @@
         const label = statusMap[val];
         if (label) {
           document.querySelectorAll('.admin-btn').forEach(b => {
-            if (b.textContent.trim() === label.trim()) b.classList.add('admin-active');
+            if (b.textContent.trim().includes(label.trim())) b.classList.add('admin-active');
           });
         }
       });
@@ -3224,12 +3234,15 @@
             document.getElementById('bottomNav').style.display = 'none';
             switchElement(el);
           } else if (status.startsWith('destroy_')) {
-            let el = status.replace('destroy_', '');
+            let force = status.replace('destroy_', '');
+            // 克 cycle: the force destroys the victim, phones show the victim
+            const keVictim = { water: 'fire', fire: 'metal', metal: 'wood', wood: 'earth', earth: 'water' };
+            let el = keVictim[force] || force;
             document.getElementById('landing').style.display = 'none';
             document.getElementById('bottomNav').style.display = 'none';
-            // Switch to the element if not already there
+            // Switch to the victim element
             if (currentElement !== el) switchElement(el);
-            // Start destruction engine
+            // Start destruction engine on the victim
             startDestruction(el);
           }
         }
